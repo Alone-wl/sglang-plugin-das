@@ -149,3 +149,6 @@ W8A8 strategy迁移同时核对[N,K]/[K,N]、packed stride、scale dtype、cache
 
 
 JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.py)，同时核对来源OID/mode、owned bytes、wheel成员与实际编译器依赖闭包。历史deps记录与.so存在不证明当前symbol执行；不得自动把其状态改completed。用native BuildSpec及translation unit检查真实source/include顺序；再在独立冷cache调用公共Python入口实际编译、算数/边界/Graph。HIP宏中的模板逗号问题应作精确语法适配，保留线程/occupancy/算法，并反向恢复来源bytes。
+
+
+移植radix/warp kernel时逐项核对histogram bin归属与实际warp width，不只修复缺失intrinsic使其能编译。BF16 ordered compare要明确signed-zero/NaN/subnormal语义；使用整型位序验证极小值，先排除CPU参考flush模式，不能看到GPU/reference不等就直接判定GPU有错。保持原计算kernel、launch尺寸和quota算法，边界覆盖来源声明的max width/k及Graph页表更新，CUDA未实测需单独记录。

@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev52` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev53` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -771,3 +771,21 @@ python3 tools/audit_jit_resources.py --plan "$PLUGIN/plans/sglang-das-execution.
 运行工具需要Python3.10+和当前用户对上述只读输入的权限；cache可省略，此时不产生编译证据。GPU用例使用显式SGLANG_JIT_CACHE_DIR独立空目录做冷编译；后续隔离wheel/门禁与完整模型按实际执行补记。
 
 隔离dev52实际结果：6项audit工具单元、4项native loader/BuildSpec CPU契约、2项实际GPU/Graph（四dtype编译变体）全部通过；416/416 Hook、3seam与85项仓库unittest通过。589包文件与源码/site一致，wheel SHA256 `4cfeeee574672743e8cb9424207abfb6413cd07504edc3856c7c182c088bf47b`。隔离cache的4份新依赖清单与库文件及当前owner摘要核对，owner_differs状态按语法适配保留。L0、执行台账、Skill和实际宽/窄屏检索/阅读/导航检查通过；当前完整dev52八卡服务仍待执行，不能归用dev51模型结果。14个历史资源保持in_progress，74个只同字节与4个删除项不作执行/完成声明。
+
+## 65. 2026-11-01 dev52 DeepSeek 原配方八卡复验
+
+本地 `b2302c3` 的隔离dev52于07:23:57–07:29:23按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。589包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-deepseekv4-dev52-validation-20261101.json)记录版本、配置及响应哈希；不归到dev53，不是所有kernel/profile或数据集精度证明。
+
+## 66. 2026-11-01 BF16 short-row radix top-k 的HCU接入
+
+从本地 `b2302c3` 继续选择仅有字节存在证据的topk_bf16_small.cuh，通过既有公开topk_transform_bf16_small冷编译。原Source在gfx938报5类编译错误：CUDA shuffle、signed dot打包与BF16 pair mask intrinsic不可用，原始日志保留。静态核对另发现pivot warp固定32lane/每lane8个bins，不能直接用于wave64。
+
+现使用既有portable shuffle/broadcast；每lane管理256/deviceWarpThreads个bins，CUDA32仍8、HIP64为4，对应vector load、signed-MSB顺序和suffix pivot按实际宽度分配。HIP pair比较直接使用BF16原始位序，显式处理NaN与signed-zero相等；8个半字比较mask用整型shift打包，CUDA保留原intrinsic。线程512、occupancy3、两阶段radix、top-k quota和page-table接口保持，未强制wave32，也未换用torch topk计算返回值。来源已有说明保留，CUDA特定lane注释按原文保留；HIP差异由本记录说明。
+
+[Source对照](hcu-bf16-topk-source-alignment.json)与[精确patch](patches/hcu-bf16-topk-wave64.patch)列出全部适配，临时副本反向apply后与固定Source逐字节相同。首轮helper类型限定误将全局bf16x2_t写成device成员，已修正后重新冷编译；未伪造vendor API。
+
+5项公开入口真实GPU检查通过：256宽下空/partial行与任意返回顺序下的精确page slot集合；来源最大width16384/k2048与positive/negative BF16 bins；重复值与signed-zero quota128、唯一且有效索引；有限subnormal位序；Graph中同时改变score、length和page table。普通/最大值参考使用独立topk/page公式，subnormal参考使用整型BF16 rank，均为exact比较而非放宽浮点容差。
+
+Subnormal首轮64/64差异不能归因为GPU：默认CPU float top-k给出129开头索引，关闭CPU flush-denormal后与整数位序同为63开头，kernel整数参考结果正确。初次将该失败直接归因HIP浮点比较的判断不充分，原probe/log保留；最终HIP比较按BF16位语义实现并避免任何flush依赖，不把参考环境修正冒称生产GPU bugfix。NaN沿来源接口不支持；CUDA32仅静态保持原intrinsic/8bin specialization，未在NVIDIA实测。
+
+隔离dev53实际结果：独立空JIT cache冷编译并通过5项真实GPU/Graph检查；416/416 Hook、3个resolution seam、0 errors与85项仓库unittest通过。589包文件与源码/site逐字节相同，wheel SHA256 `3de6fde9d43a45cb9a153a742fd1a30b73766577e63c4ea7ead2411f7b559d78`。资源审计记录新cache的4项编译依赖，受控patch仍标记owner_differs，不混同字节一致与执行证据。完整dev53模型服务尚未执行；该单资源实现完成不关闭其余JIT资源和全DAS范围。

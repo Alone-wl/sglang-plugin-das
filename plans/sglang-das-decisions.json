@@ -742,5 +742,19 @@
       "tests/runtime/jit_block_amax_gpu.py"
     ],
     "validation_scope": "4 native load_jit/BuildSpec/translation-unit CPU contracts and2 actual fresh-cache gfx938 GPU tests pass: all fp32/bf16 input/output combinations, variable/empty/tail rows, topk skips and changed score/length Graph replay. Original Source cold compile failed8 errors; only launch-bounds syntax adapted. Isolated dev52 repeats4 native BuildSpec CPU contracts and2 fresh-cache GPU tests; all4 input/output dtype variants generate validated compiler records and packaged owner hash matches wheel.416/416 hooks and85 repository tests pass,589 package files match source/site; other architectures not established."
+  },
+  "python/sglang/kernels/jit/csrc/deepseek_v4/topk_bf16_small.cuh": {
+    "status": "implemented",
+    "rationale": "Own the complete source BF16 radix short-row kernel with explicit HIP portability adapters: width-aware shuffles,256/deviceWarpThreads histogram bins per lane, ordered raw BF16 pair masks and integer flag packing. Preserve CUDA original intrinsics and32-lane8-bin specialization,512-thread/occupancy3 launch, radix selection and page mapping. Exact patch reversal restores source bytes.",
+    "implementation": [
+      "hcu_sglang/jit_overlay/csrc/deepseek_v4/topk_bf16_small.cuh",
+      "hcu_sglang/models/deepseek/current_v4/hcu_backend/topk.py",
+      "hcu_sglang/jit_overlay_loader.py"
+    ],
+    "source_alignment": "docs/hcu-bf16-topk-source-alignment.json",
+    "tests": [
+      "tests/runtime/jit_bf16_topk_gpu.py"
+    ],
+    "validation_scope": "5 actual public-entry gfx938 GPU tests pass: cold compilation, empty/partial rows, max16384 width/k2048 signed values, ties/signed zero quota, finite subnormals via integer-rank reference, Graph score/length/page updates. Default CPU float reference flush behavior was diagnosed independently; no tolerance relaxation. Isolated dev53 wheel:589 package files byte-identical,5 GPU tests,416 hooks/3 seams/no errors and85 repository tests pass. Full dev53 model service not run; NVIDIA CUDA32 not run, NaNs unsupported as source."
   }
 }

@@ -1,0 +1,34 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/kernels/jit/csrc/deepseek_v4/topk_bf16_small.cuh",
+  "source_sha256": "9213f824fae44b4465b33cd0f51145d47950c4142ebba061fe8e0f9d151d1dfa",
+  "owner": "hcu_sglang/jit_overlay/csrc/deepseek_v4/topk_bf16_small.cuh",
+  "owner_sha256": "45d4e60cc01a86651fe61720eaf53f5045886c8beeae163bce54a0746bcd4eb1",
+  "reviewable_exact_patch": "docs/patches/hcu-bf16-topk-wave64.patch",
+  "patch_sha256": "369cb7ed655ebc97b7d2a405934628c3f2bd8c2160101a713329b0c7db541e75",
+  "adaptations": [
+    "Use existing width-aware portable warp shuffle/broadcast helpers.",
+    "Cover256 histogram bins with256/deviceWarpThreads bins per lane: CUDA32 keeps8, HIP64 uses4; preserve sign ordering and suffix pivot algorithm.",
+    "HIP ordered BF16 pair comparisons operate on raw BF16 sign/exponent/mantissa ordering, with explicit NaN rejection and signed-zero equality; CUDA uses original comparison intrinsics.",
+    "HIP packs the8 comparison flags by integer shifts instead of unavailable signed dp4a; CUDA original dot-product pack remains."
+  ],
+  "invariants": [
+    "Same512-thread CTA, occupancy3, radix two-pass selection, BF16 ordering, top-k quotas and page transform.",
+    "No torch/topk alternate path selected, no forced wave32, no changes to input repositories."
+  ],
+  "source_gpu_validation": "5 real public-entry GPU tests pass: cold compile, empty/partial rows, max width16384/k2048 positive/negative BF16 bins, ties and signed-zero quota128, exact finite subnormal order via integer bit-rank reference, and score/length/page-table-changing Graph replay.",
+  "limits": "gfx938 HIP wave64 tested. CUDA32 path preserves original intrinsics and specializes bin count8 but has not been run on NVIDIA. NaN contract remains unsupported.",
+  "exact_patch_reversal_restores_source_bytes": true,
+  "reference_correction": "Original CPU float top-k reference under default flush-denormal returned indices129..; integer BF16 rank and CPU flush-disabled float reference both select63.. for this fixture. Initial attribution of all64 mismatches to GPU was unsupported; final integer reference is flush-independent. Raw logs retained.",
+  "isolated_wheel_validation": {
+    "version": "0.3.2.dev53",
+    "wheel_sha256": "3de6fde9d43a45cb9a153a742fd1a30b73766577e63c4ea7ead2411f7b559d78",
+    "matching_package_files": 589,
+    "gpu_tests_passed": 5,
+    "repository_tests_passed": 85,
+    "hooks_applied": 416,
+    "hook_errors": 0,
+    "named_resolution_hooks": 3,
+    "scope": "Fresh isolated JIT cache, public entry GPU tests; full dev53 model service not run."
+  }
+}
