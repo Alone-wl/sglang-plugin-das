@@ -22,10 +22,10 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2967,
+    "pending": 2966,
     "upstream": 26,
     "implemented": 7,
-    "in_progress": 10
+    "in_progress": 11
   },
   "files": [
     {
@@ -12694,14 +12694,17 @@
       "rationale": "Port full source channelwise LightOp helper, source scheme capability/post-load/apply and native linear wrapper apply. Preserve opt-in OCP[N,K] versus generic transposed layout, FNUZ conversion, KME retry and per-token tuple/output dtype. Add a paired compressed block hipBLASLt weight+scale orientation adaptation verified against a strict failing native-consumer counterexample. Other schemes/config and broad module review remain separate.",
       "implementation": [
         "hcu_sglang/layers/quantization/compressed_fp8.py",
-        "hcu_sglang/layers/quantization/w8a8_fp8.py"
+        "hcu_sglang/layers/quantization/w8a8_fp8.py",
+        "hcu_sglang/layers/quantization/compressed_int8.py"
       ],
       "source_alignment": "docs/hcu-compressed-fp8-source-alignment.json",
       "tests": [
         "tests/runtime/compressed_fp8.py",
-        "tests/runtime/compressed_fp8_gpu.py"
+        "tests/runtime/compressed_fp8_gpu.py",
+        "tests/runtime/compressed_int8.py",
+        "tests/runtime/compressed_int8_gpu.py"
       ],
-      "validation_scope": "Source-tree 14 public CPU tests pass, including actual native constructors/create/post-load/apply, kwargs forwarding to owned scheme and legacy scheme signature filtering, capability matrix, primary/KME exception boundaries, opt-out dtype and strict block layout. Six source-tree real GPU/Graph tests pass: opt-in BF16/FP16 and dynamic quant, opt-out tuple dtype, changed activation/weight scales, real KME after fixture primary miss, and native block post-load to actual hipBLASLt. Natural primary calls succeed without KME. Isolated dev47 repeats14 CPU and6 GPU/Graph tests;407/407 full hooks and79 repository tests pass,586 package files match source and actual installed wheel; other compressed schemes/backends are not validated."
+      "validation_scope": "Source-tree 14 public CPU tests pass, including actual native constructors/create/post-load/apply, kwargs forwarding to owned scheme and legacy scheme signature filtering, capability matrix, primary/KME exception boundaries, opt-out dtype and strict block layout. Six source-tree real GPU/Graph tests pass: opt-in BF16/FP16 and dynamic quant, opt-out tuple dtype, changed activation/weight scales, real KME after fixture primary miss, and native block post-load to actual hipBLASLt. Natural primary calls succeed without KME. Isolated dev47 repeats14 CPU and6 GPU/Graph tests;407/407 full hooks and79 repository tests pass,586 package files match source and actual installed wheel; other compressed schemes/backends are not validated. Source INT8 now exposes its own exact supported-argument metadata, so optional prequantized RMS/SiLU inputs reach the migrated scheme through the actual native wrapper. Legacy-signature CPU fixture deliberately registers only the wrapper to keep an unmigrated real native INT8 scheme available for backward-compatibility testing."
     },
     {
       "path": "python/sglang/srt/layers/quantization/compressed_tensors/compressed_tensors_marlin.py",
@@ -12776,7 +12779,21 @@
       "relation": "changed",
       "fork_oid": "b4b94dbd84085312dc81a0ee8ed4fbe4d8315dda",
       "official_oid": "e6c4fae6715eba1735c90383c45465ac7a1e5a04",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Port all four changed source INT8 scheme methods and gfx928 predicate, using actual LightOp producer, existing owned GEMM ops and cache configuration. Pair strategy-specific load layouts with native wrapper optional-argument metadata; normalize BF16 scales toFP32. Fix source-common lost bias in legacy hipBLASLt helper. Non-HCU remains effective native. Other inherited/NPU/ABI/static-AZP cases remain independent validation scopes.",
+      "implementation": [
+        "hcu_sglang/layers/quantization/compressed_int8.py",
+        "hcu_sglang/layers/quantization/w8a8_fp8.py",
+        "hcu_sglang/layers/quantization/quant_ops.py",
+        "hcu_sglang/layers/quantization/cache_config.py"
+      ],
+      "source_alignment": "docs/hcu-compressed-int8-source-alignment.json",
+      "tests": [
+        "tests/runtime/compressed_int8.py",
+        "tests/runtime/compressed_int8_gpu.py",
+        "tests/runtime/compressed_fp8_legacy.py"
+      ],
+      "validation_scope": "13 source-tree public CPU contracts and4 real GPU tests pass: all four strategy backends, real dynamic/prequantized production, bias preservation, scale normalization and changed scale/bias Graph replay. gfx928 KME packing is a CPU contract fixture only, static/asymmetric is metadata validation only. Isolated dev50 repeats13 CPU and4 GPU tests;2 selected-wrapper legacy signature tests and415/415 full hooks pass,588 package bytes match source/site.79 local repository tests pass. Full dev50 model not yet run."
     },
     {
       "path": "python/sglang/srt/layers/quantization/compressed_tensors/schemes/compressed_tensors_w8a8_int8_moe.py",

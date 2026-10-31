@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev49` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev50` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -709,3 +709,21 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 直接BF16 dense参考漏掉两次activation FP8量化、中间BF16舍入，产生31/4096差异；补齐后单点量化阈值仍放大首层rounding差异。现分别核对gate/up GEMM与activation（rtol/atol0.025）、用实际中间值作down阶段输入再独立按128-group量化/分块Torch计算down及route，最终out维持原rtol0.08/atol0.03，不放宽门限。两次GEMM和SiLU均独立检查，实际forward结果未被参考值替换。源码环境单用例通过；最终隔离四用例复验按实际结果补记。
 
 最终隔离dev49四项GPU用例全部通过（完整register、HCU_TEST_MODEL_PATH真实只读配置上下文、Native routed forward）；owned producer4次及HCU alignment1次断言通过。10项CPU、412/412 Hook、3seam和79项仓库unittest通过；587包文件与源码/site一致，wheel SHA256 `ad42689f38b850b6bdc6c53d8860e512ea9a2369c9a486386068bb94b7442f9f`。L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。完整dev49八卡服务仍待独立运行，不把dev48结果归到它；其他MoE后端/拓扑、global AITER配置与全DAS仍未关闭。
+
+## 59. 2026-11-01 dev49 DeepSeek-V4 原配方八卡复验
+
+提交 `dc59cd0` 的隔离dev49在06:11:43–06:17:19按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。587包文件与提交/wheel/site逐字节相同。[独立摘要](hcu-tp8-deepseekv4-dev49-validation-20261101.json)保存实际版本、配置及响应哈希；不归到dev50，不代表所有MoE profile或数据集精度/性能。
+
+## 60. 2026-11-01 compressed INT8 strategy 与预量化入口
+
+从本地 `dc59cd0` 继续。来源使用W8A8_SUPPORT_METHODS选择1 Triton、2 cutlass入口（HCU实际委托rocBLAS NN）、3 hipBLASLt、其他值rocBLAS；不同strategy的权重布局必须与其provider一起迁入。默认值1；变量应在进程启动前设置。完整迁入constructor、static scale normalization、post-load与apply，使用既有owned quant_ops/cache_config，来源gfx928 KME predicate逐字保留。普通gfx936/gfx938 strategy3保留连续[N,K]；gfx928按来源[K,N]、stride(1,K)打包，当前设备无该硬件验证。
+
+BF16 checkpoint scale在加载前转FP32；strategy1按已有cache reader读取指定TRITON_JSON_DIR，只有提供的config才预热，LMSLIM_TUNING_JSON显式存在时才导出model.json。未向输入仓库或模型目录写文件。SGLANG_USE_LEGACY_FUSED_RMS_QUANT与SGLANG_USE_FUSED_SILU_MUL_QUANT仍缺省关闭，启用后消费对应input_quant_args/silu_quant_args，RMS优先。Native linear wrapper读取owned scheme参数元信息，避免AROUND旧反射签名吞掉新增参数。
+
+[源码对照](hcu-compressed-int8-source-alignment.json)归一native N后4个变化方法及架构predicate AST相等，create_weights/get_min_capability复用AST未变native方法；沿用已存在的owned cache兼容类，不把其实现称为本阶段逐字Source迁入。Non-HCU保留有效original。Legacy旧签名测试只登记wrapper，保留真实未迁入native INT8类作接口兼容单元测试；生产GPU用例登记完整插件，这与forward测试漏登记alignment的错误情形不同。
+
+严格public CPU反例确认共享legacy hipBLASLt helper接收bias却直接返回不含bias的GEMM结果，6/6元素全部丢失。现仅在该返回路径用in-place add加入非None bias并保留输出dtype；精确移除该AST增量后恢复完整来源helper。未替换kernel、未禁用hipBLASLt；gfx928 KME原有bias处理保持其provider接口。
+
+13项CPU覆盖真实native constructor/create/post-load/wrapper apply、BF16 scale、gfx928 stride/AZP元信息、tensor scale、cache预热/m bucket、两种预量化参数优先级、四provider分派及异常、bias反例和non-HCU委托。4项真实GPU覆盖四种strategy实际backend、普通动态INT8量化、RMS pair进入真实hipBLASLt、SiLU pair进入真实Triton、以及更改scale/bias后的Graph重放；数学参考使用实际量化结果及独立FP32矩阵乘法，rtol/atol0.025。Static/asymmetric仅核对来源metadata，不能冒称AZP kernel数值通过；gfx928也仅CPU契约通过。隔离wheel、全Hook与模型结果按实际执行补记。
+
+隔离dev50实际结果：13项INT8 CPU、4项真实GPU/Graph、2项指定wrapper旧签名兼容单元测试、415/415 Hook与3seam通过，errors/unapplied为空；588包文件与源码/site逐字节相同，wheel SHA256 `2d897fad205952c99b6c66058937d2918da0bed1c7222bb55359c6b466b94997`。本地79项仓库unittest、L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。新增helper bias按独立AST增量记录；完整dev50模型未由这些局部检查替代，dev49模型结果仍仅归属dc59cd0。

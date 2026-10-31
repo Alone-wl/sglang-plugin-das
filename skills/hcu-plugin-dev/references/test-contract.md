@@ -140,3 +140,6 @@ FP4/FP8 MoE迁移从native constructor/create/static factory到完整post-load�
 
 
 真实MoE forward测试应调用完整插件注册入口，不能只登记量化方法而漏掉已有alignment/activation等依赖；用真实runtime context发布必要配置，TP1通信group显式声明。量化不连续边界会放大上游BF16微小舍入，应分阶段独立核对GEMM、activation和down/route，保留原门限；记录实际中间值供下阶段参考不等于替换实际kernel。共享测试的模型/metadata路径使用显式环境变量。
+
+
+W8A8 strategy迁移同时核对[N,K]/[K,N]、packed stride、scale dtype、cache m bucket与真正provider；入口名称cutlass可能在HCU委托另一backend，按最终调用记录。Bias必须从真实native wrapper经过helper到结果，不能只检查参数存在。新scheme增加optional输入后提供其参数元信息；旧签名兼容单元测试可限定注册范围，但真实GPUforward必须完整插件注册。Static/AZP元数据与实际非对称量化数值、gfx928布局fixture与真实gfx928执行分开记录。

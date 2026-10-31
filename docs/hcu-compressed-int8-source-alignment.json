@@ -1,0 +1,29 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "source_path": "python/sglang/srt/layers/quantization/compressed_tensors/schemes/compressed_tensors_w8a8_int8.py",
+  "source_sha256": "bc49c6c600d48f9a0adf053111fd9d0c4c6d1ccd0bc8cde195a466b363a4b914",
+  "changed_source_methods_normalized_ast_equal": [
+    "__init__",
+    "_normalize_weight_scale",
+    "apply_weights",
+    "process_weights_after_loading"
+  ],
+  "architecture_predicate_ast_equal": true,
+  "unchanged_native_methods_reused": [
+    "create_weights",
+    "get_min_capability"
+  ],
+  "owner": "hcu_sglang/layers/quantization/compressed_int8.py",
+  "owner_sha256": "3513327389fe43bfc41cac18611f445af2f31d1c996dfdafdad2a652ddabf75c",
+  "bindings": [
+    "Use existing owned quant_ops and W8a8GetCacheJSON compatibility class; explicit tuning directory variables remain with that owner.",
+    "Use the actual lightop.quant.per_token_quant_int8 producer.",
+    "Install the source normalization helper as staticmethod and exact source optional-argument metadata for the native linear wrapper.",
+    "Non-HCU uses effective native methods."
+  ],
+  "controlled_adaptations": [
+    "Legacy hipBLASLt helper now adds non-None bias to the returned output in-place, preserving output dtype. Removing exactly this guarded AST addition restores the full source helper AST. Original public CPU test lost all6 bias elements."
+  ],
+  "limits": "Source strategy dispatch/layout and current-HCU numerical evidence are separate. gfx928 KME layout can be CPU-contract tested but is not real gfx928 GPU validation. Static/asymmetric metadata is not evidence for unsupported AZP numerical kernels."
+}

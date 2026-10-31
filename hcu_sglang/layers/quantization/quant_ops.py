@@ -116,6 +116,8 @@ def blaslt_scaled_mm(
     _, out = quant_ops.hipblaslt_w8a8_gemm(
         a, b, scale_a, scale_b, m, n, k, "NT", out_dtype
     )
+    if bias is not None:
+        out.add_(bias)
     return out
 
 

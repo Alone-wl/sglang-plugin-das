@@ -102,6 +102,7 @@ _ENV_SPECS: dict[str, tuple[type, Any]] = {
     "SGLANG_USE_FUSED_RMS_QUANT": (EnvBool, False),
     "SGLANG_USE_FUSED_RMS_ROTARY": (EnvBool, False),
     "SGLANG_USE_FUSED_SILU_MUL_QUANT": (EnvBool, False),
+    "SGLANG_USE_LEGACY_FUSED_RMS_QUANT": (EnvBool, False),
     "SGLANG_USE_FUSED_TOPK_SOFTMAX": (EnvBool, False),
     "SGLANG_USE_LIGHTOP": (EnvBool, False),
     "SGLANG_USE_LIGHTOP_GROUP_FP8_QUANT": (EnvBool, False),

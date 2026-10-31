@@ -7,7 +7,7 @@ from hcu_sglang.compat.aiter import bootstrap_aiter_compat
 bootstrap_aiter_compat()
 from hcu_sglang.environ import register_envs
 register_envs()
-from hcu_sglang.layers.quantization import w8a8_fp8 as H
+from hcu_sglang.layers.quantization import compressed_fp8 as H
 from sglang.srt.layers.quantization.compressed_tensors.compressed_tensors import CompressedTensorsLinearMethod
 from sglang.srt.layers.quantization.compressed_tensors.schemes import compressed_tensors_w8a8_int8 as I
 from sglang.srt.plugins.hook_registry import HookRegistry
