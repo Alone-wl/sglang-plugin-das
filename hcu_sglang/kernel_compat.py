@@ -70,33 +70,6 @@ def around_assign_extend_cache_locs_func(
     return out_cache_loc
 
 
-def around_scaled_fp8_quant(
-    original: Callable[..., tuple[torch.Tensor, torch.Tensor]],
-    input: torch.Tensor,
-    scale: torch.Tensor | None = None,
-    num_token_padding: int | None = None,
-    use_per_token_if_dynamic: bool = False,
-) -> tuple[torch.Tensor, torch.Tensor]:
-    if not (is_dcu() and scale is None and use_per_token_if_dynamic):
-        return original(input, scale, num_token_padding, use_per_token_if_dynamic)
-
-    from lightop.quant import per_token_quant_fp8
-    from sglang.kernels.ops.quantization.fp8_kernel import fp8_dtype
-
-    if not input.is_contiguous():
-        input = input.contiguous()
-    output = torch.empty_like(input, dtype=fp8_dtype)
-    output_scale = torch.empty(
-        (input.shape[0], 1), device=input.device, dtype=torch.float32
-    )
-    return per_token_quant_fp8(
-        input,
-        dtype=output.dtype,
-        out_q=output,
-        out_scale=output_scale,
-    )
-
-
 def _dispatch_mhc(name: str, original: Callable[..., Any], *args: Any, **kwargs: Any):
     if not is_dcu():
         return original(*args, **kwargs)
@@ -158,11 +131,6 @@ def register_hooks() -> None:
         "sglang.kernels.ops.speculative.cache_locs."
         "assign_extend_cache_locs_func",
         around_assign_extend_cache_locs_func,
-        HookType.AROUND,
-    )
-    HookRegistry.register(
-        "sglang.kernels.ops.quantization.fp8_kernel.scaled_fp8_quant",
-        around_scaled_fp8_quant,
         HookType.AROUND,
     )
     mhc_target = "sglang.kernels.ops.layernorm.mhc"

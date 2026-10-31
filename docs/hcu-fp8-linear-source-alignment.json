@@ -1,0 +1,20 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_utils_sha256": "e3d0cd30fb7246fb153ed719c8663eef6d14794c28fe4124e43ac733f6556945",
+  "source_quant_sha256": "4580a7e26b55d20daf9764a01c63d1267439f0a208514b9ff1a13d0a88f5a874",
+  "source_consumer": "Fp8LinearMethod.apply",
+  "native_consumer_ast_matches_source": true,
+  "producer_definitions_ast_identical_after_provider_qualification_and_docstring_indentation": [
+    "scaled_fp8_quant",
+    "_native_dynamic_per_token_quant_fp8",
+    "_native_dynamic_per_tensor_quant_fp8",
+    "_native_static_quant_fp8"
+  ],
+  "apply_base_source_ast_restored": true,
+  "controlled_adaptations": [
+    "Flatten direct tuple token dimensions/scales for a2D-weight GEMM and restore output shape afterward.",
+    "Allocate output for actual quantized rows including padding, trim to logical rows before restoring output shape; protects the source/native compressed-static/per-tensor paths."
+  ],
+  "producer_behavior": "Copy the actual conditional HCU scaled_fp8_quant branch: LightOp per-token output/scale stay unpadded despite a padding request; source native tensor/static helpers write only logical rows of padded output.",
+  "scope": "Complete selected generic HCU apply/producer path and unchanged native consumer wiring only. Post-load block/mxscale, MoE and LightOp channelwise opt-in definitions remain independently incomplete."
+}

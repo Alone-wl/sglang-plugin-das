@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev41` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev44` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -592,3 +592,26 @@ dev40真实GPU探针暴露两个固定source/native共有的问题：先把[M,N]
 本地代码 `9976f34` 的隔离dev39按原MiniMax BF16八卡配方，02:52:18–03:02:41完成六个严格请求，正常stop、自有进程为空、端口关闭。TP8、FP8 KV、context131072、max-running512与默认Graph保留；578包文件与该已提交代码/实际wheel/site逐字节相同。[运行摘要](hcu-tp8-minimax-dev39-validation-20261101.json)保存实际artifact与响应哈希，不归到后续dev41。
 
 隔离dev41实际结果：7项CPU、3项GPU数值/Graph与400/400 Hook、3seam通过；79项仓库unittest、L0、Skill和实际宽/窄屏检索/阅读/导航检查通过。真实M17与M32均未进入失败cache，已知cache夹具用真实同源优化Triton kernel。仅当前选择范围通过，其余fp8_utils定义及完整模型dev41验收不由此关闭。
+
+
+## 48. 2026-11-01 通用HCU FP8 apply与条件量化生产端
+
+本阶段从本地 `1951b9e` 延续FP8迁移。来源 `apply_fp8_linear` 在HCU上使用真实DeepGEMM接口并支持预量化输入，原插件没有该路径接入。现提取完整来源函数并沿公开Hook更新已导入alias；原生 `Fp8LinearMethod.apply` AST与DAS相同，直接保留其consumer，验证从原生类入口到新apply，而非旁路私有quant_method。
+
+[源码/边界证据](hcu-fp8-linear-source-alignment.json)明确两处受控buffer适配：直接carrier统一flatten token维及scale、还原输出leading维；output按实际q行数（包括padding）分配，截取真实token行后还原shape。源函数此前用未补齐行数分配GEMM输出，CPU严格backend夹具在q17/out2时失败，未在GPU上冒险执行越界配置。
+
+真实GPU进一步发现Native ROCm scaled_fp8_quant在input8行/scale17行copy失败。DAS对此已有实际条件HCU分支：LightOp dynamic per-token返回未补齐且匹配的q/scale，tensor/static helper只写真实行。已将该分支及三个配套helper原样提取到owned fp8_quant，沿公开函数Hook传播到所有早期alias；保留Source capability/dtype/shape和错误边界，不只修consumer掩盖producer缺口。
+
+12项CPU公共入口/原生consumer回归通过；源树4项真实DeepGEMM GPU检查通过，覆盖BF16/FP16输出、直接多维carrier、dynamic/compressed生产端及变更scale的Graph replay。fixture起初错误要求view后的Tensor对象identity，已改为storage指针与数值/参数检查；并未放宽数学参考或容差。dev42中间artifact保留，其compressed GPU失败指向原生产端；后续隔离dev43结果按实际执行补记。
+
+fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale及其他定义仍分别待审。此处完整选择函数、4个producer定义及未改原生consumer的来源对照不能代表整个文件或全DAS完成。
+
+## 49. 2026-11-01 dev41 DeepSeek-V4 八卡复验
+
+代码 `1951b9e` 的隔离dev41运行 `deepseekv4-fp8-tp8-dev41-20261101-attempt1`，六请求严格通过，自有进程与端口清理。保留原TP8/DP8/EP8、DSPARK/DeepEP、context32768、graph32及64线程加载；580包文件与源码commit/wheel/site逐字节核验。[独立验收摘要](hcu-tp8-deepseekv4-dev41-validation-20261101.json)保存实际版本、响应/配置哈希和HCU backend日志，不归因于后续dev43。
+
+本阶段隔离dev43实际结果：12项公开CPU producer/consumer、4项真实DeepGEMM GPU数值/Graph、401/401 Hook与3seam通过；582包文件与源码/site一致，wheel SHA256 `d04f014e94f3dbd32784902d9ac53805a0570587baeeea72674185affcd3a2e3`。79项仓库unittest、L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。测试只证明选择路径，block/mxscale/post-load及全量目标仍未完。
+
+完整加载复核确认scaled_fp8_quant早已有kernel_compat动态分支hook，因此去重后的总target为401而非推算的402。旧局部wrapper与registration已退役，当前完整Source量化函数统一拥有入口；两层同时注册的中间dev43保留各自artifact，不以重复wrapper作为新能力数。最终dev44重新构建/隔离核验。
+
+最终dev44隔离验证完成：12项CPU、4项真实GPU数值/Graph、401/401 Hook（errors与unapplied均为空）、79项仓库unittest通过；582包文件与源码及实际安装内容一致。wheel SHA256 `d9987b88b04eeb87c2321dc34fcf19414af8cf22fb1cfb5b7a0e633741aea6f7`。完整模型记录仍分别归属于其实际版本，不将dev41的八卡结果归到dev44；其余DAS迁移范围保持未完成。

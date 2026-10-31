@@ -4,4 +4,6 @@ from __future__ import annotations
 
 
 def register_hooks() -> None:
-    pass
+    from . import fp8_linear, fp8_quant
+    fp8_quant.register_hooks()
+    fp8_linear.register_hooks()

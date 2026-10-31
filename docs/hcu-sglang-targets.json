@@ -263,6 +263,7 @@
     "sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16.CompressedTensorsWNA16.apply_weights",
     "sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16.CompressedTensorsWNA16.process_weights_after_loading",
     "sglang.srt.layers.quantization.fp8_utils._apply_fallback_scaled_mm",
+    "sglang.srt.layers.quantization.fp8_utils.apply_fp8_linear",
     "sglang.srt.layers.quantization.get_quantization_config",
     "sglang.srt.layers.quantization.unquant.UnquantizedFusedMoEMethod.forward_cuda",
     "sglang.srt.layers.quantization.unquant.UnquantizedFusedMoEMethod.process_weights_after_loading",
