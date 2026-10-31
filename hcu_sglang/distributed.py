@@ -45,3 +45,6 @@ def register_hooks() -> None:
 
     from hcu_sglang.layers import norm_collectives
     norm_collectives.register_hooks()
+
+    from hcu_sglang import distributed_backend
+    distributed_backend.register_hooks()

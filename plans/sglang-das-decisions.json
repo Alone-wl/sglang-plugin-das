@@ -44,5 +44,80 @@
       "tests/runtime/norm_collectives_gpu.py"
     ],
     "validation_scope": "Nine CPU public API/alias/branch tests and real eight-rank IPC fused norm compared with RCCL passed forTP8/attentionTP4/MoETP2. The gfx95-only quantized kernel correctly declines on gfx938. Full collective Graph, Fabric/backend initialization and whole-model dev36 are not validated."
+  },
+  "python/sglang/srt/distributed/parallel_state.py": {
+    "status": "in_progress",
+    "implementation": [
+      "hcu_sglang/distributed_backend.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/server_args_hooks.py",
+      "hcu_sglang/distributed.py"
+    ],
+    "tests": [
+      "tests/runtime/distributed_backend.py"
+    ],
+    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
+    "rationale": "Port the full selected HCU constructor, world/model factories and backend accessors; retain native class identity and strict-Fabric failure behavior. Other CP/topology/method differences remain separately incomplete.",
+    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+  },
+  "python/sglang/srt/distributed/bootstrap.py": {
+    "status": "in_progress",
+    "implementation": [
+      "hcu_sglang/distributed_backend.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/server_args_hooks.py",
+      "hcu_sglang/distributed.py"
+    ],
+    "tests": [
+      "tests/runtime/distributed_backend.py"
+    ],
+    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
+    "rationale": "Bridge resolved plugin-owned backend after the existing all-reduce flag initialization. Preserve native disable/other flags and keep remaining bootstrap changes unreviewed.",
+    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+  },
+  "python/sglang/srt/arg_groups/fields/exec_.py": {
+    "status": "in_progress",
+    "implementation": [
+      "hcu_sglang/distributed_backend.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/server_args_hooks.py",
+      "hcu_sglang/distributed.py"
+    ],
+    "tests": [
+      "tests/runtime/distributed_backend.py"
+    ],
+    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
+    "rationale": "Implement the custom-allreduce CLI semantics with explicit process-owned state because pinned official frozen records lack this field; do not fabricate typed namespace fields. Other ExecComm/input additions remain unreviewed.",
+    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+  },
+  "python/sglang/srt/arg_groups/serving_hook.py": {
+    "status": "in_progress",
+    "implementation": [
+      "hcu_sglang/distributed_backend.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/server_args_hooks.py",
+      "hcu_sglang/distributed.py"
+    ],
+    "tests": [
+      "tests/runtime/distributed_backend.py"
+    ],
+    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
+    "rationale": "Preserve disable-wins and HCU legacy-auto promotion for the backend bridge; remaining serving/environment behavior is not claimed migrated.",
+    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+  },
+  "python/sglang/srt/server_args.py": {
+    "status": "in_progress",
+    "implementation": [
+      "hcu_sglang/distributed_backend.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/server_args_hooks.py",
+      "hcu_sglang/distributed.py"
+    ],
+    "tests": [
+      "tests/runtime/distributed_backend.py"
+    ],
+    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
+    "rationale": "Add source NSA deprecated aliases and current custom-allreduce CLI handoff without mutating raw ServerArgs fields. Other source-only CLI options remain unreviewed.",
+    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
   }
 }
