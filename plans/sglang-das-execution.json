@@ -22,10 +22,10 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2975,
+    "pending": 2973,
     "upstream": 26,
     "in_progress": 5,
-    "implemented": 4
+    "implemented": 6
   },
   "files": [
     {
@@ -11893,7 +11893,17 @@
       "relation": "fork_only",
       "fork_oid": "fec60ae39c443d62b3bced76ad150871bea258dd",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Existing owned full helper is byte-identical to pinned source and is now consumed by actual public linear paths. Preserve capability/alignment/device/dtype/alias/epsilon guards and real LightOp calls without substitute math.",
+      "implementation": [
+        "hcu_sglang/layers/fused_rms_quant.py",
+        "hcu_sglang/layers/current_linear.py"
+      ],
+      "source_alignment": "docs/hcu-linear-source-alignment.json",
+      "tests": [
+        "tests/runtime/current_linear_gpu.py"
+      ],
+      "validation_scope": "Actual HCU BF16/FP16 RMS/INT8 producer, update semantics, projection/Graph and packedMLA data preservation tested ondev38. This does not validate every downstream model or unsupported input/other hardware mode."
     },
     {
       "path": "python/sglang/srt/layers/hc_mix_triton.py",
@@ -12150,7 +12160,19 @@
       "relation": "changed",
       "fork_oid": "5a2c787ec2627d11ebd5427f76f33d87237aae66",
       "official_oid": "f5d93c1de811452d59976b7fc7310dcfe5f9adf9",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "All ten changed/new Python definitions are represented in current_linear and row_fusion. Preserve native class identity, exact owner super, epsilon/partition state, explicit quantized carriers and source merged returns; route extended Row positional/keyword calls while retaining effective original for ordinary/old calls. SP/native quantization dependencies remain separate paths.",
+      "implementation": [
+        "hcu_sglang/layers/current_linear.py",
+        "hcu_sglang/layers/row_fusion.py",
+        "hcu_sglang/layers/linear_fusion.py"
+      ],
+      "source_alignment": "docs/hcu-linear-source-alignment.json",
+      "tests": [
+        "tests/runtime/current_linear.py",
+        "tests/runtime/current_linear_gpu.py"
+      ],
+      "validation_scope": "Ten public CPU calls/consumer tests pass. Isolateddev38 real HCU fused RMS/INT8 GEMM/Graph/packedMLA tests pass;dev39 only adds tested Row call routing. Full deployment/modes, SP and other dependency files are independent validation scopes."
     },
     {
       "path": "python/sglang/srt/layers/logits_processor.py",

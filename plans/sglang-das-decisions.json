@@ -391,5 +391,33 @@
       "ast_sha256": "3902874c26da1c8b6f4ec9a5735d75a08ea8e6eda39c271791f1d3c560bd935d"
     },
     "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
+  },
+  "python/sglang/srt/layers/linear.py": {
+    "status": "implemented",
+    "rationale": "All ten changed/new Python definitions are represented in current_linear and row_fusion. Preserve native class identity, exact owner super, epsilon/partition state, explicit quantized carriers and source merged returns; route extended Row positional/keyword calls while retaining effective original for ordinary/old calls. SP/native quantization dependencies remain separate paths.",
+    "implementation": [
+      "hcu_sglang/layers/current_linear.py",
+      "hcu_sglang/layers/row_fusion.py",
+      "hcu_sglang/layers/linear_fusion.py"
+    ],
+    "source_alignment": "docs/hcu-linear-source-alignment.json",
+    "tests": [
+      "tests/runtime/current_linear.py",
+      "tests/runtime/current_linear_gpu.py"
+    ],
+    "validation_scope": "Ten public CPU calls/consumer tests pass. Isolateddev38 real HCU fused RMS/INT8 GEMM/Graph/packedMLA tests pass;dev39 only adds tested Row call routing. Full deployment/modes, SP and other dependency files are independent validation scopes."
+  },
+  "python/sglang/srt/layers/fused_rms_quant.py": {
+    "status": "implemented",
+    "rationale": "Existing owned full helper is byte-identical to pinned source and is now consumed by actual public linear paths. Preserve capability/alignment/device/dtype/alias/epsilon guards and real LightOp calls without substitute math.",
+    "implementation": [
+      "hcu_sglang/layers/fused_rms_quant.py",
+      "hcu_sglang/layers/current_linear.py"
+    ],
+    "source_alignment": "docs/hcu-linear-source-alignment.json",
+    "tests": [
+      "tests/runtime/current_linear_gpu.py"
+    ],
+    "validation_scope": "Actual HCU BF16/FP16 RMS/INT8 producer, update semantics, projection/Graph and packedMLA data preservation tested ondev38. This does not validate every downstream model or unsupported input/other hardware mode."
   }
 }

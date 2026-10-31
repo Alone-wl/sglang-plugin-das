@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev37` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev39` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -543,3 +543,24 @@ DeepSeek-V4原八卡配方正在复验，保留TP8/DP8/EP8、DSPARK、DeepEP、c
 新增 `audit_python_equivalence.py`，在固定两输入的Git tree/blob上完整比对，保留docstring/type comments/常量/imports/guards/decorators；权限、对象、shebang、输出重叠、dirty输入和并发决定修改均保护。5项实际Git fixture检查通过，包含布尔/数值差异、docstring、无效语法、入口/权限、人工决定保留与陈旧stat cache下index字节保留。
 
 本次覆盖1534个双边changed Python路径：26个AST一致、1494个实际不同、14个权限/类型漂移。复核26个匹配路径后，只添加尚无人工记录的代码级upstream，未覆盖已有决定；两个来源HEAD/index不变。当前台账为2975 pending、26代码级upstream、5 in_progress、4 implemented。报告保留[逐文件哈希](../plans/sglang-das-python-equivalence.json)，代码复用与行为/依赖验收分层，不据此计算全功能完成率。
+
+
+## 44. 2026-11-01 线性层预量化消费者与 fused RMS 契约
+
+从干净 `5082647` 继续M1。旧Column包装器没有 `input_quant_args`，公开接口在dev37上实际抛出unexpected keyword；同时它对rms_weight执行单独归一化，没有来源的fused INT8消费契约。本阶段迁入来源的Replicated/Column/Merged forward、Column构造/partition、Merged构造和attn_cp group解析，保留原生类身份和准确super owner。完整helper原已在本仓与来源同字节，本次将其接入实际投影消费者，不另写数学fallback。
+
+显式q/scale不依赖legacy开关，unsupported消费者按来源拒绝；保留epsilon、input/residual更新、Merged fused分支五值返回和普通分支二值返回。Row的来源位置参数及swiglu_limit也接到已有完整forward；普通无扩展调用与旧位置output buffer保持effective original。[对照记录](hcu-linear-source-alignment.json)包含全部十个改变/新增Python定义，去除provider限定和显式owner适配后AST相同，helper原始字节相同。
+
+| 验证 | 实际结果与范围 |
+|---|---|
+| dev37公开反例 | 显式prequantized Column调用因unexpected keyword失败，原始日志保留 |
+| CPU公共入口 | 10项通过，含真实SlimQuant消费者与post-load布局、三个投影类、QKV继承、fused输入/residual/epsilon、Merged五值、组选择、unsupported拒绝及Row扩展/旧调用 |
+| 真实HCU | dev38隔离wheel的3项通过：BF16/FP16 fused RMS量化/残差；真实INT8 GEMM的显式/融合路径及Graph replay；packed MLA q/kv归一化、q量化与rope保持 |
+| dev38产物 | 578包文件源码/wheel/site一致，SHA256 `a8c00a5ff80060ecbafa8484a2f3c27e1b1bb20fd0967a2af0aa71da56ecab5c`；400/400 Hook与3 seam通过 |
+| dev39产物 | 只补Row调用路由；578包文件一致，SHA256 `b6c970994bb9b8c490174ea28bf5eae8fbc25520bf80b5860341dca62d2be2f3`；400/400 Hook与3 seam通过；模型结果按实际版本另记 |
+
+GPU首轮的投影夹具错放为连续[K,N]，不符合真实INT8 GEMM post-load[N,K]布局。修正为调用真实process_weights_after_loading后通过；生产GEMM、来源数学和测试容差未改。3项GPU结果只归于dev38；dev39路由由新增CPU公共调用覆盖，不将其冒充新GPU执行。原始证据在ignored `artifacts/plugin-v3-1028-linear-20261101/`。
+
+[原八卡Qwen3-235B的dev38运行摘要](hcu-tp8-qwen3-dev38-validation-20261101.json)记录六请求通过、进程/端口已清理；该中间artifact来自独立build-dev38源码快照，不伪装为含后续Row修复的dev39提交。后续按最终代码版本记录完整服务。
+
+本阶段77项仓库unittest、L0、执行台账快照、Skill校验及实际宽/窄屏检索/阅读/导航检查通过。GPU证据与源码快照按版本分开，未推送远程。

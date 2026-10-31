@@ -104,3 +104,10 @@ CP 数值对照出现偏差时，先比较实际 Q/KV/索引与有效长度，�
 若输出供量化投影使用，按真实消费者保留 FP8 tensor/scale 的 carrier、是否额外返回 residual，以及 `update_input` 等生产约定；显式未启用的可选能力须按来源拒绝。CPU kernel stub 只验证数据流和分支，另以真实 vendor 数学、Graph replay 和整体服务分别提供证据。单个类的选中方法对照保持选择范围，不能据此关闭整个文件的迁移项。
 
 归一化包含 collective 时，核对 `tp`、`attn_tp`、`moe_tp` 的真实成员、world size 与 fallback，不能用 MoE EP 代替 MoE TP，也不能在融合拒绝时换回全 TP 组。同时保留计算后端与 communicator 策略的独立开关。验证预先导入的 public alias 是否随 Hook 更新，以及 quantized/BF16 side output 的生产消费；CPU 组标签测试与真实多进程通信分别记录。复用未变化的框架 coordinator 方法不等于验证了其完整构造、传输后端或 Graph 生命周期。
+
+
+## 线性层显式量化与调用布局
+
+迁移线性投影时同时验证公开签名、构造/partition字段、真实post-load权重布局、q/scale消费者能力与返回容器；不要只在模型私有方法直接调用quant_method来绕过公开接口缺口。显式carrier应保持来源定义的优先级，不能因fused开关关闭而丢弃，也不能把INT8交给不支持的FP8消费者。
+
+保留输入/残差是否原地更新及epsilon来源，检查继承构造器的super owner和Merged普通/融合分支的不同返回。Source新增位置参数可能与旧output-buffer位置冲突，两种实际调用分别回归。GPU夹具应执行真实权重后处理，按最终布局计算参考；CPU标记流通过不能代替真实GEMM或Graph结果，各artifact版本分别记录。
