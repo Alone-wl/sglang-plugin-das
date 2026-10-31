@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev47` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev48` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -661,3 +661,23 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 源树6项真实GPU测试全部通过：opt-in BF16/FP16预量化+bias、动态多维量化、opt-out tuple输出dtype、KME实际计算、更新activation/weight scale的Graph，以及native compressed block加载到实际hipBLASLt的非方形scale数学对照。自然预量化两种dtype均为primary1/KME0；KME数学由明确的primary miss夹具触发（KME1），不称为自然硬件失败。统一rtol/atol=0.025，未放宽容差；block反例由[256,512]原错误layout转为[512,256]后才通过。
 
 隔离dev47实际结果：14项CPU、6项真实GPU/Graph、407/407 Hook与3seam通过，errors/unapplied为空；586包文件与源码/site一致，wheel SHA256 `3f9ba712b33e60c70e063b6e7b136175eadf56989988f7a60aac7111572331b2`。79项仓库unittest、L0、执行台账、Skill与实际宽/窄屏检索/阅读/导航检查通过，固定official/fork输入工作区复核干净。该artifact的原配方完整八卡模型验证尚待独立运行；dev46六请求证据仍只归属 `5ba8e96`。
+
+## 55. 2026-11-01 dev47 两组原配方八卡复验
+
+提交 `d2dc00d` 的隔离dev47先后完成[DeepSeek-V4](hcu-tp8-deepseekv4-dev47-validation-20261101.json)与[GLM-5 INT4](hcu-tp8-glm5-dev47-validation-20261101.json)八卡配方，各六项严格请求均正常stop，已清理自有进程与监听端口。两次586包文件与提交/wheel/site逐字节相同，分别04:41:59–04:47:30、04:48:50–04:57:01，均只归到dev47。
+
+DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加载。GLM保留原TP8、INT4、EAGLE、FP8KV、默认Graph、memory0.85和显式AITER custom-AR；八rank IPC选择记录与multimem all-gather运行时capability降级日志独立计数，没有手动取消优化参数。GLM SlimQuant使用独立LinearMethod，属于组合回归，不能用它替代所有compressed schemes的验证。
+
+## 56. 2026-11-01 FP8 utility 剩余定义与递归盘点
+
+从本地 `d2dc00d` 继续，迁入完整显式backend选择函数与公开torch_fp8_block_gemm参考函数。HCU请求不可用AITER时，错误现在按来源指出HCU设备及SGLANG_USE_AITER=1，其他backend返回有效native/已hooked consumer；非HCU保留有效原分派。公开参考函数按来源使用per-row/per-K-block及per-K/N-block scale，不把参考Torch矩阵乘法接入优化计算fallback。
+
+[定义/global对照](hcu-fp8-utils-source-alignment.json)覆盖17个变化的顶层定义与62个AST未变的native定义，并核对7个顶层global及conditional import归属。Native CK表保留来源2行并额外保留(4096,2048):2048与(4608,4096):512两条上游ROCm7.0 NaN防护，不能为了消掉旧DAS差异删除这些已存在保护。其gfx95性能/数学依然未经当前gfx938验证。
+
+递归FunctionDef检查发现顶层盘点外的CUDA-only _fp8_blockwise_scaled_mm_abstract，另有CUDA raw FlashInfer BMM从eager变LazyImport的来源差异，均尚未迁入。它们不会在当前HCU条件命中，但仍在本文件处置范围内，因此fp8_utils继续in_progress，不把顶层17定义核对称为整个模块完成。
+
+源树6项CPU通过实际公开/早期alias检查显式backend身份及诊断，并用独立scalar double乘积验证ragged K/N block、三种输出dtype、输入不变和空token。2项真实HCU GPU/Graph将reference函数与CPU double按block求和对照，覆盖K257/N129尾块和更新scale的Graph；它是新公开debug/reference helper的设备验证，不代表优化GEMM新增或性能结论。
+
+另外2项CPU使用真实CompressedTensorsLinearMethod及native W8A8 INT8静态/动态scheme，实际构造、建参、post-load、signature cache/kwargs过滤到apply均验证；仅量化和scaled-MM计算mock，证明旧签名路由不回归，不能声称INT8 HCU kernel验证，也不替代后续INT8 scheme来源迁移。隔离wheel、全部Hook及门禁按实际执行补记。
+
+隔离dev48实际结果：6项utility CPU、2项真实native INT8 scheme旧签名路由CPU、2项reference GPU/Graph及408/408 Hook、3seam通过，errors/unapplied为空；586包文件与源码/site逐字节一致，wheel SHA256 `3269c3b34ed33d5e3358417b9af53f05e454526b22a2b83ce6d17c4675c08be8`。79项仓库unittest、L0、执行台账、Skill与实际宽/窄屏检索/阅读/导航通过。Generic来源反向比较新增精确受控分支AST检查，先验证允许的buffer/dtype适配再恢复Source，避免笼统替换整个分支掩盖额外修改。dev47两次八卡结果不能自动记为dev48；其余CUDA条件分支和DAS范围仍未完成。

@@ -308,6 +308,103 @@ def process_weights_after_loading_block_quant(self, layer: Module) -> None:
             with torch.no_grad():
                 layer.weight_scale_inv.set_(scale_reordered)
 
+def _dispatch_explicit_backend(backend: N.Fp8GemmRunnerBackend) -> Callable:
+    """Dispatch based on explicitly selected backend."""
+    if backend.is_flashinfer_trtllm():
+        if not (N.get_platform().is_sm100 and N.is_flashinfer_available()):
+            raise RuntimeError(
+                "FlashInfer FP8 GEMM requested via --fp8-gemm-backend=flashinfer_trtllm, "
+                "but FlashInfer is not available or not supported on this hardware. "
+                "FlashInfer TRTLLM FP8 GEMM requires SM100/SM103 GPUs and FlashInfer."
+            )
+        return N.flashinfer_gemm_w8a8_block_fp8_linear_with_fallback
+
+    elif backend.is_flashinfer_cutlass():
+        if not (N.get_platform().is_blackwell and N.is_flashinfer_available()):
+            raise RuntimeError(
+                "FlashInfer FP8 GEMM requested via --fp8-gemm-backend=flashinfer_cutlass, "
+                "but FlashInfer is not available or not supported on this hardware. "
+                "FlashInfer CUTLASS FP8 GEMM requires Blackwell GPUs and FlashInfer."
+            )
+        return N.flashinfer_gemm_w8a8_block_fp8_linear_with_fallback
+
+    elif backend.is_flashinfer_deepgemm():
+        if not (N.get_platform().is_sm90 and N.is_flashinfer_available()):
+            raise RuntimeError(
+                "FlashInfer DeepGEMM with swapAB requested via --fp8-gemm-backend=flashinfer_deepgemm, "
+                "but it's not available. This backend requires Hopper (SM90) GPUs and FlashInfer "
+                "to be installed."
+            )
+        return N.flashinfer_deepgemm_w8a8_block_fp8_linear_with_fallback
+
+    elif backend.is_cutlass():
+        if not N.get_platform().is_sm120:
+            raise RuntimeError(
+                "--fp8-gemm-backend=cutlass is deprecated on this hardware. "
+                "Please switch to DeepGEMM or FlashInfer TRTLLM on SM90/SM100."
+            )
+        return N.cutlass_w8a8_block_fp8_linear_with_fallback
+
+    elif backend.is_aiter():
+        if not N._use_aiter:
+            aiter_platform = "HCU devices" if _is_hcu else "AMD GPUs"
+            raise RuntimeError(
+                "AITER backend requested via --fp8-gemm-backend=aiter, "
+                f"but AITER is not available. AITER requires {aiter_platform} with "
+                "SGLANG_USE_AITER=1 environment variable set."
+            )
+        return N.aiter_w8a8_block_fp8_linear
+
+    elif backend.is_deep_gemm():
+        if not N.deep_gemm_wrapper.ENABLE_JIT_DEEPGEMM:
+            raise RuntimeError(
+                "DeepGEMM backend requested via --fp8-gemm-backend=deep_gemm, "
+                "but DeepGEMM is not available. This usually means the deep_gemm package "
+                "is not installed or has been disabled via SGLANG_ENABLE_JIT_DEEPGEMM=0."
+            )
+        return N.deepgemm_w8a8_block_fp8_linear_with_fallback
+
+    elif backend.is_triton():
+        return N.triton_w8a8_block_fp8_linear
+
+    else:
+        raise ValueError(f"Unknown FP8 GEMM backend: {backend}")
+
+def torch_fp8_block_gemm(
+    a,
+    b,
+    scale_a,
+    scale_b,
+    block_size,
+    out_dtype=torch.bfloat16,
+):
+
+    a_cp = a.clone().to(torch.float32)
+    b_cp = b.clone().to(torch.float32)
+    scale_a_cp = scale_a.clone().to(torch.float32)
+    scale_b_cp = scale_b.clone().to(torch.float32)
+
+    m, k = a.shape
+    _, n = b.shape
+
+    k_block = torch.arange(k, device=a.device) // block_size
+    n_block = torch.arange(n, device=a.device) // block_size
+
+    scale_a_full = scale_a_cp[:, k_block]
+    scale_b_full = scale_b_cp[k_block][:, n_block]
+
+    a_scaled = a_cp * scale_a_full
+    b_scaled = b_cp * scale_b_full
+
+    c = a_scaled @ b_scaled
+    return c.to(out_dtype)
+
+def around_explicit_backend(original, backend):
+    if not is_dcu():
+        return original(backend)
+    return _dispatch_explicit_backend(backend)
+
+
 def around_auto_backend(original):
     if not is_dcu():
         return original()
@@ -329,4 +426,13 @@ def register_hooks():
     HookRegistry.register(
         "sglang.srt.layers.quantization.fp8.Fp8LinearMethod.process_weights_after_loading_block_quant",
         around_process_block_weights, HookType.AROUND,
+    )
+    if is_dcu():
+        previous = getattr(N, "torch_fp8_block_gemm", torch_fp8_block_gemm)
+        if previous is not torch_fp8_block_gemm:
+            raise RuntimeError("Native FP8 block reference already exists; re-review the source contract")
+        N.torch_fp8_block_gemm = torch_fp8_block_gemm
+    HookRegistry.register(
+        "sglang.srt.layers.quantization.fp8_utils._dispatch_explicit_backend",
+        around_explicit_backend, HookType.AROUND,
     )

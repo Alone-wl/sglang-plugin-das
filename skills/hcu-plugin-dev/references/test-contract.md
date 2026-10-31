@@ -131,3 +131,6 @@ Dense mxscale迁移应检查capability、gfx95门控、shape白名单、权重sh
 
 
 Compressed FP8应通过native LinearMethod→scheme验证建参、post-load与apply；propagated dtype和optional量化参数必须在真实上层wrapper中断言。AROUND的legacy反射签名可能丢失新增kwargs，需限定owner提供实际参数元信息，其他scheme保留signature/cache过滤。LightOp opt-in保持OCP[N,K]与bias输出dtype一致，普通HCU保持其转置和per-token scale；compressed block也必须遵守所选backend的weight/scale双向布局。KME的策略夹具与真正自然失败分开记录。
+
+
+模块差异审查不能只枚举顶层函数：递归检查conditional function/fake registration、lazy import、global初值和动态绑定。记录当前设备不命中的差异为pending，不能据此删掉范围；反向AST归一需限定具体适配。保留目标基线新增的正确性保护，来源较旧并不授权删除它们。通用wrapper回归至少覆盖一个真实的其他native scheme；独立SlimQuant全模型结果不能冒充该wrapper覆盖。
