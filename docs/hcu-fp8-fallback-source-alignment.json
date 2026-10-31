@@ -1,0 +1,31 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/srt/layers/quantization/fp8_utils.py",
+  "source_sha256": "e3d0cd30fb7246fb153ed719c8663eef6d14794c28fe4124e43ac733f6556945",
+  "source_symbol": "_apply_fallback_scaled_mm",
+  "owned_path": "hcu_sglang/layers/quantization/fp8_fallback.py",
+  "normalization": "Existing provider qualification plus exactly the two documented adaptations. Reversing them yields the fixed source AST for fallback, wrapper and kernel.",
+  "reused_gemm_file": "python/sglang/kernels/ops/gemm/fp8_kernel.py",
+  "reused_definitions_ast_identical": [
+    "triton_scaled_mm",
+    "scaled_mm_kernel",
+    "_as_column_scale",
+    "is_weak_contiguous"
+  ],
+  "scope": "Selected channel-FP8 fallback only; block/dense-mxscale/channelwise opt-in and other fp8_utils differences remain separately incomplete.",
+  "base_source_ast_matches_before_controlled_adaptations": true,
+  "controlled_adaptations": [
+    {
+      "location": "Fallback success path",
+      "change": "Scale/bias in flattened[M,N] rows before final reshape; same operations/order for2D, fixes per-token broadcast for multidimensional outputs.",
+      "evidence": "Original dev40 real GPU output[2,14,128] with scale[28,1] raised a broadcast error; CPU regression added."
+    },
+    {
+      "location": "Source-derived Triton kernel bias branch",
+      "change": "Explicitly cast(c+bias) to the existing output element type before SSA merge. The store would perform this cast anyway; preserves fused kernel/rounding order and accepts mixed floating bias.",
+      "evidence": "Original identical source/native kernel failed Triton SSA merge forFP16 output+FP32 bias; real GPU mixed-bias test passes after store-equivalent cast."
+    }
+  ],
+  "owned_triton_path": "hcu_sglang/layers/quantization/fp8_scaled_mm.py",
+  "runtime_scope": "Real shapes32x256x128 and17x6144x768 both use successful hipBLASLt on this installed runtime. A preseeded known-failure shape19x256x128 explicitly exercises real source-derived Triton math. No claim of a natural device failure forM17."
+}

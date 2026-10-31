@@ -111,3 +111,11 @@ CP 数值对照出现偏差时，先比较实际 Q/KV/索引与有效长度，�
 迁移线性投影时同时验证公开签名、构造/partition字段、真实post-load权重布局、q/scale消费者能力与返回容器；不要只在模型私有方法直接调用quant_method来绕过公开接口缺口。显式carrier应保持来源定义的优先级，不能因fused开关关闭而丢弃，也不能把INT8交给不支持的FP8消费者。
 
 保留输入/残差是否原地更新及epsilon来源，检查继承构造器的super owner和Merged普通/融合分支的不同返回。Source新增位置参数可能与旧output-buffer位置冲突，两种实际调用分别回归。GPU夹具应执行真实权重后处理，按最终布局计算参考；CPU标记流通过不能代替真实GEMM或Graph结果，各artifact版本分别记录。
+
+
+## 选择性 backend fallback 与失败缓存
+
+迁移fallback时保留来源的probe、异常类型/文本筛选、cache key和数学/scale/bias处理，不能只替换成一个能跑的后端。分别测成功不缓存、已知失败只probe一次、形状/device/dtype隔离及非预期错误原样抛出；裁剪/reshape、输出dtype、旧返回容器均沿公开入口检查。真实GPU测试分清自然触发的backend失败与预置已知cache的夹具，后者只能证明选中kernel的数值，不冒充实际设备probe失败。Graph replay应更新输入或scale后重验。
+
+
+Triton bias/scale分支要检查SSA合并类型与公开API的mixed dtype/多维输出，显式store等价cast应保持计算顺序并单独记录为来源适配。迁移时不仅原全局名不能局部绑定，新增的provider/owner限定名也不能被维度变量遮蔽；例如函数局部N会令N.helper指向整数。抽取预检应在写文件前拒绝此类冲突，采用不冲突的明确namespace。

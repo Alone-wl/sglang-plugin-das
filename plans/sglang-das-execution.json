@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2973,
+    "pending": 2972,
     "upstream": 26,
-    "in_progress": 5,
+    "in_progress": 6,
     "implemented": 6
   },
   "files": [
@@ -12781,7 +12781,19 @@
       "relation": "changed",
       "fork_oid": "8fe72f4c80ecb4ec18cae1cb5ba7ac68cdea6355",
       "official_oid": "6fa480b3b81a6bb986e61a1dc904f8a770df117d",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Port the complete current channel-FP8 fallback with selective BLASLt error caching, exact scaling/bias/padding and exception propagation instead of an unconditional LightOp replacement. Other block/mxscale/opt-in/dispatch definitions remain independently unreviewed. Two documented source/native-common defects are intentionally adapted: scale before multidimensional reshape and store-equivalent typed bias addition in the source-derived fused Triton kernel.",
+      "implementation": [
+        "hcu_sglang/layers/quantization/fp8_fallback.py",
+        "hcu_sglang/layers/quantization/fp8.py",
+        "hcu_sglang/layers/quantization/fp8_scaled_mm.py"
+      ],
+      "source_alignment": "docs/hcu-fp8-fallback-source-alignment.json",
+      "tests": [
+        "tests/runtime/fp8_fallback.py",
+        "tests/runtime/fp8_fallback_gpu.py"
+      ],
+      "validation_scope": "Isolateddev41 seven public CPU tests,three real HCU math/Graph tests,400/400 Hooks and79 repository tests pass. M17/M32 succeed on the actual backend; a clearly preseeded cache fixture exercises real source-derived Triton with mixed bias. Two documented source-common defects adapted; remaining fp8_utils definitions/dependencies/profiles stay incomplete."
     },
     {
       "path": "python/sglang/srt/layers/quantization/gptq_triton.py",

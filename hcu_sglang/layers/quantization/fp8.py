@@ -18,50 +18,12 @@ def around_fallback_scaled_mm(
 ):
     from hcu_sglang.utils.detection import is_dcu
 
-    if not is_dcu() or qinput.dtype not in (
-        torch.float8_e4m3fn,
-        torch.float8_e4m3fnuz,
-    ):
-        return original(
-            qinput,
-            weight,
-            x_scale,
-            weight_scale,
-            input_2d_shape,
-            output_shape,
-            bias,
-            input_dtype,
-        )
-
-    try:
-        from lightop.gemm_ops import hipblaslt_w8a8_channelwise_gemm
-    except ImportError:
-        return original(
-            qinput,
-            weight,
-            x_scale,
-            weight_scale,
-            input_2d_shape,
-            output_shape,
-            bias,
-            input_dtype,
-        )
-
-    _, output = hipblaslt_w8a8_channelwise_gemm(
-        qinput.unsqueeze(0).contiguous(),
-        weight.T.unsqueeze(0).contiguous(),
-        x_scale.reshape(1, -1, 1).contiguous(),
-        weight_scale.reshape(1, -1, 1).contiguous(),
-        qinput.shape[0],
-        weight.shape[1],
-        weight.shape[0],
-        "NT",
-        input_dtype,
-        bias,
-    )
-    if output.dim() == 3:
-        output = output.squeeze(0)
-    return output.narrow(0, 0, input_2d_shape[0]).view(*output_shape)
+    if not is_dcu():
+        return original(qinput, weight, x_scale, weight_scale,
+                        input_2d_shape, output_shape, bias, input_dtype)
+    from hcu_sglang.layers.quantization.fp8_fallback import _apply_fallback_scaled_mm
+    return _apply_fallback_scaled_mm(qinput, weight, x_scale, weight_scale,
+                                     input_2d_shape, output_shape, bias, input_dtype)
 
 
 def around_rms_norm_forward_hip(
