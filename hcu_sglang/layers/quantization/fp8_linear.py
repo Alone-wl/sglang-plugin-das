@@ -55,7 +55,7 @@ def apply_fp8_linear(
         x_scale = input[1]
         if x_scale.dim() > 2:
             x_scale = x_scale.view(-1, x_scale.shape[-1])
-        output = torch.empty((qinput.shape[0], weight.shape[1]), device=qinput.device, dtype=torch.bfloat16)
+        output = torch.empty((qinput.shape[0], weight.shape[1]), device=qinput.device, dtype=pre_quant_output_dtype or torch.bfloat16)
         deepgemm.fp8_gemm((qinput, x_scale), (weight, weight_scale), output)
         if bias is not None:
             output += bias

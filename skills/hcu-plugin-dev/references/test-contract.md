@@ -128,3 +128,6 @@ Block-FP8 backend迁移必须把加载布局和计算接口一并核对：checkp
 
 
 Dense mxscale迁移应检查capability、gfx95门控、shape白名单、权重shuffle之后的scale准备和全部consumer readiness。E8M0 scale的逻辑shape不等于其物理column-major字节排列；分别验证原始字节、独立量化数值与Graph输入更新。可运行的融合Triton生产端不能证明另一架构的AITER GEMM；vendor导入失败与CPU条件模拟应单独记录，不能关闭优化开关后宣称该分支通过。
+
+
+Compressed FP8应通过native LinearMethod→scheme验证建参、post-load与apply；propagated dtype和optional量化参数必须在真实上层wrapper中断言。AROUND的legacy反射签名可能丢失新增kwargs，需限定owner提供实际参数元信息，其他scheme保留signature/cache过滤。LightOp opt-in保持OCP[N,K]与bias输出dtype一致，普通HCU保持其转置和per-token scale；compressed block也必须遵守所选backend的weight/scale双向布局。KME的策略夹具与真正自然失败分开记录。

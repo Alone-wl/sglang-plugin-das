@@ -422,7 +422,7 @@
   },
   "python/sglang/srt/layers/quantization/fp8_utils.py": {
     "status": "in_progress",
-    "rationale": "Port the complete current channel-FP8 fallback with selective BLASLt error caching, exact scaling/bias/padding and exception propagation instead of an unconditional LightOp replacement. Other block/mxscale/opt-in/dispatch definitions remain independently unreviewed. Two documented source/native-common defects are intentionally adapted: scale before multidimensional reshape and store-equivalent typed bias addition in the source-derived fused Triton kernel. Complete selected HCU apply path now calls source DeepGEMM and paired producer; flatten/padded-output boundary adaptations are documented. Other definitions stay open. The complete source auto dispatcher and paired LightOp hipBLASLt block-FP8 helpers are now owned by fp8_block; preserve higher-priority DeepGEMM/AITER dispatch and the paired post-load layout. Port source dense mxscale helpers and preparation together with the complete source AITER consumer; source capability/shape/gfx95 gates remain intact. Other definitions in this file stay open.",
+    "rationale": "Port the complete current channel-FP8 fallback with selective BLASLt error caching, exact scaling/bias/padding and exception propagation instead of an unconditional LightOp replacement. Other block/mxscale/opt-in/dispatch definitions remain independently unreviewed. Two documented source/native-common defects are intentionally adapted: scale before multidimensional reshape and store-equivalent typed bias addition in the source-derived fused Triton kernel. Complete selected HCU apply path now calls source DeepGEMM and paired producer; flatten/padded-output boundary adaptations are documented. Other definitions stay open. The complete source auto dispatcher and paired LightOp hipBLASLt block-FP8 helpers are now owned by fp8_block; preserve higher-priority DeepGEMM/AITER dispatch and the paired post-load layout. Port source dense mxscale helpers and preparation together with the complete source AITER consumer; source capability/shape/gfx95 gates remain intact. Other definitions in this file stay open. Port the explicit LightOp channelwise helper with its compressed-tensors consumers; adapt generic direct-tuple output allocation to honor the dtype already forwarded by the source caller.",
     "implementation": [
       "hcu_sglang/layers/quantization/fp8_fallback.py",
       "hcu_sglang/layers/quantization/fp8.py",
@@ -430,7 +430,8 @@
       "hcu_sglang/layers/quantization/fp8_linear.py",
       "hcu_sglang/layers/quantization/w8a8_fp8.py",
       "hcu_sglang/layers/quantization/fp8_block.py",
-      "hcu_sglang/layers/quantization/fp8_mxscale.py"
+      "hcu_sglang/layers/quantization/fp8_mxscale.py",
+      "hcu_sglang/layers/quantization/compressed_fp8.py"
     ],
     "source_alignment": "docs/hcu-fp8-fallback-source-alignment.json",
     "tests": [
@@ -441,9 +442,11 @@
       "tests/runtime/fp8_block.py",
       "tests/runtime/fp8_block_gpu.py",
       "tests/runtime/fp8_mxscale.py",
-      "tests/runtime/fp8_mxscale_gpu.py"
+      "tests/runtime/fp8_mxscale_gpu.py",
+      "tests/runtime/compressed_fp8.py",
+      "tests/runtime/compressed_fp8_gpu.py"
     ],
-    "validation_scope": "Isolateddev44 12 public CPU producer/consumer tests,4 actual DeepGEMM GPU/Graph tests,401/401 Hooks and79 repository tests pass. Paired source HCU quantizer preserves matched q/scale rows; documented flatten/output-buffer adaptations prevent incorrect multidimensional/padded backend calls. Other dispatch/block/post-load/opt-in definitions remain separately incomplete. Source-tree dev45 block route has 7 CPU and 3 real GPU tests passed; other block/mxscale modes are separate. dev46 source-tree 11 CPU mxscale contracts,7 block regressions and3 real fused RMSNorm/e8m0 GPU/Graph tests pass. Installed AITER lacks gemm_a8w8_blockscale; gfx95 optimized GEMM is not validated on gfx938. Isolated dev46 repeats 11 CPU mxscale tests,7 block regressions and3 real fused-producer GPU/Graph tests;404/404 Hooks,585 byte-matched source/site package files and79 local repository tests pass."
+    "validation_scope": "Isolateddev44 12 public CPU producer/consumer tests,4 actual DeepGEMM GPU/Graph tests,401/401 Hooks and79 repository tests pass. Paired source HCU quantizer preserves matched q/scale rows; documented flatten/output-buffer adaptations prevent incorrect multidimensional/padded backend calls. Other dispatch/block/post-load/opt-in definitions remain separately incomplete. Source-tree dev45 block route has 7 CPU and 3 real GPU tests passed; other block/mxscale modes are separate. dev46 source-tree 11 CPU mxscale contracts,7 block regressions and3 real fused RMSNorm/e8m0 GPU/Graph tests pass. Installed AITER lacks gemm_a8w8_blockscale; gfx95 optimized GEMM is not validated on gfx938. Isolated dev46 repeats 11 CPU mxscale tests,7 block regressions and3 real fused-producer GPU/Graph tests;404/404 Hooks,585 byte-matched source/site package files and79 local repository tests pass. dev47 compressed CPU counterexample exposes the source tuple dtype allocation bug; corrected dtype and block layout pass14 CPU contracts. Remaining explicit-backend diagnostic and unused source torch_fp8_block_gemm helper stay separately open."
   },
   "python/sglang/kernels/ops/quantization/fp8_kernel.py": {
     "status": "in_progress",
@@ -491,5 +494,33 @@
       "tests/runtime/fp8_mxscale_gpu.py"
     ],
     "validation_scope": "Three source-tree real gfx938 GPU tests: BF16 norm/FP8/UE8M0 scale bytes for M1/17/8 and K256/384/7168, zero/empty inputs and changed-input/weight Graph replay pass. Isolated dev46 repeats all three GPU tests; package bytes match source/site and404/404 full hooks pass; gfx95 mxscale GEMM not established."
+  },
+  "python/sglang/srt/layers/quantization/compressed_tensors/schemes/compressed_tensors_w8a8_fp8.py": {
+    "status": "in_progress",
+    "rationale": "Port full source channelwise LightOp helper, source scheme capability/post-load/apply and native linear wrapper apply. Preserve opt-in OCP[N,K] versus generic transposed layout, FNUZ conversion, KME retry and per-token tuple/output dtype. Add a paired compressed block hipBLASLt weight+scale orientation adaptation verified against a strict failing native-consumer counterexample. Other schemes/config and broad module review remain separate.",
+    "implementation": [
+      "hcu_sglang/layers/quantization/compressed_fp8.py",
+      "hcu_sglang/layers/quantization/w8a8_fp8.py"
+    ],
+    "source_alignment": "docs/hcu-compressed-fp8-source-alignment.json",
+    "tests": [
+      "tests/runtime/compressed_fp8.py",
+      "tests/runtime/compressed_fp8_gpu.py"
+    ],
+    "validation_scope": "Source-tree 14 public CPU tests pass, including actual native constructors/create/post-load/apply, kwargs forwarding to owned scheme and legacy scheme signature filtering, capability matrix, primary/KME exception boundaries, opt-out dtype and strict block layout. Six source-tree real GPU/Graph tests pass: opt-in BF16/FP16 and dynamic quant, opt-out tuple dtype, changed activation/weight scales, real KME after fixture primary miss, and native block post-load to actual hipBLASLt. Natural primary calls succeed without KME. Isolated dev47 repeats14 CPU and6 GPU/Graph tests;407/407 full hooks and79 repository tests pass,586 package files match source and actual installed wheel; other compressed schemes/backends are not validated."
+  },
+  "python/sglang/srt/layers/quantization/compressed_tensors/compressed_tensors.py": {
+    "status": "in_progress",
+    "rationale": "Port full source channelwise LightOp helper, source scheme capability/post-load/apply and native linear wrapper apply. Preserve opt-in OCP[N,K] versus generic transposed layout, FNUZ conversion, KME retry and per-token tuple/output dtype. Add a paired compressed block hipBLASLt weight+scale orientation adaptation verified against a strict failing native-consumer counterexample. Other schemes/config and broad module review remain separate.",
+    "implementation": [
+      "hcu_sglang/layers/quantization/compressed_fp8.py",
+      "hcu_sglang/layers/quantization/w8a8_fp8.py"
+    ],
+    "source_alignment": "docs/hcu-compressed-fp8-source-alignment.json",
+    "tests": [
+      "tests/runtime/compressed_fp8.py",
+      "tests/runtime/compressed_fp8_gpu.py"
+    ],
+    "validation_scope": "Source-tree 14 public CPU tests pass, including actual native constructors/create/post-load/apply, kwargs forwarding to owned scheme and legacy scheme signature filtering, capability matrix, primary/KME exception boundaries, opt-out dtype and strict block layout. Six source-tree real GPU/Graph tests pass: opt-in BF16/FP16 and dynamic quant, opt-out tuple dtype, changed activation/weight scales, real KME after fixture primary miss, and native block post-load to actual hipBLASLt. Natural primary calls succeed without KME. Isolated dev47 repeats14 CPU and6 GPU/Graph tests;407/407 full hooks and79 repository tests pass,586 package files match source and actual installed wheel; other compressed schemes/backends are not validated."
   }
 }

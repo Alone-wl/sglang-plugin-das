@@ -16,6 +16,7 @@ _ENV_SPECS: dict[str, tuple[type, Any]] = {
     'SGLANG_AITER_INTREE_MHC_TILE_M16': (EnvBool, True),
     'SGLANG_DSV4_DECODER_TAIL_GRAPH_MAX_ROWS': (EnvInt, 2048),
     'SGLANG_DSV4_DENSE_MXSCALE': (EnvBool, False),
+    'SGLANG_USE_LIGHTOP_CHANNEL_FP8': (EnvBool, False),
     'SGLANG_DSV4_DENSE_MXSCALE_SHAPES': (EnvStr, ''),
     'SGLANG_DSV4_FUSE_MHC_REPEAT_CP_SPLIT': (EnvBool, False),
     "SGLANG_W4A8_TPMOE_BACKEND": (EnvStr, "auto"),

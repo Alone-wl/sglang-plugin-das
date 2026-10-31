@@ -1,0 +1,35 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "functions_source_ast_restored": {
+    "apply_fp8_lightop_channelwise_linear": true,
+    "supports_fp8_prequantized_input": true,
+    "process_weights_after_loading": true,
+    "apply_weights": true,
+    "linear_apply": true
+  },
+  "unchanged_native_scheme_methods_reused": [
+    "__init__",
+    "get_min_capability",
+    "create_weights"
+  ],
+  "unchanged_native_linear_methods_reused": [
+    "__init__",
+    "create_weights",
+    "process_weights_after_loading"
+  ],
+  "compressed_source_sha256": "05950b93a67e9c91ca297481ab459da475a6ead784526e10cca0da4a07deaa5e",
+  "wrapper_source_sha256": "d5049f01960c0eea054977dd820f5385f001e0ad01f200a87cd0e93483b59128",
+  "fp8_utils_source_sha256": "e3d0cd30fb7246fb153ed719c8663eef6d14794c28fe4124e43ac733f6556945",
+  "normalization": [
+    "Qualify existing native globals with Q/U; HCU and LightOp opt-in flags remain module-owned.",
+    "Bind the source capability getter as a property on the actual native class; rename the extracted wrapper apply to linear_apply.",
+    "Expose the missing public LightOp helper with a collision check."
+  ],
+  "controlled_adaptations": [
+    "Reorient weight and block scale together only when the compressed block consumer is the source hipBLASLt helper; the source compressed post-load omitted the transpose its backend requires. The exact guarded AST addition is removed before comparison.",
+    "Provide the owned compressed scheme argument cache to the source linear wrapper because AROUND preserves the legacy native function signature; inspect other schemes normally.",
+    "Honor the forwarded direct-tuple pre_quant_output_dtype in the generic HCU apply allocation; separate generic source-alignment record documents this change."
+  ],
+  "limits": "Selected definition differences and paired layout adaptation covered; this does not close the compressed-tensors subsystem or whole fp8_utils file. Source KME retry semantics are preserved. Numerical, Graph and full artifact evidence are separate."
+}

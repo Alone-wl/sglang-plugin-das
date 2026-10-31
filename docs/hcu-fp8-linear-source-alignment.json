@@ -12,9 +12,10 @@
   ],
   "apply_base_source_ast_restored": true,
   "controlled_adaptations": [
+    "Honor pre_quant_output_dtype in the direct HCU tuple branch; the source caller forwards it but the source allocation always used BF16.",
     "Flatten direct tuple token dimensions/scales for a2D-weight GEMM and restore output shape afterward.",
     "Allocate output for actual quantized rows including padding, trim to logical rows before restoring output shape; protects the source/native compressed-static/per-tensor paths."
   ],
   "producer_behavior": "Copy the actual conditional HCU scaled_fp8_quant branch: LightOp per-token output/scale stay unpadded despite a padding request; source native tensor/static helpers write only logical rows of padded output.",
-  "scope": "Complete selected generic HCU apply/producer path and unchanged native consumer wiring only. Post-load block/mxscale, MoE and LightOp channelwise opt-in definitions remain independently incomplete."
+  "scope": "Complete selected generic HCU apply/producer path and unchanged native consumer wiring only. Separate current source-alignment records cover block/mxscale and compressed LightOp paths; this record does not establish whole-file or full DAS completion."
 }
