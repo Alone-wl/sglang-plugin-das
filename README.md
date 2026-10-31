@@ -154,6 +154,7 @@ hcu-sglang-plugin/
 ```bash
 # 从本方法库根目录执行；选择当前任务需要的工具。
 python3 tools/audit_repositories.py --help
+python3 tools/audit_python_equivalence.py --help
 python3 tools/reconstruct_sglang_das.py --help
 python3 tools/validate_plugin_runtime.py --help
 ```

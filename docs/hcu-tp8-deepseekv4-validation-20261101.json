@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "run_id": "deepseekv4-fp8-tp8-dev37-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe": "docs/model-deployment/sglang/deepseek-v4.md: DeepSeek-V4-Flash-0731-Channel-FP8-w8a8 IFB BW1100 8x SGLang0.5.18",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/deepseek-v4.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "plugin_source_commit": "89ac15156cea30a2b6415a301bb7008ef56ad67b",
+  "plugin_version": "0.3.2.dev37",
+  "wheel_sha256": "c991a6918ea1fff44bada82348477bab133ef0b0366837043cee2504e7e05498",
+  "wheel_source_and_installed_package_files_identical": 577,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "mem_fraction_static": 0.9,
+  "graph": "Original DSPARK/DeepEP recipe: graph max32, context32768, max-running32,TP8/DP8/EP8 and64-thread weight loading retained.",
+  "dp": 8,
+  "ep": 8,
+  "owned_HCU_backend_log_lines": 16,
+  "deepep_config_sha256": "268521dacd03feeddea23e1e58f9b6bfb52b5befce0dffec0be705e7d9d2b18a",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "0adbf43001a0a31ca52d5ccc37a97030be4adf01f2d90106750d2fb63157514d"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "481aec6758c44d99fc8331d911b9bad86413bc363012e41777feaa6c2205c9fd"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "7fd527d62c21e2763dda60bfba1da42aa081fea7d34b44c6c2e011ce51450595"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "ec18edd3f327fd66cfb1ed5bd7089d82aa00756b3d8427d91d0905e2c8eeaeb5"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "0d78a8d356d0b5ad45f669fd1789647413b52dac1ed73903fa649dff6e0650a6"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "fa6ef57967d8c696580827f06b4b07b9392227cc67c59d5be90e01c5c4ed3c92"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T01:26:47+0800",
+  "finished_at": "2026-11-01T01:34:20+0800",
+  "limits": "Six deterministic short requests, not a dataset accuracy score or throughput benchmark. This validates the isolated dev37 artifact, not other artifacts or unreviewed DAS modules.",
+  "owned_HCU_backend_dp_ranks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "backend_log_pattern": "HCU dsv4 backend: hcu_sglang.models.deepseek.current_v4.hcu_backend.backend.DeepseekV4AttnBackend"
+}

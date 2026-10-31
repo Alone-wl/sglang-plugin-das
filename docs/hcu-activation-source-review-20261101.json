@@ -1,0 +1,23 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "source_path": "python/sglang/srt/layers/activation.py",
+  "source_sha256": "255c3e27568c7c57a6cd72d8f9b5846acaf88ce4a4f90d9b0ebfa026fd72bb27",
+  "changed_python_definitions": [
+    "SiluAndMul.forward_cuda"
+  ],
+  "owned_path": "hcu_sglang/layers/norm_activation.py",
+  "review": "The source only changes the SiluAndMul CUDA body to call LightOp on HCU, plus the module-level _use_aiter gate excludes HCU. The existing plugin routes the CUDA body to the same LightOp call with identical output shape/dtype/device and preserves the effective original elsewhere; its constructor AFTER hook switches only a chosen forward_aiter to forward_cuda, retaining deterministic/native selection. Other class/function AST definitions match official.",
+  "tests": {
+    "path": "tests/runtime/activation_hcu.py",
+    "status": "passed",
+    "cases": 4,
+    "coverage": [
+      "constructor HCU/AITER/deterministic gates",
+      "actual public LightOp BF16/FP16 forward against FP32 SiLU*up reference across three shapes",
+      "Graph replay with changed gate/up inputs",
+      "non-HCU original delegation"
+    ]
+  },
+  "limits": "The GPU profile uses the source-compatible default SGLANG_USE_AITER=0. A separate forced-global-AITER=1 attempt fails before activation in fp8_utils because this container lacks aiter.gemm_a8w8_blockscale. The enabling expression and import requirement are also present in the fixed source fork; no fake function, math replacement or source gate modification was introduced. Full global-AITER deployment is not validated."
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "models": [
+    {
+      "evidence": "hcu-tp8-qwen3-validation-20261101.json",
+      "run_id": "qwen3-235b-instruct-tp8-dev34-20261101-attempt1",
+      "plugin_version": "0.3.2.dev34",
+      "plugin_source_commit": "b97b4d9cb3a074a7f4a945f250c77e355ba381c3",
+      "wheel_sha256": "45b88367f9fc3f9462eed414d24279fb7176dacb5f9c588733f0e7e0479d415a",
+      "tp": 8,
+      "status": "passed",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false,
+      "passed_requests": 6
+    },
+    {
+      "evidence": "hcu-tp8-minimax-validation-20261101.json",
+      "run_id": "minimax-m25-bf16-tp8-dev35-20261101-attempt1",
+      "plugin_version": "0.3.2.dev35",
+      "plugin_source_commit": "fefb5fcb74126dc3412ea80e3352f3d8b57657f3",
+      "wheel_sha256": "4dabfc1963c943b625de840a17c70a83eb2aab29e5ceb840ac11cd043839e35a",
+      "tp": 8,
+      "status": "passed",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false,
+      "passed_requests": 6
+    },
+    {
+      "evidence": "hcu-tp8-glm5-validation-20261101.json",
+      "run_id": "glm5-int4-tp8-dev37-20261101-attempt1",
+      "plugin_version": "0.3.2.dev37",
+      "plugin_source_commit": "89ac15156cea30a2b6415a301bb7008ef56ad67b",
+      "wheel_sha256": "c991a6918ea1fff44bada82348477bab133ef0b0366837043cee2504e7e05498",
+      "tp": 8,
+      "status": "passed",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false,
+      "passed_requests": 6
+    },
+    {
+      "evidence": "hcu-tp8-deepseekv4-validation-20261101.json",
+      "run_id": "deepseekv4-fp8-tp8-dev37-20261101-attempt1",
+      "plugin_version": "0.3.2.dev37",
+      "plugin_source_commit": "89ac15156cea30a2b6415a301bb7008ef56ad67b",
+      "wheel_sha256": "c991a6918ea1fff44bada82348477bab133ef0b0366837043cee2504e7e05498",
+      "tp": 8,
+      "status": "passed",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false,
+      "passed_requests": 6
+    }
+  ],
+  "scope": "Each result belongs to its explicit isolated artifact. Six deterministic short requests per service, with original eight-GPU recipe capacity/Graph/parallel modes preserved; not a dataset score, benchmark or full-DAS equivalence.",
+  "full_migration_status": "in_progress"
+}

@@ -22,9 +22,10 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 3002,
+    "pending": 2975,
+    "upstream": 26,
     "in_progress": 5,
-    "implemented": 3
+    "implemented": 4
   },
   "files": [
     {
@@ -4761,7 +4762,14 @@
       "relation": "changed",
       "fork_oid": "75437a2216b3df64b7363f8a034e7c7128e07d88",
       "official_oid": "5cc1a1d3fe0bacbff7bad61d588f48163dc06760",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "5cc1a1d3fe0bacbff7bad61d588f48163dc06760",
+        "fork_oid": "75437a2216b3df64b7363f8a034e7c7128e07d88",
+        "ast_sha256": "82161609e11d6667c98df10bcca802a6cab824ba3d8a4d9006e3c92f794bff66"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/kernels/ops/attention/dsv4/candidate_blocks.py",
@@ -5001,7 +5009,14 @@
       "relation": "changed",
       "fork_oid": "bd3cf20d73f9ab080b72ec5a852597dd48c224fb",
       "official_oid": "f4b892f68ba115c4182d2a788a5485771664973d",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "f4b892f68ba115c4182d2a788a5485771664973d",
+        "fork_oid": "bd3cf20d73f9ab080b72ec5a852597dd48c224fb",
+        "ast_sha256": "ed1605388a99699f6811aae64d95ebf66b256be10e0f15e884184bbc2fa0405a"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/kernels/ops/attention/fla/chunk_delta_h.py",
@@ -6057,7 +6072,14 @@
       "relation": "changed",
       "fork_oid": "44384590f2998754efbfab747c7d7f9ba0862510",
       "official_oid": "790c3141a0224e9c9d52bafae32c897252d2b52d",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "790c3141a0224e9c9d52bafae32c897252d2b52d",
+        "fork_oid": "44384590f2998754efbfab747c7d7f9ba0862510",
+        "ast_sha256": "9fea63631f0467fdc76eefb75e881c1fd602335fe2b7c09a3327413ff85dcc67"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/kernels/ops/layernorm/norm.py",
@@ -6513,7 +6535,14 @@
       "relation": "changed",
       "fork_oid": "c583734a914396260bc44c231ff730826165b75b",
       "official_oid": "c1daae04a4b4942091c2c7cf435bcfb1ce3edeef",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "c1daae04a4b4942091c2c7cf435bcfb1ce3edeef",
+        "fork_oid": "c583734a914396260bc44c231ff730826165b75b",
+        "ast_sha256": "0db88fb962447a5f663240e9fc20471209e2abb3f9fbed512957807b60ddec34"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/kernels/ops/quantization/minimax_quant_ue8m0.py",
@@ -7497,7 +7526,14 @@
       "relation": "changed",
       "fork_oid": "52ce3057ca4ba1299ebe3766179ce398b6fcdcee",
       "official_oid": "54ed9c033fdaa1c6b7eebbc5252482a49fa50d1b",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "54ed9c033fdaa1c6b7eebbc5252482a49fa50d1b",
+        "fork_oid": "52ce3057ca4ba1299ebe3766179ce398b6fcdcee",
+        "ast_sha256": "7a852be20ade3dbf5637746bfccc9a5cef99de2946c07da1d2ba2bfaed323226"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/multimodal_gen/runtime/loader/utils.py",
@@ -7921,7 +7957,14 @@
       "relation": "changed",
       "fork_oid": "20593332718905f18d22a7fae8828acb6d7709a4",
       "official_oid": "a4d4c3edf1bc1f7e62a65c00e82a7a7d65f0fb63",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "a4d4c3edf1bc1f7e62a65c00e82a7a7d65f0fb63",
+        "fork_oid": "20593332718905f18d22a7fae8828acb6d7709a4",
+        "ast_sha256": "9a0c5f9de6711931ca2200ca08eac84bdfd20603fb2135d0b45ba4ffee246eb8"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/multimodal_gen/runtime/models/encoders/qwen3_5.py",
@@ -8009,7 +8052,14 @@
       "relation": "changed",
       "fork_oid": "37b402075b469aa6a4543bee4aa69deffc9ac082",
       "official_oid": "3a729a22cc75142aaa41f579d9b3bb8ae1739c4f",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "3a729a22cc75142aaa41f579d9b3bb8ae1739c4f",
+        "fork_oid": "37b402075b469aa6a4543bee4aa69deffc9ac082",
+        "ast_sha256": "dbca09dfd24c4022afeedee1d3a07bb0c6e089140d2f14f1322f2dc4ab58fbbc"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/multimodal_gen/runtime/models/vaes/conv_fold.py",
@@ -10313,7 +10363,14 @@
       "relation": "changed",
       "fork_oid": "84d3855034c710ce8f4cfff47530a168fc731d82",
       "official_oid": "0597c72dfd7e6e160919f0ba65b9bec0029d3d50",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "0597c72dfd7e6e160919f0ba65b9bec0029d3d50",
+        "fork_oid": "84d3855034c710ce8f4cfff47530a168fc731d82",
+        "ast_sha256": "a5380d03da5bf5c6de13faa95c4503f6bd9e92d5c95db8a321e992af6932a6d0"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/disaggregation/mooncake/conn.py",
@@ -10740,7 +10797,14 @@
       "relation": "changed",
       "fork_oid": "5ea872434c4d38f71e8469ef3d54e773d896abac",
       "official_oid": "d25330c5a36b86f6000617719b4f7f884f8425c4",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "d25330c5a36b86f6000617719b4f7f884f8425c4",
+        "fork_oid": "5ea872434c4d38f71e8469ef3d54e773d896abac",
+        "ast_sha256": "2bb5622d0b961577610efb3521cbb6673f2fa9695cad1845a7bd138c3c46681f"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/hardware_backend/npu/memory_pool_npu.py",
@@ -10820,7 +10884,16 @@
       "relation": "changed",
       "fork_oid": "c1920237948c47c26c58eb77989d14137bbbdb64",
       "official_oid": "d1f277319c2d74f068e10bded3e87eb031079e8a",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Review confirms the only changed Python definition is SiluAndMul.forward_cuda plus a module AITER selection gate excluding HCU. Existing CUDA AROUND calls the same LightOp operator with identical tensor shape/dtype/device; constructor AFTER switches a selected AITER method to CUDA on HCU and preserves deterministic/native selection. All other class/function AST definitions match official.",
+      "implementation": [
+        "hcu_sglang/layers/norm_activation.py"
+      ],
+      "source_alignment": "docs/hcu-activation-source-review-20261101.json",
+      "tests": [
+        "tests/runtime/activation_hcu.py"
+      ],
+      "validation_scope": "Four tests pass including public HCU LightOp BF16/FP16 math across three shapes and GPU Graph replay. Whole global-AITER=1 deployment is not validated because both source and official fp8_utils require an API missing in the current vendor package; no dummy API or gate alteration added."
     },
     {
       "path": "python/sglang/srt/layers/attention/aiter_backend.py",
@@ -13542,7 +13615,14 @@
       "relation": "changed",
       "fork_oid": "b4bf29955ef79c87fc0e8c1f03802c4b495b9bae",
       "official_oid": "34067a730ac02e4513d53e3e6518f28530fc4c76",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "34067a730ac02e4513d53e3e6518f28530fc4c76",
+        "fork_oid": "b4bf29955ef79c87fc0e8c1f03802c4b495b9bae",
+        "ast_sha256": "845d3301a8b266ec745d80af1f9a2324466d1d298e7c5eb205d2ae8ee2657c7c"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/mem_cache/multimodal_cache.py",
@@ -13646,7 +13726,14 @@
       "relation": "changed",
       "fork_oid": "b447f015cb5bb9c7fdfb9bd1b265891805be7124",
       "official_oid": "b034e4e9c28262b3714367b21936dcd2b17524d3",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "b034e4e9c28262b3714367b21936dcd2b17524d3",
+        "fork_oid": "b447f015cb5bb9c7fdfb9bd1b265891805be7124",
+        "ast_sha256": "f37ebb0059f0bb9116d3f9d8b2f657a4489b70ec94a338dfa733e4d23c250d6d"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/mem_cache/rust_tree_core/adapter.py",
@@ -14126,7 +14213,14 @@
       "relation": "changed",
       "fork_oid": "0b3c97305b797c55e139e43c6c1553d6d7d63656",
       "official_oid": "d281abe6705512b37c5d5fd897c41fbf4d6b20e2",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "d281abe6705512b37c5d5fd897c41fbf4d6b20e2",
+        "fork_oid": "0b3c97305b797c55e139e43c6c1553d6d7d63656",
+        "ast_sha256": "19fbdde0e8884619337b7c6aae6fa73d13130a55e8c7b4a2c6a100c12bab40bb"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/models/bailing_mm.py",
@@ -14286,7 +14380,14 @@
       "relation": "changed",
       "fork_oid": "a809bd3d88b3eccdef86252bc1b528adb6ea82f6",
       "official_oid": "86dab137a1d1b83192eb6bab3ea9152da632cc2a",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "86dab137a1d1b83192eb6bab3ea9152da632cc2a",
+        "fork_oid": "a809bd3d88b3eccdef86252bc1b528adb6ea82f6",
+        "ast_sha256": "8eddde869a9015fc686f0f6ecb3f2d8eef9361da4bb6dc31a7dee5c0b12b3cd6"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/models/deepseek_common/decoder_swa_bounded_replay.py",
@@ -14766,7 +14867,14 @@
       "relation": "changed",
       "fork_oid": "cf62e3c672f5b14b9c3d26c88612e244172e5533",
       "official_oid": "8f4dd5191d3ef7849961481405245d5028a2ff1b",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "8f4dd5191d3ef7849961481405245d5028a2ff1b",
+        "fork_oid": "cf62e3c672f5b14b9c3d26c88612e244172e5533",
+        "ast_sha256": "22034a38eb8f839e9b684ee74e0f3a5c1fd6d4622b22a42784729884eff4093b"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/models/minicpmo.py",
@@ -14950,7 +15058,14 @@
       "relation": "changed",
       "fork_oid": "a7f2b4fda6d7598fb57c050304401202cd82f71d",
       "official_oid": "a1dc41e08bad5deecc99d7d60dfa16277eafd835",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "a1dc41e08bad5deecc99d7d60dfa16277eafd835",
+        "fork_oid": "a7f2b4fda6d7598fb57c050304401202cd82f71d",
+        "ast_sha256": "05dd75a7901b461cb5aa65c0286b93fd47fbfad8f4a0c56a080c68ddde0ac7e4"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/models/qwen2_moe.py",
@@ -15230,7 +15345,14 @@
       "relation": "changed",
       "fork_oid": "1646dc3654a2f6c90dc8c5b8d4cdf3d1a2c8fb6a",
       "official_oid": "3f862f355bc478534330e2d54339e402f7e10831",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "3f862f355bc478534330e2d54339e402f7e10831",
+        "fork_oid": "1646dc3654a2f6c90dc8c5b8d4cdf3d1a2c8fb6a",
+        "ast_sha256": "345d8f5160b05dab2515228448ba9d441f2c97521ea64d402c6a47abc22ffcb4"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/multimodal/processors/muse_spark_omni.py",
@@ -15358,7 +15480,14 @@
       "relation": "changed",
       "fork_oid": "58c433cb1c9501df4196fd5f3bfff48308b0b30e",
       "official_oid": "fee776bd2b819528c2de6eb18637f62342ad82b0",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "fee776bd2b819528c2de6eb18637f62342ad82b0",
+        "fork_oid": "58c433cb1c9501df4196fd5f3bfff48308b0b30e",
+        "ast_sha256": "c972f310aa622b9c3ccf486a9a91eff7fd490e89a382a42eb59a361460928cd0"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/srt/server_args.py",
@@ -16018,7 +16147,14 @@
       "relation": "changed",
       "fork_oid": "ae75f2e9d8bbdb4fb5e8fd28da21a34101fb310b",
       "official_oid": "d3d8206a476f345ca3d22fc4b237454926c56dee",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "d3d8206a476f345ca3d22fc4b237454926c56dee",
+        "fork_oid": "ae75f2e9d8bbdb4fb5e8fd28da21a34101fb310b",
+        "ast_sha256": "26ebc149c2b1b34e49f753bd3ec4420ebaa54d3908446334c3e7ff698c9bb814"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "python/sglang/test/kits/attention_unittest/runner_modes/split_op_runner.py",
@@ -17866,7 +18002,14 @@
       "relation": "changed",
       "fork_oid": "c49925e803f85fb6eace928ae961fd4a3327d107",
       "official_oid": "cce1a29e992a89de19c5c65f6bd9b2a3cdb58a89",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "cce1a29e992a89de19c5c65f6bd9b2a3cdb58a89",
+        "fork_oid": "c49925e803f85fb6eace928ae961fd4a3327d107",
+        "ast_sha256": "0f68fd946531058f7c6e66aeb9537c6567384909d9009d78917b5644a4a1e465"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/manual/ep/test_kimi_k3_eplb.py",
@@ -17930,7 +18073,14 @@
       "relation": "changed",
       "fork_oid": "1c88059fa4a04a0a9512cfb6da20782c82169fd3",
       "official_oid": "c3ebd076291ac2d16c0fd20c61cc2da18789d563",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "c3ebd076291ac2d16c0fd20c61cc2da18789d563",
+        "fork_oid": "1c88059fa4a04a0a9512cfb6da20782c82169fd3",
+        "ast_sha256": "50cedf11e1c19e09f9ffa4ba71d0ec0fc0e3326294832efd39c8a74a4179da81"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/manual/test_hcu_delta_rule_cuda.py",
@@ -18306,7 +18456,14 @@
       "relation": "changed",
       "fork_oid": "7938edf673f74b6d1638db3e604ad2fb920c0b7a",
       "official_oid": "86d2a047fd9e11bbb0f67dbf4963ea4dcdaeb609",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "86d2a047fd9e11bbb0f67dbf4963ea4dcdaeb609",
+        "fork_oid": "7938edf673f74b6d1638db3e604ad2fb920c0b7a",
+        "ast_sha256": "ec13edc20985fc21d9ee9ca0cfe3d1273f910fb3fca315ca0432100bdb72c602"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/core/test_page_size.py",
@@ -19794,7 +19951,14 @@
       "relation": "changed",
       "fork_oid": "8451976c82e4e55fa63008abc89beeceb3b6f79b",
       "official_oid": "2d190f3a9dbb5bc2960a7ebf5c928e216f5b494e",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "2d190f3a9dbb5bc2960a7ebf5c928e216f5b494e",
+        "fork_oid": "8451976c82e4e55fa63008abc89beeceb3b6f79b",
+        "ast_sha256": "bd236e267c3514bd9f4a70714f5623e2ffa5ad86665b293e33f3077d2fcb702e"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/kernels/benchmark/quantization/bench_per_token_group_quant_masked.py",
@@ -19802,7 +19966,14 @@
       "relation": "changed",
       "fork_oid": "d55a53f3077ec7f10752933449bbf8a631aa3b6e",
       "official_oid": "c9ca5d82411e5768a57c59f2c06e0b1a28e8d354",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "c9ca5d82411e5768a57c59f2c06e0b1a28e8d354",
+        "fork_oid": "d55a53f3077ec7f10752933449bbf8a631aa3b6e",
+        "ast_sha256": "de6110c1e3d43465c46d776d32ef637d5c692652f275efcf9512f9ab007a9e34"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/kernels/ops/activation/test_fused_op_gpu_parity.py",
@@ -21074,7 +21245,14 @@
       "relation": "changed",
       "fork_oid": "7e3cab846e2506c7c8c4dfe6dd5ca611e69f9add",
       "official_oid": "19f49f65a4c99e468ac6009858b8773d688f5b1a",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "19f49f65a4c99e468ac6009858b8773d688f5b1a",
+        "fork_oid": "7e3cab846e2506c7c8c4dfe6dd5ca611e69f9add",
+        "ast_sha256": "aa80bf2efc26cdc6cd0e1bb88a30968f04cc0bc99101828e4e387ae25f32d8c3"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/profiling/test_diffusion_stage_profiler_sync.py",
@@ -21226,7 +21404,14 @@
       "relation": "changed",
       "fork_oid": "e9b7fe942dc04339163874cb43c138d113cd5b4d",
       "official_oid": "029a8c78499ec5a2b5f68aa3b18ae8864eccb8cd",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "029a8c78499ec5a2b5f68aa3b18ae8864eccb8cd",
+        "fork_oid": "e9b7fe942dc04339163874cb43c138d113cd5b4d",
+        "ast_sha256": "7658c3c940cae33d154ceea7faaa98d348b56ae8160db2eaf48d8f8c18dac81f"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/sampling/test_penalty.py",
@@ -23002,7 +23187,14 @@
       "relation": "changed",
       "fork_oid": "5c0335d81d4d533f666176bfab8f9df42ac454ab",
       "official_oid": "30bdbac0628cc06011833ae4f4796acbb16b252f",
-      "status": "pending"
+      "status": "upstream",
+      "rationale": "Whole committed Python AST matches the pinned official file, including imports, guards, decorators, values, docstrings and type comments. Reuse official code unchanged; dependencies/other paths remain separate review scopes.",
+      "evidence": {
+        "official_oid": "30bdbac0628cc06011833ae4f4796acbb16b252f",
+        "fork_oid": "5c0335d81d4d533f666176bfab8f9df42ac454ab",
+        "ast_sha256": "3902874c26da1c8b6f4ec9a5735d75a08ea8e6eda39c271791f1d3c560bd935d"
+      },
+      "validation_scope": "Per-file committed Python code equality only; not runtime, dependency equivalence or whole-DAS completion."
     },
     {
       "path": "test/registered/unit/mem_cache/test_pp_prefetch_ticket.py",
