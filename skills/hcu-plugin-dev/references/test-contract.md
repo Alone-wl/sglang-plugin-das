@@ -102,3 +102,5 @@ CP 数值对照出现偏差时，先比较实际 Q/KV/索引与有效长度，�
 迁移 RMSNorm/Gemma 等方法时，同时核对独立输入、residual、post-residual、非连续视图、weight 与预计算 `1 + weight`、batch-invariant 以及可选 AITER 分支。数学近似相同不代表状态契约相同：检查来源要求的融合分支是否实际命中、哪些张量原地更新、调用方仍持有哪些别名；不要用 native 回退替代来源已支持的 HCU fused 路径。
 
 若输出供量化投影使用，按真实消费者保留 FP8 tensor/scale 的 carrier、是否额外返回 residual，以及 `update_input` 等生产约定；显式未启用的可选能力须按来源拒绝。CPU kernel stub 只验证数据流和分支，另以真实 vendor 数学、Graph replay 和整体服务分别提供证据。单个类的选中方法对照保持选择范围，不能据此关闭整个文件的迁移项。
+
+归一化包含 collective 时，核对 `tp`、`attn_tp`、`moe_tp` 的真实成员、world size 与 fallback，不能用 MoE EP 代替 MoE TP，也不能在融合拒绝时换回全 TP 组。同时保留计算后端与 communicator 策略的独立开关。验证预先导入的 public alias 是否随 Hook 更新，以及 quantized/BF16 side output 的生产消费；CPU 组标签测试与真实多进程通信分别记录。复用未变化的框架 coordinator 方法不等于验证了其完整构造、传输后端或 Graph 生命周期。

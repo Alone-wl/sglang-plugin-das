@@ -22,9 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 3008,
-    "in_progress": 1,
-    "implemented": 1
+    "pending": 3007,
+    "implemented": 3
   },
   "files": [
     {
@@ -10353,7 +10352,18 @@
       "relation": "changed",
       "fork_oid": "ccbc4e973d5b6cc8a22c7bcb4005fda06fdaabf3",
       "official_oid": "df7170c40c61a3c009b0f72c9d61b343406bdd61",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "The only changed Python definitions in the pinned communication_op module are the two fused AR/norm entry points. Port their full group-selection bodies; preserve default tp and reject unsupported groups, update real public aliases with Hook propagation, and reuse unchanged native GroupCoordinator implementations. The parallel_state constructor/backend-selection file is a separate incomplete migration scope.",
+      "implementation": [
+        "hcu_sglang/layers/norm_collectives.py",
+        "hcu_sglang/distributed.py"
+      ],
+      "source_alignment": "docs/hcu-norm-collectives-source-alignment.json",
+      "tests": [
+        "tests/runtime/norm_collectives.py",
+        "tests/runtime/norm_collectives_gpu.py"
+      ],
+      "validation_scope": "Nine CPU public API/alias/branch tests and real eight-rank IPC fused norm compared with RCCL passed forTP8/attentionTP4/MoETP2. The gfx95-only quantized kernel correctly declines on gfx938. Full collective Graph, Fabric/backend initialization and whole-model dev36 are not validated."
     },
     {
       "path": "python/sglang/srt/distributed/device_communicators/configs/custom_all_reduce_v2.py",
@@ -11985,17 +11995,24 @@
       "relation": "changed",
       "fork_oid": "fe164be8c4f33278fc16144ff11458cc9ca50cb3",
       "official_oid": "6068e8f2095f09b0841913fec7fe07a88b7020ef",
-      "status": "in_progress",
-      "rationale": "Synchronize selected HCU RMSNorm/Gemma HIP branches and the explicit Gemma FP8 carrier with fixed DAS. The old plugin incorrectly routed the residual branch to forward_native. File scope remains incomplete: all-reduce fusion helpers and any additional platform deltas require separate review.",
+      "status": "implemented",
+      "rationale": "All reviewed HCU-specific norm differences are wired through public methods/helpers: HIP RMSNorm/Gemma, explicit Gemma FP8 capability, and correctly grouped AR/norm/FP8 handoffs. Existing Gemma AR wrapper differs only by equivalent positional/keyword syntax. Non-HCU Gemma3 XPU/NPU deltas delegate to official and are outside the HCU runtime scope. This is implementation status, not full validation.",
       "implementation": [
         "hcu_sglang/layers/norm_current.py",
-        "hcu_sglang/layers/quantization/fp8.py"
+        "hcu_sglang/layers/quantization/fp8.py",
+        "hcu_sglang/layers/norm_collectives.py"
       ],
-      "source_alignment": "docs/hcu-norm-source-alignment.json",
+      "source_alignment": [
+        "docs/hcu-norm-source-alignment.json",
+        "docs/hcu-norm-collectives-source-alignment.json"
+      ],
       "tests": [
-        "tests/runtime/norm_current.py"
+        "tests/runtime/norm_current.py",
+        "tests/runtime/norm_current_gpu.py",
+        "tests/runtime/norm_collectives.py",
+        "tests/runtime/norm_collectives_gpu.py"
       ],
-      "validation_scope": "Six CPU public Hook regressions and three real HCU norm/Graph tests passed. Isolated dev35 package and386/386 Hook contract passed. Whole-model dev35, optional Gemma FP8 kernel and remaining all-reduce helpers stay separate pending scopes."
+      "validation_scope": "Six public norm CPU tests, three real HCU norm/Graph tests, nine collective CPU tests, real eight-rank AITER IPC routing forTP8/attentionTP4/MoETP2, and390/390 isolated wheel Hooks passed. Optional Gemma FP8 kernel, collective Graph, gfx95 quantized fusion, Fabric and other profiles remain unverified."
     },
     {
       "path": "python/sglang/srt/layers/layernorm_sp.py",

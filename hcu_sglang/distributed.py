@@ -42,3 +42,6 @@ def register_hooks() -> None:
         HookType.AROUND,
     )
 
+
+    from hcu_sglang.layers import norm_collectives
+    norm_collectives.register_hooks()
