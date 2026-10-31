@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2971,
+    "pending": 2970,
     "upstream": 26,
-    "in_progress": 7,
+    "in_progress": 8,
     "implemented": 6
   },
   "files": [
@@ -12784,7 +12784,18 @@
       "relation": "changed",
       "fork_oid": "658e74ff3f6a43c78c19057f1e2545fa0b39c8eb",
       "official_oid": "5542b41666643f69680f886ed150b6b40c53a06b",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Port the complete source block post-load method for the paired HCU hipBLASLt consumer, including contiguous transpose of both weight and block scale. Other consumers delegate to the effective native method; AITER dense mxscale and the remainder of this module stay open.",
+      "implementation": [
+        "hcu_sglang/layers/quantization/fp8_block.py",
+        "hcu_sglang/layers/quantization/w8a8_fp8.py"
+      ],
+      "source_alignment": "docs/hcu-block-fp8-source-alignment.json",
+      "tests": [
+        "tests/runtime/fp8_block.py",
+        "tests/runtime/fp8_block_gpu.py"
+      ],
+      "validation_scope": "Source-tree 7 public CPU tests and 3 real HCU GPU tests passed: native post-load through native apply, BF16/FP16, non-square scales, multidimensional input, live Graph replay. Isolated dev45 repeats 7 CPU and 3 real GPU tests;403/403 Hooks and79 repository tests pass,583 package files match source/site; other backends and whole-model dev45 unvalidated."
     },
     {
       "path": "python/sglang/srt/layers/quantization/fp8_utils.py",
@@ -12793,22 +12804,25 @@
       "fork_oid": "8fe72f4c80ecb4ec18cae1cb5ba7ac68cdea6355",
       "official_oid": "6fa480b3b81a6bb986e61a1dc904f8a770df117d",
       "status": "in_progress",
-      "rationale": "Port the complete current channel-FP8 fallback with selective BLASLt error caching, exact scaling/bias/padding and exception propagation instead of an unconditional LightOp replacement. Other block/mxscale/opt-in/dispatch definitions remain independently unreviewed. Two documented source/native-common defects are intentionally adapted: scale before multidimensional reshape and store-equivalent typed bias addition in the source-derived fused Triton kernel. Complete selected HCU apply path now calls source DeepGEMM and paired producer; flatten/padded-output boundary adaptations are documented. Other definitions stay open.",
+      "rationale": "Port the complete current channel-FP8 fallback with selective BLASLt error caching, exact scaling/bias/padding and exception propagation instead of an unconditional LightOp replacement. Other block/mxscale/opt-in/dispatch definitions remain independently unreviewed. Two documented source/native-common defects are intentionally adapted: scale before multidimensional reshape and store-equivalent typed bias addition in the source-derived fused Triton kernel. Complete selected HCU apply path now calls source DeepGEMM and paired producer; flatten/padded-output boundary adaptations are documented. Other definitions stay open. The complete source auto dispatcher and paired LightOp hipBLASLt block-FP8 helpers are now owned by fp8_block; preserve higher-priority DeepGEMM/AITER dispatch and the paired post-load layout.",
       "implementation": [
         "hcu_sglang/layers/quantization/fp8_fallback.py",
         "hcu_sglang/layers/quantization/fp8.py",
         "hcu_sglang/layers/quantization/fp8_scaled_mm.py",
         "hcu_sglang/layers/quantization/fp8_linear.py",
-        "hcu_sglang/layers/quantization/w8a8_fp8.py"
+        "hcu_sglang/layers/quantization/w8a8_fp8.py",
+        "hcu_sglang/layers/quantization/fp8_block.py"
       ],
       "source_alignment": "docs/hcu-fp8-fallback-source-alignment.json",
       "tests": [
         "tests/runtime/fp8_fallback.py",
         "tests/runtime/fp8_fallback_gpu.py",
         "tests/runtime/fp8_linear.py",
-        "tests/runtime/fp8_linear_gpu.py"
+        "tests/runtime/fp8_linear_gpu.py",
+        "tests/runtime/fp8_block.py",
+        "tests/runtime/fp8_block_gpu.py"
       ],
-      "validation_scope": "Isolateddev44 12 public CPU producer/consumer tests,4 actual DeepGEMM GPU/Graph tests,401/401 Hooks and79 repository tests pass. Paired source HCU quantizer preserves matched q/scale rows; documented flatten/output-buffer adaptations prevent incorrect multidimensional/padded backend calls. Other dispatch/block/post-load/opt-in definitions remain separately incomplete."
+      "validation_scope": "Isolateddev44 12 public CPU producer/consumer tests,4 actual DeepGEMM GPU/Graph tests,401/401 Hooks and79 repository tests pass. Paired source HCU quantizer preserves matched q/scale rows; documented flatten/output-buffer adaptations prevent incorrect multidimensional/padded backend calls. Other dispatch/block/post-load/opt-in definitions remain separately incomplete. Source-tree dev45 block route has 7 CPU and 3 real GPU tests passed; other block/mxscale modes are separate."
     },
     {
       "path": "python/sglang/srt/layers/quantization/gptq_triton.py",

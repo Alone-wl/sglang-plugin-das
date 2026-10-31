@@ -122,3 +122,6 @@ Triton bias/scale分支要检查SSA合并类型与公开API的mixed dtype/多维
 
 
 量化carrier必须沿真实公开consumer入口验证，并检查token flatten/padding与backend输出buffer行数。保留Tensor view的storage即可，不把新view对象identity误当重复量化；用禁止requant的反例和实际q/scale指针分别证明。遇到producer shape失败时核对来源的条件平台分支，不能只修下游reshape而继续使用不匹配的生产端。不得在GPU上试跑已知q/output行数不一致的越界配置；先用严格CPU backend契约捕获。
+
+
+Block-FP8 backend迁移必须把加载布局和计算接口一并核对：checkpoint与GEMM的[N,K]/[K,N]方向、block scale的[N-block,K-block]/[K-block,N-block]方向及contiguous状态用非方形shape测试；从原生post-load到原生apply验证，不能只直调helper。auto选择需保留高优先级backend；仅为对应consumer改布局。数值参考应解码真实per-group量化结果，Graph replay改变输入后复验。
