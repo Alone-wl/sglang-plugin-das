@@ -265,6 +265,7 @@
     "sglang.srt.layers.quantization.fp8.Fp8LinearMethod.process_weights_after_loading_block_quant",
     "sglang.srt.layers.quantization.fp8_utils._apply_fallback_scaled_mm",
     "sglang.srt.layers.quantization.fp8_utils._dispatch_auto_backend",
+    "sglang.srt.layers.quantization.fp8_utils.aiter_w8a8_block_fp8_linear",
     "sglang.srt.layers.quantization.fp8_utils.apply_fp8_linear",
     "sglang.srt.layers.quantization.get_quantization_config",
     "sglang.srt.layers.quantization.unquant.UnquantizedFusedMoEMethod.forward_cuda",

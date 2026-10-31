@@ -315,7 +315,7 @@ def around_auto_backend(original):
 
 
 def around_process_block_weights(original, self, layer):
-    if not is_dcu() or self.w8a8_block_fp8_linear is not hipblaslt_w8a8_block_fp8_linear:
+    if not is_dcu() or self.w8a8_block_fp8_linear not in (hipblaslt_w8a8_block_fp8_linear, getattr(P, "aiter_w8a8_block_fp8_linear", None)):
         return original(self, layer)
     return process_weights_after_loading_block_quant(self, layer)
 

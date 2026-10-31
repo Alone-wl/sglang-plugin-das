@@ -1,0 +1,25 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "functions_normalized_ast_equal": {
+    "aiter_has_dense_mxscale": true,
+    "set_dense_mxscale": true,
+    "_dense_mxscale_shapes": true,
+    "dense_mxscale_wanted": true,
+    "block_fp8_scale_to_e8m0_128": true,
+    "is_e8m0_scale": true,
+    "dense_mxscale_ready": true,
+    "quant_fp8_e8m0_128": true,
+    "aiter_w8a8_block_fp8_linear": true,
+    "_maybe_prepare_dense_mxscale": true
+  },
+  "model_fused_producer_normalized_ast_equal": true,
+  "fused_kernel_source_bytes_identical": true,
+  "fused_kernel_sha256": "844d230b16e75f7eb74caf0fe61f1843395b190ee8f510a938e9a37c7eed00ac",
+  "adaptations": [
+    "Qualify existing native globals with N/P; preserve module-owned global toggle, cached shape policy, helpers and logged set.",
+    "Bind model fused producer import to the byte-identical owned kernel.",
+    "Extend block post-load interception to its actual AITER consumer; retain effective original for other backends.",
+    "Expose missing public helpers and class preparation method with collision checks."
+  ],
+  "validation_limits": "gfx938 cannot validate gfx95 mxscale bpreshuffle GEMM. Installed vendor lacks native SGLANG_USE_AITER=1 imports; CPU branch fixtures do not establish optimized GEMM mathematics."
+}

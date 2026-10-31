@@ -125,3 +125,6 @@ Triton bias/scale分支要检查SSA合并类型与公开API的mixed dtype/多维
 
 
 Block-FP8 backend迁移必须把加载布局和计算接口一并核对：checkpoint与GEMM的[N,K]/[K,N]方向、block scale的[N-block,K-block]/[K-block,N-block]方向及contiguous状态用非方形shape测试；从原生post-load到原生apply验证，不能只直调helper。auto选择需保留高优先级backend；仅为对应consumer改布局。数值参考应解码真实per-group量化结果，Graph replay改变输入后复验。
+
+
+Dense mxscale迁移应检查capability、gfx95门控、shape白名单、权重shuffle之后的scale准备和全部consumer readiness。E8M0 scale的逻辑shape不等于其物理column-major字节排列；分别验证原始字节、独立量化数值与Graph输入更新。可运行的融合Triton生产端不能证明另一架构的AITER GEMM；vendor导入失败与CPU条件模拟应单独记录，不能关闭优化开关后宣称该分支通过。
