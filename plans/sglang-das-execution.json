@@ -22,10 +22,10 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2964,
-    "upstream": 26,
-    "implemented": 9,
-    "in_progress": 11
+    "pending": 2949,
+    "implemented": 10,
+    "in_progress": 25,
+    "upstream": 26
   },
   "files": [
     {
@@ -3746,7 +3746,22 @@
       "relation": "changed",
       "fork_oid": "63ae02bb0d1ed696d5d711985cba205cce301d0c",
       "official_oid": "330073800bc1eb055b3c8da67e70a639fdc0a80e",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own the complete source block-amax header with one exact HIP syntax adaptation: parenthesize template-containing launch-bounds expressions so the preprocessor cannot split typename commas. Block size, occupancy and arithmetic unchanged; exact reverse replacement restores source bytes. Native public JIT path cold-compiles and executes it.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/block_amax.cuh",
+        "hcu_sglang/models/deepseek/current_v4/hcu_backend/candidate_blocks.py",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": [
+        "docs/hcu-jit-block-amax-source-alignment.json",
+        "docs/hcu-jit-resource-coverage.json"
+      ],
+      "tests": [
+        "tests/runtime/jit_overlay_contract.py",
+        "tests/runtime/jit_block_amax_gpu.py"
+      ],
+      "validation_scope": "4 native load_jit/BuildSpec/translation-unit CPU contracts and2 actual fresh-cache gfx938 GPU tests pass: all fp32/bf16 input/output combinations, variable/empty/tail rows, topk skips and changed score/length Graph replay. Original Source cold compile failed8 errors; only launch-bounds syntax adapted. Isolated dev52 repeats4 native BuildSpec CPU contracts and2 fresh-cache GPU tests; all4 input/output dtype variants generate validated compiler records and packaged owner hash matches wheel.416/416 hooks and85 repository tests pass,589 package files match source/site; other architectures not established."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/c1.cuh",
@@ -3802,7 +3817,14 @@
       "relation": "changed",
       "fork_oid": "f288dbb60884dac125bac03da3beb50b6fdd73e6",
       "official_oid": "2d1419a94214b6f124e1ff4cf53f34e39784d149",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/c_plan.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/candidate_block_table.cuh",
@@ -3858,7 +3880,14 @@
       "relation": "changed",
       "fork_oid": "17db44bd7c203c3e541d3f622eb6c7a78aeb5f4a",
       "official_oid": "6105fc36df9a1876969c1d70a193d194ddbf5cc5",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/fused_norm_rope_v2.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/hash_topk.cuh",
@@ -3882,7 +3911,14 @@
       "relation": "changed",
       "fork_oid": "94698bfff3d1932b2834e14b581bc45df50bb831",
       "official_oid": "1ccfb43448a8662e13c0fb0b05fd23c5e030f09e",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/main_norm_rope.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/mega_moe_pre_dispatch.cuh",
@@ -3906,7 +3942,14 @@
       "relation": "changed",
       "fork_oid": "e774dc6920d43774ca71703ad3edd6adcc337b8c",
       "official_oid": "008367b78bd4ced1560cc6688b4ca7ffa8f839e6",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/silu_and_mul_masked_post_quant.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/store.cuh",
@@ -3938,7 +3981,14 @@
       "relation": "changed",
       "fork_oid": "0272b59e0603f6f6201ced9502d6f6e676c25bb8",
       "official_oid": "fae0ece4c657ffe94a7dfb0f5cd1a4f74dbc5f55",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/topk_v2.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/wo_a_fused.cuh",
@@ -4354,7 +4404,14 @@
       "relation": "changed",
       "fork_oid": "5c8f17919febabd1637885dc6cf145c41c7c7f0a",
       "official_oid": "c148521811ab4102cca65d023810d09fb9e32b1b",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/fp4_utils.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/fp8_utils.cuh",
@@ -4362,7 +4419,14 @@
       "relation": "changed",
       "fork_oid": "febe1ca76e310d107930bfcc41c6e6d951994368",
       "official_oid": "7b600211cb4190a9484fd39ad646915f4f0c740c",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/fp8_utils.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/kv_layout.cuh",
@@ -4370,7 +4434,14 @@
       "relation": "changed",
       "fork_oid": "1dbddd91b212701cab70e1bf5e687728044a05b1",
       "official_oid": "028766b9e78598e4ddbb45800ada8ffae3a1a2ee",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/kv_layout.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/topk_impl.cuh",
@@ -4378,7 +4449,14 @@
       "relation": "changed",
       "fork_oid": "08bf5e41b2b06be43031126d915722b6553a07b7",
       "official_oid": "b0b2088540974d576480dc3db2ecbe9cacab9485",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/topk_impl.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/dsa/legacy_radix_topk.cuh",
@@ -4418,7 +4496,14 @@
       "relation": "changed",
       "fork_oid": "8f9febd17e1858272646fa16d021393579d37bdc",
       "official_oid": "44e61ee505f4b58a316eb4321566a07b28337811",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/runtime.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/tensor.h",
@@ -4426,7 +4511,14 @@
       "relation": "changed",
       "fork_oid": "5c2a16ace63755ba7ee10bfd7f537eeef33a534d",
       "official_oid": "196a00a556668427dbeed345fc5c0df7028d27fc",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/tensor.h",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/utils.cuh",
@@ -4434,7 +4526,14 @@
       "relation": "changed",
       "fork_oid": "94f3aa1bb72313826ce92b820c5f6461c9f2d4ae",
       "official_oid": "fa724a99385a73f0b553f1a461427b45bb87c0f7",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/utils.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/utils.h",
@@ -4442,7 +4541,14 @@
       "relation": "changed",
       "fork_oid": "6c232b674363dacbb002ed25409287cd603e836d",
       "official_oid": "9c7f29ddcef719ede6f6c3e3d6e4587d738fff9b",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/utils.h",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/include/sgl_kernel/warp.cuh",
@@ -4450,7 +4556,14 @@
       "relation": "changed",
       "fork_oid": "4f1420c26f3c43dabfe407855111b94dfd4d9acb",
       "official_oid": "0697e111373cd3dbf9699b8a88b7850ce6cfe8c7",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Exact source blob/mode, current owned content and dev51 wheel packaging verified. A validated historical compiler dependency record includes this same content in a leaf containing a library. Existing overlay/native BuildSpec contracts verify source/include routing. Current execution/all templates are not established solely by this record; retain in_progress for full caller/profile review.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/include/sgl_kernel/warp.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-jit-resource-coverage.json",
+      "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
     },
     {
       "path": "python/sglang/kernels/jit/kpool_write_plan.py",
