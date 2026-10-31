@@ -143,3 +143,6 @@ FP4/FP8 MoE迁移从native constructor/create/static factory到完整post-load�
 
 
 W8A8 strategy迁移同时核对[N,K]/[K,N]、packed stride、scale dtype、cache m bucket与真正provider；入口名称cutlass可能在HCU委托另一backend，按最终调用记录。Bias必须从真实native wrapper经过helper到结果，不能只检查参数存在。新scheme增加optional输入后提供其参数元信息；旧签名兼容单元测试可限定注册范围，但真实GPUforward必须完整插件注册。Static/AZP元数据与实际非对称量化数值、gfx928布局fixture与真实gfx928执行分开记录。
+
+
+比较已存在的owned helper时要核对完整Source函数/全局，而非只核对本次调用的一个分支，防止漏掉fast path。会在缺binary时exit的provider必须在调用前按来源gate排除；异常fallback测试不能证明能捕获进程exit。GPU记录实际ASM/Triton计数和Graph更新，不能只凭名称推断后端。量化config target测试覆盖不含Linear名称的自定义子类及MRO/路径/fused优先级。

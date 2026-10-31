@@ -268,6 +268,7 @@
     "sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16.CompressedTensorsWNA16.__init__",
     "sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16.CompressedTensorsWNA16.apply_weights",
     "sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_wNa16.CompressedTensorsWNA16.process_weights_after_loading",
+    "sglang.srt.layers.quantization.compressed_tensors.utils.find_matched_target",
     "sglang.srt.layers.quantization.fp8.Fp8LinearMethod.process_weights_after_loading_block_quant",
     "sglang.srt.layers.quantization.fp8.Fp8MoEMethod.create_fp8_moe_weight_",
     "sglang.srt.layers.quantization.fp8.Fp8MoEMethod.maybe_get_hip_aiter_quant_info",

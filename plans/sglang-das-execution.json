@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2966,
+    "pending": 2964,
     "upstream": 26,
-    "implemented": 7,
+    "implemented": 9,
     "in_progress": 11
   },
   "files": [
@@ -12728,7 +12728,18 @@
       "relation": "fork_only",
       "fork_oid": "8000fe60f6e9831501f9e6eca013104bc7a2d089",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own all7 source GEMM helper functions and full source module state/import layout, rebinding only missing native is_hcu to existing owned detection. Preserve source smooth-ASM slide selection, gfx928 fatal-binary exclusion, tuned/bias/layout gates and exception fallback; retain documented dev50 lost-bias fix. This is code implementation, not all-architecture validation.",
+      "implementation": [
+        "hcu_sglang/layers/quantization/quant_ops.py"
+      ],
+      "source_alignment": "docs/hcu-quant-ops-targets-source-alignment.json",
+      "tests": [
+        "tests/runtime/quant_ops_dispatch.py",
+        "tests/runtime/quant_ops_gpu.py",
+        "tests/runtime/compressed_int8_gpu.py"
+      ],
+      "validation_scope": "Source6 CPU dispatch-policy tests and3 real gfx938 GPU tests pass: actual smooth ASM1/Triton0, bias ASM0/Triton1, scale-changing actual ASM Graph. Source full module AST restored except exact provider import and bias fix. gfx928 exclusion tested as CPU contract, not real gfx928 execution. Isolated dev51 repeats6 CPU dispatch tests,3 actual ASM/Triton GPU tests and4 real compressed INT8 consumer GPU regressions.416/416 full hooks,79 repository tests and589 byte-matched source/site package files pass. All architecture/provider performance profiles remain unvalidated."
     },
     {
       "path": "python/sglang/srt/layers/quantization/compressed_tensors/schemes/__init__.py",
@@ -12825,7 +12836,17 @@
       "relation": "changed",
       "fork_oid": "ac3338de36451da4b4ed43963f1115c4f10accfa",
       "official_oid": "5369d8d9dc2c3326cb80b90f36161250ad39e164",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Port the sole changed source function find_matched_target through a narrow HCU public hook. Search exact/regex layer path, then leaf and parent classes in Python MRO, then all-components fused mapping; exclude object. All remaining module AST is native/source identical. Non-HCU keeps effective original.",
+      "implementation": [
+        "hcu_sglang/layers/quantization/compressed_targets.py",
+        "hcu_sglang/layers/quantization/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-quant-ops-targets-source-alignment.json",
+      "tests": [
+        "tests/runtime/compressed_targets.py"
+      ],
+      "validation_scope": "7 isolated dev51 public CPU tests pass including real native CompressedTensorsConfig.get_scheme_dict inherited-only resolution and early alias, path/regex/leaf/MRO/fused priorities, empty/object/non-HCU boundaries.416/416 full root hooks pass. Other config/model profiles are not established by these cases."
     },
     {
       "path": "python/sglang/srt/layers/quantization/fp8.py",

@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev50` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev51` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -727,3 +727,21 @@ BF16 checkpoint scale在加载前转FP32；strategy1按已有cache reader读取�
 13项CPU覆盖真实native constructor/create/post-load/wrapper apply、BF16 scale、gfx928 stride/AZP元信息、tensor scale、cache预热/m bucket、两种预量化参数优先级、四provider分派及异常、bias反例和non-HCU委托。4项真实GPU覆盖四种strategy实际backend、普通动态INT8量化、RMS pair进入真实hipBLASLt、SiLU pair进入真实Triton、以及更改scale/bias后的Graph重放；数学参考使用实际量化结果及独立FP32矩阵乘法，rtol/atol0.025。Static/asymmetric仅核对来源metadata，不能冒称AZP kernel数值通过；gfx928也仅CPU契约通过。隔离wheel、全Hook与模型结果按实际执行补记。
 
 隔离dev50实际结果：13项INT8 CPU、4项真实GPU/Graph、2项指定wrapper旧签名兼容单元测试、415/415 Hook与3seam通过，errors/unapplied为空；588包文件与源码/site逐字节相同，wheel SHA256 `2d897fad205952c99b6c66058937d2918da0bed1c7222bb55359c6b466b94997`。本地79项仓库unittest、L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。新增helper bias按独立AST增量记录；完整dev50模型未由这些局部检查替代，dev49模型结果仍仅归属dc59cd0。
+
+## 61. 2026-11-01 dev50 GLM-5 INT4 原配方八卡复验
+
+提交 `814792e` 的隔离dev50于06:31:46–06:37:17完成原TP8、INT4、EAGLE、FP8 KV、memory0.85、默认Graph和显式AITER custom-AR配方，六项严格请求均正常stop，自有进程为空、端口关闭。588包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-glm5-dev50-validation-20261101.json)记录实际响应、配置和backend日志计数。GLM走独立SlimQuant，本次是共享helper/组合回归，不作为新compressed INT8 scheme的全模型证明，也不归到dev51。
+
+## 62. 2026-11-01 small-M ASM 与量化 target 父类匹配
+
+从本地 `814792e` 审查相邻pending文件发现：既有quant_ops虽已迁入大部分helper，却缺来源small-M ASM fast path及其致命binary缺失架构保护；Native matching只看当前类名，不能识别不含Linear命名的自定义子类。现迁入完整来源7个helper和匹配函数，保留默认Triton/显式config/bias/layout/shape gates，以及来源异常后Triton fallback。m/n的slide1/9选择、完整K256 tile要求、gfx928禁用与未知arch probe失败均按来源保留，未为了通过改掉kernel选择。
+
+当前官方utils没有is_hcu导出，owned module将该导入绑定到既有detection.is_dcu；未给官方模块伪造符号。Source quant_ops全部函数与module其余AST均核对，除这处真实provider重绑定及dev50精确bias AST增量外相同。[全文件对照](hcu-quant-ops-targets-source-alignment.json)还证明target utility唯一变化函数归一native N后相同，其余完整module AST与native相同，因此这两项代码处置改为implemented；不据此把全部DAS或所有profile改为完成。
+
+Target按exact/regex layer path、Python MRO中的leaf/parent、fused全组件匹配的顺序选择，跳过object，支持空字符串显式匹配。公开Hook传播到早期alias，并保留non-HCU有效original；不因自定义layer名称改变而漏配quantization。
+
+6项CPU验证ASM架构缓存、source slide与provider完整参数、bias/tuned config/partial K/large M回到原Triton、gfx928不调用会exit的provider、exception和non-HCU边界；6项CPU验证target inherited-only、leaf/regex/path/MRO优先级、fused-all/object/空值。3项真实gfx938 GPU验证自然small-M命中ASM1/Triton0、带bias命中ASM0/Triton1及实际ASM Graph读取scale更新，独立FP32数学参考rtol/atol0.025。gfx928只测保护契约，不作硬件执行结论；没有性能A/B结论。隔离artifact、全Hook和消费者回归按实际结果补记。
+
+追加真实native CompressedTensorsConfig.get_scheme_dict消费者检查：自定义HiddenProjection仅通过父类LinearStem命中，返回实际QuantizationArgs payload；用于验证native config模块内的早期import alias也更新。该用例将target CPU检查增至7项，隔离执行结果单独记录。
+
+隔离dev51实际结果：6项分派CPU、7项target CPU（含真实native config消费者）、3项ASM/Triton GPU/Graph和4项实际compressed INT8 backend回归均通过；416/416 Hook、3seam与79项仓库unittest通过。589包文件与源码/site逐字节相同，wheel SHA256 `8d2c37a703cafbcea4f148a34a6a79492c59c2337715ff42273d059020535635`。L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。Source helper7函数完整覆盖与config utility单一变化覆盖只支持对应两项implemented处置，未关闭其他文件或全DAS。另有106个pending来源路径与owned文件字节相同，仅作为后续编译/注册/caller审查线索，未凭此更改状态；完整dev51模型尚未运行。
