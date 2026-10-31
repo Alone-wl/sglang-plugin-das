@@ -1,0 +1,41 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "source_sha256": "497577baec5423dcc464e96a5e102d4585163e28686d64952d560ba269a41184",
+  "owner": "hcu_sglang/layers/quantization/fp8_moe.py",
+  "owner_sha256": "311942240c70e6440b521916b60338a6c82d8423508775ee8b854c74852e7271",
+  "complete_changed_Fp8MoEMethod_definitions_ast_equal": [
+    "create_fp8_moe_weight_",
+    "maybe_get_hip_aiter_quant_info",
+    "process_weights_after_loading",
+    "process_weights_after_loading_block_quant"
+  ],
+  "unchanged_native_methods_reused": [
+    "__init__",
+    "_convert_mxfp8_moe_to_block_fp8",
+    "_dequantize_aiter_fp4_experts",
+    "_ensure_cutlass_buffers_initialized",
+    "_get_hpc_ops_quant_info",
+    "_prepare_flashinfer_trtllm_activation_params",
+    "_prepare_hpc_ops_weights",
+    "_process_mxfp8_moe_weights",
+    "_process_npu_fp4_expert_weights",
+    "apply",
+    "create_moe_runner",
+    "create_weights",
+    "get_triton_quant_info",
+    "is_deepgemm_moe_runner_backend_enabled",
+    "process_weights_hip_int4",
+    "process_weights_hip_scale_padding"
+  ],
+  "global_bindings": {
+    "_is_hcu": "owned is_dcu detection",
+    "_is_shuffle_moe_mxfp4": "native gfx95 capability AND NOT owned HCU flag, as source",
+    "SGLANG_USE_AITER_FP8_ASM_MOE": "False initially, as source",
+    "asm_shuffle_weight_b8": "same aiter.ops.shuffle provider, loaded on actual invocation",
+    "existing module globals": "qualified native P; local imports stay local"
+  },
+  "integration": "Existing owned MegaMoE registration publishes source HCU runtime/builder helpers before quantization hooks. Static factory remains a staticmethod through native HookRegistry descriptor preservation. Non-HCU uses effective original.",
+  "limits": "CPU ASM/quant-info/MegaMoE contracts and real GPU layout/dequantization are distinct from MoE GEMM/expert-routing accuracy. Global AITER=1 FP8 imports remain unsupported by the installed vendor API; HCU gfx95 and other profiles are not validated here.",
+  "additional_forward_validation": "Isolated dev49 all4 GPU tests pass with full plugin registration. TP1,E2,topk1 native apply uses actual HCU alignment(count1) and two real Triton GEMMs, independently checked at each stage. Other3 tests verify real b8 layout, lossless FP4 conversion and owned BF16->FP8 producer(count4). AITER/MegaMoE GEMM and other parallel profiles remain unvalidated."
+}

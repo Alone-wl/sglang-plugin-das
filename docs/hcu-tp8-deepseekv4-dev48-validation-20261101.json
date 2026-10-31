@@ -1,0 +1,78 @@
+{
+  "status": "passed",
+  "run_id": "deepseekv4-fp8-tp8-dev48-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe": "docs/model-deployment/sglang/deepseek-v4.md: DeepSeek-V4-Flash-0731-Channel-FP8-w8a8 IFB BW1100 8x SGLang0.5.18",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/deepseek-v4.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "plugin_source_commit": "b0eafcf038798529742fe13797010b871b2a9803",
+  "plugin_version": "0.3.2.dev48",
+  "wheel_sha256": "3269c3b34ed33d5e3358417b9af53f05e454526b22a2b83ce6d17c4675c08be8",
+  "wheel_source_and_installed_package_files_identical": 586,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "mem_fraction_static": 0.9,
+  "graph": "Original DSPARK/DeepEP recipe: graph max32, context32768, max-running32,TP8/DP8/EP8 and64-thread weight loading retained.",
+  "dp": 8,
+  "ep": 8,
+  "owned_HCU_backend_log_lines": 16,
+  "deepep_config_sha256": "268521dacd03feeddea23e1e58f9b6bfb52b5befce0dffec0be705e7d9d2b18a",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "598153fb49767556f56de72e7a4d7029fc5f1a52072cb2b6d4323772e3821761"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "a7c520a8dee72558bed47388e3ee790a27af927c077064e403b78fba31b297ea"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "86a628b907c9f96dcd74ad2197b4dedcd82dee4edea7016901adcad6290b5b19"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "92b40c1aa25b73f11120f4062a540cdd156c8f5ea62eb76399843df577f3cab9"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "b48f08d2cc9f93168de47ced65445750c6c4cedba6f25713b796b205bc484234"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "c55286c0e46bbf5d67a36a88101e84c709bd02740cfbd7008f355571c5fac70d"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T05:13:31+0800",
+  "finished_at": "2026-11-01T05:19:13+0800",
+  "limits": "Six deterministic short requests, not a dataset accuracy score or throughput benchmark. This validates the isolated dev48 artifact, not other artifacts or unreviewed DAS modules."
+}

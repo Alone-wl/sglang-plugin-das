@@ -134,3 +134,9 @@ Compressed FP8应通过native LinearMethod→scheme验证建参、post-load与ap
 
 
 模块差异审查不能只枚举顶层函数：递归检查conditional function/fake registration、lazy import、global初值和动态绑定。记录当前设备不命中的差异为pending，不能据此删掉范围；反向AST归一需限定具体适配。保留目标基线新增的正确性保护，来源较旧并不授权删除它们。通用wrapper回归至少覆盖一个真实的其他native scheme；独立SlimQuant全模型结果不能冒充该wrapper覆盖。
+
+
+FP4/FP8 MoE迁移从native constructor/create/static factory到完整post-load检查；新dtype必须与实际runner、量化信息结构、weight与scale的布局成对接入。保留staticmethod/classmethod descriptor；通过caller's真实类验证。ASM布局用真实provider及独立逆排列检查所有bytes/Parameter storage；FP4转换用独立E2M1解码比较值与scale。加载初始化的layout/conversion测试不能宣称完整routed MoE GEMM或forward Graph通过，局部分支provider可用也不等于全局vendor配置可import。
+
+
+真实MoE forward测试应调用完整插件注册入口，不能只登记量化方法而漏掉已有alignment/activation等依赖；用真实runtime context发布必要配置，TP1通信group显式声明。量化不连续边界会放大上游BF16微小舍入，应分阶段独立核对GEMM、activation和down/route，保留原门限；记录实际中间值供下阶段参考不等于替换实际kernel。共享测试的模型/metadata路径使用显式环境变量。

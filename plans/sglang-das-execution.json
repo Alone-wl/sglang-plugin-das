@@ -12817,23 +12817,28 @@
       "fork_oid": "658e74ff3f6a43c78c19057f1e2545fa0b39c8eb",
       "official_oid": "5542b41666643f69680f886ed150b6b40c53a06b",
       "status": "in_progress",
-      "rationale": "Port the complete source block post-load method for paired HCU hipBLASLt and AITER consumers, preserving contiguous hipBLASLt transpose and AITER weight-shuffle-before-e8m0 preparation. Add source _maybe_prepare_dense_mxscale and retain effective native post-load for other consumers. The remaining Fp8MoEMethod definitions and complete-module review stay open.",
+      "rationale": "Port source block post-load for paired HCU linear consumers and dense-mxscale preparation, plus all four changed Fp8MoEMethod definitions: FP4 FP32 scale construction, HCU quant-info guard, MegaMoE handoff and block/ASM/FP4 post-load. Reuse16 unchanged native MoE methods, including constructors/create/apply/dequantization. Existing native module remains the provider for common globals; source-only HCU/MXFP4/ASM bindings are owned. Whole-file global/conditional/provider review and non-default profiles remain open.",
       "implementation": [
         "hcu_sglang/layers/quantization/fp8_block.py",
         "hcu_sglang/layers/quantization/w8a8_fp8.py",
-        "hcu_sglang/layers/quantization/fp8_mxscale.py"
+        "hcu_sglang/layers/quantization/fp8_mxscale.py",
+        "hcu_sglang/layers/quantization/fp8_moe.py",
+        "hcu_sglang/layers/quantization/fp8.py"
       ],
       "source_alignment": [
         "docs/hcu-block-fp8-source-alignment.json",
-        "docs/hcu-dense-mxscale-source-alignment.json"
+        "docs/hcu-dense-mxscale-source-alignment.json",
+        "docs/hcu-fp8-moe-source-alignment.json"
       ],
       "tests": [
         "tests/runtime/fp8_block.py",
         "tests/runtime/fp8_block_gpu.py",
         "tests/runtime/fp8_mxscale.py",
-        "tests/runtime/fp8_mxscale_gpu.py"
+        "tests/runtime/fp8_mxscale_gpu.py",
+        "tests/runtime/fp8_moe.py",
+        "tests/runtime/fp8_moe_gpu.py"
       ],
-      "validation_scope": "Source-tree 7 public CPU tests and 3 real HCU GPU tests passed: native post-load through native apply, BF16/FP16, non-square scales, multidimensional input, live Graph replay. Isolated dev45 repeats 7 CPU and 3 real GPU tests;403/403 Hooks and79 repository tests pass,583 package files match source/site; other backends and whole-model dev45 unvalidated. dev46 source-tree 11 CPU mxscale contracts,7 block regressions and3 real fused RMSNorm/e8m0 GPU/Graph tests pass. Installed AITER lacks gemm_a8w8_blockscale; gfx95 optimized GEMM is not validated on gfx938. Isolated dev46 repeats 11 CPU mxscale tests,7 block regressions and3 real fused-producer GPU/Graph tests;404/404 Hooks,585 byte-matched source/site package files and79 local repository tests pass."
+      "validation_scope": "Source-tree 7 public CPU tests and 3 real HCU GPU tests passed: native post-load through native apply, BF16/FP16, non-square scales, multidimensional input, live Graph replay. Isolated dev45 repeats 7 CPU and 3 real GPU tests;403/403 Hooks and79 repository tests pass,583 package files match source/site; other backends and whole-model dev45 unvalidated. dev46 source-tree 11 CPU mxscale contracts,7 block regressions and3 real fused RMSNorm/e8m0 GPU/Graph tests pass. Installed AITER lacks gemm_a8w8_blockscale; gfx95 optimized GEMM is not validated on gfx938. Isolated dev46 repeats 11 CPU mxscale tests,7 block regressions and3 real fused-producer GPU/Graph tests;404/404 Hooks,585 byte-matched source/site package files and79 local repository tests pass. dev49 source10 CPU public native-constructor/create/static-descriptor/dispatch/MegaMoE/ASM/FP4 contracts pass. Two real GPU full-load tests pass: installed ASM b8 permutation and independent inverse recover all bytes/storage; packed FP4->FP8 preserves values exactly for the tested positive power-of-two scales. These are layout/conversion, not routed MoE GEMM precision. Global AITER=1 FP8 imports still lack vendor APIs. Isolated wheel/full hooks pending. Additional real nonserialized BF16->FP8 expert quantization passes, bringing GPU source tests to3; reference bounds apply to FP8 quantization, not lossless dequantization. Final isolated dev49 repeats10 CPU and4 real GPU tests including TP1,E2,topk1 native routed FP8 forward with full plugin/HCU alignment, independently stage-checked;412/412 hooks and79 repository tests pass,587 package files match source/site. A partial-test-registration VM fault was reproduced then eliminated by using the already-existing full plugin alignment, not by changing a kernel or disabling an optimized feature."
     },
     {
       "path": "python/sglang/srt/layers/quantization/fp8_utils.py",

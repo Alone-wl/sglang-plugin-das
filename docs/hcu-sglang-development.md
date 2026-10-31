@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev48` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev49` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -681,3 +681,31 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 另外2项CPU使用真实CompressedTensorsLinearMethod及native W8A8 INT8静态/动态scheme，实际构造、建参、post-load、signature cache/kwargs过滤到apply均验证；仅量化和scaled-MM计算mock，证明旧签名路由不回归，不能声称INT8 HCU kernel验证，也不替代后续INT8 scheme来源迁移。隔离wheel、全部Hook及门禁按实际执行补记。
 
 隔离dev48实际结果：6项utility CPU、2项真实native INT8 scheme旧签名路由CPU、2项reference GPU/Graph及408/408 Hook、3seam通过，errors/unapplied为空；586包文件与源码/site逐字节一致，wheel SHA256 `3269c3b34ed33d5e3358417b9af53f05e454526b22a2b83ce6d17c4675c08be8`。79项仓库unittest、L0、执行台账、Skill与实际宽/窄屏检索/阅读/导航通过。Generic来源反向比较新增精确受控分支AST检查，先验证允许的buffer/dtype适配再恢复Source，避免笼统替换整个分支掩盖额外修改。dev47两次八卡结果不能自动记为dev48；其余CUDA条件分支和DAS范围仍未完成。
+
+## 57. 2026-11-01 dev48 DeepSeek-V4 原配方八卡复验
+
+本地 `b0eafcf` 的隔离dev48从05:13:31至05:19:13按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六个严格请求，正常stop，自有进程为空、端口关闭。586包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-deepseekv4-dev48-validation-20261101.json)保存实际版本、响应与配置哈希，不归到后续dev49，也不是数据集精度或吞吐指标。
+
+## 58. 2026-11-01 FP8 MoE 建参、HCU分派与加载布局
+
+从本地 `b0eafcf` 继续。来源HCU在FP4建参保留int8 packed bytes与FP32 scale，不使用generic ROCm的e8m0 scale初始化；generic runner-core AiterMoeQuantInfo在HCU返回None；standalone/grouped MegaMoE有各自格式边界；HCU AITER/ASM的block-FP8加载消费b8布局，不能套用generic16x16 shuffle或MXFP4路径。上述4个变化方法需配套迁移，不能只改单个dtype。
+
+完整来源方法迁入owned fp8_moe，四个HCU-only AROUND沿原生Fp8MoEMethod绑定；非HCU保留有效original。Native HookRegistry保留static factory的staticmethod descriptor。既有MegaMoE注册先发布HCU runtime/builder，再注册quantization，避免导入未发布helper。ASM使用来源aiter.ops.shuffle.asm_shuffle_weight_b8 provider，在实际分支调用时加载，未伪造vendor接口。初值SGLANG_USE_AITER_FP8_ASM_MOE=False及gfx95 AND NOT HCU的MXFP4 shuffle条件保留来源语义。
+
+[来源对照](hcu-fp8-moe-source-alignment.json)覆盖Fp8MoEMethod全部4个变化定义，归一native P后AST相等；16个AST未变方法继续复用native，包括真实constructor、create、apply和FP4转换helper。来源的声明、注释和许可保留，说明放本记录；方法抽取阶段误带第二个future import，已在执行测试前修正header，未改来源计算语义。
+
+10项CPU通过实际Native Fp8Config/Fp8MoEMethod构造、create_weights到static factory，验证FP4在AITer/e8m0 override请求下仍生成FP32 scale；验证HCU quant-info在no_combine assert之前返回、standalone非法格式先拒绝、grouped block转交、ASM顺序1/2且不走generic shuffle、packed FP4 int8保留、dequant早退与non-HCU original。MegaMoE builder及CPU ASM计算采用明确spy/mock，不作数学精度结论。
+
+2项真实GPU均从native完整process_weights_after_loading入口执行：FP8 E2/H256/I256在真实已安装ASM b8 provider后，用独立逆排列逐字节恢复w13/w2，保留Parameter及storage；packed FP4用全nibble值与正二次幂scale模式，经真实native FP4->FP8转换后按128-block scale解码，与独立E2M1解码逐值相等，保留Parameter对象。它们证明布局/转换，不证明完整MoE expert routing、GEMM或性能；未把权重初始化反复Graph replay当作forward Graph验收。
+
+当前容器全局SGLANG_USE_AITER=1的FP8 import仍缺vendor API；方法分支内的实际b8 provider可用，不等于整个AITer FP8配置已可部署。CPU patch分派标志与真实GPU provider证据分开记录。dev49隔离wheel、全Hook及完整模型按实际执行补记；全DAS、其余global/conditional/provider组合仍未完成。
+
+追加非serialized BF16 expert的完整加载检查：从native create到owned HCU quant producer量化w13/w2，得到FP8权重与FP32 per-expert scale，解码后按FP8舍入界限rtol0.075/atol0.005比较原BF16值；不是放宽既有lossless FP4或byte布局断言。初次fixture缺实际FusedMoE的num_local_experts上下文，补齐2个expert后3项GPU通过。最终隔离用例另断言两组权重、2expert共4次调用确实进入owned producer，避免只凭数值推断alias已切换。
+
+进一步补查真实routed FP8 consumer：以完整插件入口注册、真实ServerArgs发布exec上下文，TP1用公开parallel override显式声明无通信group；模型配置只读位置由HCU_TEST_MODEL_PATH提供。E2/H256/I256、M16/topk1实际native create_moe_runner→apply选择Triton，HCU alignment计数1，两次真实GEMM各自记录中间结果供独立Torch检查，未替换任何计算kernel。
+
+最初仅登记FP8相关方法的测试漏掉了生产入口已有的HCU alignment，原生小batch CUDA alignment触发320线程超过256 launch bound并使后续fused kernel VM fault。GPU进程退出后设备内存恢复，未重置设备或修改来源；改用完整register复验不再触发故障。该失败属于不完整测试注册，不能描述成修改kernel后修好了生产故障。
+
+直接BF16 dense参考漏掉两次activation FP8量化、中间BF16舍入，产生31/4096差异；补齐后单点量化阈值仍放大首层rounding差异。现分别核对gate/up GEMM与activation（rtol/atol0.025）、用实际中间值作down阶段输入再独立按128-group量化/分块Torch计算down及route，最终out维持原rtol0.08/atol0.03，不放宽门限。两次GEMM和SiLU均独立检查，实际forward结果未被参考值替换。源码环境单用例通过；最终隔离四用例复验按实际结果补记。
+
+最终隔离dev49四项GPU用例全部通过（完整register、HCU_TEST_MODEL_PATH真实只读配置上下文、Native routed forward）；owned producer4次及HCU alignment1次断言通过。10项CPU、412/412 Hook、3seam和79项仓库unittest通过；587包文件与源码/site一致，wheel SHA256 `ad42689f38b850b6bdc6c53d8860e512ea9a2369c9a486386068bb94b7442f9f`。L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。完整dev49八卡服务仍待独立运行，不把dev48结果归到它；其他MoE后端/拓扑、global AITER配置与全DAS仍未关闭。

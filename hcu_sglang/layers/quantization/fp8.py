@@ -55,3 +55,6 @@ def register_hooks() -> None:
     if is_dcu():
         from hcu_sglang.layers.norm_current import register_hooks as register_norm_hooks
         register_norm_hooks()
+
+    from . import fp8_moe
+    fp8_moe.register_hooks()
