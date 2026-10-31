@@ -2,8 +2,26 @@
   "python/sglang/srt/layers/moe/token_dispatcher/standard.py": {
     "status": "implemented",
     "rationale": "Port the DAS dispatch method with explicit official module globals and an HCU-only AROUND hook. Preserve negative and out-of-range global expert IDs as the -1 drop sentinel. Keep the effective original callable for non-HCU devices.",
-    "implementation": ["hcu_sglang/layers/moe/standard_dispatcher.py", "hcu_sglang/__init__.py"],
+    "implementation": [
+      "hcu_sglang/layers/moe/standard_dispatcher.py",
+      "hcu_sglang/__init__.py"
+    ],
     "validation_scope": "CPU public dispatcher regression; GPU EP/Graph/model lanes pending.",
-    "tests": ["tests/runtime/standard_dispatcher.py"]
+    "tests": [
+      "tests/runtime/standard_dispatcher.py"
+    ]
+  },
+  "python/sglang/srt/layers/layernorm.py": {
+    "status": "in_progress",
+    "rationale": "Synchronize selected HCU RMSNorm/Gemma HIP branches and the explicit Gemma FP8 carrier with fixed DAS. The old plugin incorrectly routed the residual branch to forward_native. File scope remains incomplete: all-reduce fusion helpers and any additional platform deltas require separate review.",
+    "implementation": [
+      "hcu_sglang/layers/norm_current.py",
+      "hcu_sglang/layers/quantization/fp8.py"
+    ],
+    "source_alignment": "docs/hcu-norm-source-alignment.json",
+    "tests": [
+      "tests/runtime/norm_current.py"
+    ],
+    "validation_scope": "Six CPU public Hook regressions and three real HCU norm/Graph tests passed. Isolated dev35 package and386/386 Hook contract passed. Whole-model dev35, optional Gemma FP8 kernel and remaining all-reduce helpers stay separate pending scopes."
   }
 }

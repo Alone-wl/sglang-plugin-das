@@ -70,17 +70,8 @@ def around_rms_norm_forward_hip(
     from hcu_sglang.utils.detection import is_dcu
 
     if is_dcu():
-        if residual is not None:
-            return self.forward_native(x, residual, post_residual_addition, quant_linear)
-        if isinstance(x, torch.Tensor) and x.is_cuda and quant_linear is None and post_residual_addition is None:
-            from sglang.srt.batch_invariant_ops import is_batch_invariant_mode_enabled
-            if not is_batch_invariant_mode_enabled():
-                from lightop import op
-                if not x.is_contiguous():
-                    x = x.contiguous()
-                out = torch.empty_like(x)
-                op.rms_norm_opt(out, x, self.weight.data, self.variance_epsilon)
-                return out
+        from hcu_sglang.layers.norm_current import rms_forward_hip
+        return rms_forward_hip(self, x, residual, post_residual_addition, quant_linear)
     return original(self, x, residual, post_residual_addition, quant_linear)
 
 
@@ -97,3 +88,8 @@ def register_hooks() -> None:
         around_rms_norm_forward_hip,
         HookType.AROUND,
     )
+
+    from hcu_sglang.utils.detection import is_dcu
+    if is_dcu():
+        from hcu_sglang.layers.norm_current import register_hooks as register_norm_hooks
+        register_norm_hooks()

@@ -22,7 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 3009,
+    "pending": 3008,
+    "in_progress": 1,
     "implemented": 1
   },
   "files": [
@@ -11984,7 +11985,17 @@
       "relation": "changed",
       "fork_oid": "fe164be8c4f33278fc16144ff11458cc9ca50cb3",
       "official_oid": "6068e8f2095f09b0841913fec7fe07a88b7020ef",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Synchronize selected HCU RMSNorm/Gemma HIP branches and the explicit Gemma FP8 carrier with fixed DAS. The old plugin incorrectly routed the residual branch to forward_native. File scope remains incomplete: all-reduce fusion helpers and any additional platform deltas require separate review.",
+      "implementation": [
+        "hcu_sglang/layers/norm_current.py",
+        "hcu_sglang/layers/quantization/fp8.py"
+      ],
+      "source_alignment": "docs/hcu-norm-source-alignment.json",
+      "tests": [
+        "tests/runtime/norm_current.py"
+      ],
+      "validation_scope": "Six CPU public Hook regressions and three real HCU norm/Graph tests passed. Isolated dev35 package and386/386 Hook contract passed. Whole-model dev35, optional Gemma FP8 kernel and remaining all-reduce helpers stay separate pending scopes."
     },
     {
       "path": "python/sglang/srt/layers/layernorm_sp.py",

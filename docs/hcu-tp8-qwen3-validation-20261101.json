@@ -1,0 +1,74 @@
+{
+  "status": "passed",
+  "run_id": "qwen3-235b-instruct-tp8-dev34-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe": "docs/model-deployment/sglang/qwen3.md: Qwen3-235B-A22B-Instruct-2507 IFB BW1100 8x SGLang0.5.18",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/qwen3.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "plugin_source_commit": "b97b4d9cb3a074a7f4a945f250c77e355ba381c3",
+  "plugin_version": "0.3.2.dev34",
+  "wheel_sha256": "45b88367f9fc3f9462eed414d24279fb7176dacb5f9c588733f0e7e0479d415a",
+  "wheel_source_and_installed_package_files_identical": 574,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "mem_fraction_static": 0.85,
+  "graph": "Default decode Graph capture present; no disable/max-bs override.",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "923dec11f41137a4c56b618f5f9150a6cc75de859a8d642143fb6c1b3f6c540e"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "e48feebaae7ce03a55fdd408bb05df5925e2a97e10eb5a5b2ef1c34d8bd17f21"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "fe12613e58aa32136e3899ea17a2d53002b04dd8ed389103e7cefe50a261a917"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "ed632a05f8700b8ab8337a24780b4b7704b9e93ebcc1c56214678e43b3908eca"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "25ace7fed22171a3f2521e3cbde480b0c3fd6a97b812deb1929e48ca434bab62"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "db3283e136ddc9bbb9f7cab1aa3da4c8e93470270b0ce366672513f82b36a0bd"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T00:02:07+0800",
+  "finished_at": "2026-11-01T00:13:40+0800",
+  "limits": "Six deterministic short requests, not a dataset accuracy score or throughput benchmark. This validates the isolated dev34 artifact, not dev35 or unreviewed DAS modules."
+}

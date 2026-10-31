@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev34` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev35` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -440,3 +440,26 @@ DeepSeek dev34 attempt12 的日志明确记录 HCU owned DeepseekV4AttnBackend�
 修正安装指南的 wheel/editable、metadata、严格加载合同、服务及卸载示例，当前合同显式指定 `--plugin-package hcu_sglang` 并先初始化 AITER 兼容。同步配置、回溯、排障、README 和相关 Skill 中仍将当前实现称作旧包的说明；旧版本实施记录、来源清单、兼容工具接口和历史文件名保持其来源语义。硬件接口 `is_dcu()` 不属于插件入口改名范围。
 
 本轮仓库 72 项离线测试、L0 的 333 个 Python 文件/8 个 Skill、全部 Skill 元信息及 Markdown 链接/标题锚点检查通过。网页从原始文档重新构建，不直接修改生成 HTML。检查证据保存在本次 ignored artifacts 中。本轮未修改运行时行为、未在本机执行 HCU Hook/模型服务；wheel 名称与入口检查不作为模型精度或设备可用性验收。
+
+## 35. 2026-11-01 RMSNorm/Gemma HCU 分支继续迁移
+
+继续执行 plugin-v3-1028，输入仍为固定 official `baa9befa` 与 DAS `15c7204b`。从当前干净 `b97b4d9` 开始，本轮只做本地提交，不推送。dev34 的八卡 Qwen3-235B 验证与本轮 dev35 代码验收分别记录，不把隔离旧 wheel 的结果归给新代码。
+
+原插件 RMSNorm 在 residual 非空时直接调用 native；当前 DAS 明确进入 LightOp `fused_add_rms_norm_opt`，保留实际 residual 原地更新和 post-residual 的独立张量语义。本轮迁入该完整 HIP 方法，并将当前 Gemma HIP 方法、显式 `forward_with_lightop_fp8_quant` 与其 vLLM ABI 辅助函数放入 owned `norm_current`；只限定官方 provider 全局名、函数命名和惰性 vendor 导入。AITER Gemma 优先级、`1 + weight` 缓冲、batch-invariant、FP8 门控与 `(quantized, residual)` 返回结构沿用来源。非 HCU 保留传入 original，不改官方文件，也不动态导入 DAS。
+
+[源码对照](hcu-norm-source-alignment.json) 固定源文件哈希和五个选择定义；去除导入限定并规范化抽取 docstring 缩进后 AST 相同。这只证明选择的方法，不能证明整个 layernorm 文件已迁移。全文件处置保持 in_progress；AR/RMSNorm 的通信组与 per-group quant 融合仍需独立处理。
+
+`tests/runtime/norm_current.py` 在指定容器内通过六项 CPU 回归，真实公共 RMSNorm/Gemma 类、注册与 forward 调用保留，昂贵 LightOp kernel 用可观察数学夹具替代。覆盖非连续输入、融合分支命中、residual/post-residual 存储语义、batch-invariant、Gemma 权重加载/AITER 优先级、FP8 carrier/gate 与非 HCU original 委托；不据此宣称 vendor GPU 数学、Graph 或模型精度通过。当前准备版本 dev35、Hook 合同 386 项，产物和完整运行验证结果待本次执行后补充。原始日志位于本次 ignored `artifacts/plugin-v3-1028-20261101/`。
+
+
+本阶段实际结果：dev35 wheel SHA256 `4dabfc1963c943b625de840a17c70a83eb2aab29e5ceb840ac11cd043839e35a`；575 个包文件与源码及隔离安装相同。隔离 wheel 严格加载 386/386 项 Hook、3 个具名 seam，软错误和旧包导入为空；72 项仓库 unittest、6 项公共入口 CPU 回归通过。
+
+`tests/runtime/norm_current_gpu.py` 使用真实 gfx938/HCU LightOp 数学，3 项通过：BF16/FP16 RMSNorm 的 plain/residual/post-residual/非连续输入与 FP32 参考，BF16 Gemma plain/fused 与 `1 + weight` 参考，以及 RMSNorm residual 的 Graph 捕获和两次不同输入 replay。未使用 kernel stub、未修改生产容差；这些仅证明该测试的形状和分支，不代表 Gemma FP8 opt-in 分支或整模型已通过。完整 MiniMax 八卡服务已用该隔离 dev35 wheel 启动，结果在后续验证记录补充。
+
+## 36. 2026-11-01 原八卡配方 Qwen3-235B 验收
+
+在八张卡均空闲时，按 cookbook 固定 `e91f05fe` 的 Qwen3-235B-A22B-Instruct-2507 / BW1100 / SGLang0.5.18 单机配方运行固定官方0.5.22 + 隔离 plugin dev34。保留 TP8、fa3、page64、内存比例0.85、默认上下文/KV 和默认 Graph，没有沿用四卡 bounded smoke 的容量限制；只使用本地只读权重、任务 loopback 端口及既有离线 Rust/缓存配置。
+
+运行 `qwen3-235b-instruct-tp8-dev34-20261101-attempt1` 于 00:02:07–00:13:40 完成。六个算术/中文/英文/阅读/代码/重复请求的 HTTP200、模型身份、完整最终答案和正常 stop 均通过；默认 Graph 捕获从 batch512 开始。结束时自有进程为空、端口关闭。对提交 `b97b4d9`、实际 dev34 wheel 与隔离安装的574个包文件重新逐字节核验一致。
+
+[可提交验收摘要](hcu-tp8-qwen3-validation-20261101.json) 保存 cookbook 来源、版本、wheel与响应哈希、每个实际最终答案和清理结果；原始日志/请求/响应继续留在用户指定 test-model/runs 目录。该结果证明 dev34 的八卡短请求配方，不是数据集精度、吞吐、全 DAS 功能等价，也不归因于本阶段 dev35。

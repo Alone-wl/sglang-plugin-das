@@ -225,6 +225,7 @@
     "sglang.srt.layers.cp.interleave.InterleaveCPStrategy",
     "sglang.srt.layers.cp.interleave.InterleaveContextParallelMetadata",
     "sglang.srt.layers.layer_boundary.stage.StageBoundary.prepare",
+    "sglang.srt.layers.layernorm.GemmaRMSNorm.forward_hip",
     "sglang.srt.layers.layernorm.RMSNorm.forward_hip",
     "sglang.srt.layers.linear.ColumnParallelLinear.forward",
     "sglang.srt.layers.linear.RowParallelLinear.forward",
