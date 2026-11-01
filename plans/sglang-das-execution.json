@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2899,
-    "implemented": 34,
-    "in_progress": 51,
+    "pending": 2897,
+    "implemented": 35,
+    "in_progress": 52,
     "upstream": 26
   },
   "files": [
@@ -13713,7 +13713,17 @@
       "relation": "changed",
       "fork_oid": "58057a2e9712bd96dc644bb2e2b1127881b52457",
       "official_oid": "79efa0bacc63b49c08540af6bcc644576e1b12a0",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Full Source LoRA event table initialization and namespace registration helper integrated around native public generate/embedding entry and existing namespace seam, preserving effective original request processing. Remaining large Source scheduler delta is not claimed.",
+      "implementation": [
+        "hcu_sglang/mem_cache/kv_event_admission.py",
+        "hcu_sglang/mem_cache/kv_events.py"
+      ],
+      "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/kv_events_cpu.py"
+      ],
+      "validation_scope": "Public request entry with explicit admission/elastic namespace data fixtures, real registered native namespace seam without elastic backend, exception/nested context and non-HCU fallback. Ordinary8GPU service separately; full Source scheduler/LoRA model/elastic deployment pending."
     },
     {
       "path": "python/sglang/srt/managers/scheduler_components/batch_result_processor.py",
@@ -14109,7 +14119,17 @@
       "relation": "changed",
       "fork_oid": "861d8589d24e70ff81d91382e94e6a1256738906",
       "official_oid": "cf7d8c5d4bb41bc92402864e4a490d0810e241c2",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete Source Python events module copied byte-for-byte before hook registration, including all3 classes and persistent selected-namespace names. Source scheduler init/registration helper paired via native public handler and post-namespace seam;6 imported native hash helpers remain AST-equal to Source.",
+      "implementation": [
+        "hcu_sglang/mem_cache/kv_events.py",
+        "hcu_sglang/mem_cache/kv_event_admission.py"
+      ],
+      "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/kv_events_cpu.py"
+      ],
+      "validation_scope": "Python table/recorder/native tree constructor and insert/leaf-eviction, default/Dynamo hashes, parent/store/remove, delayed host event, merge identity. Public native request entry/namespace retained with expensive internal admission as fixture. Rust tagged binding/publisher socket/router/model LoRA remain pending."
     },
     {
       "path": "python/sglang/srt/mem_cache/glm5_next.py",

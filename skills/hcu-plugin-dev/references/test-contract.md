@@ -192,3 +192,7 @@ Prefill compute预算与KV预算分开验收：replay行计入compute并先从�
 ## FileIO 分片状态与淘汰归属
 
 MLA KV 可跨 TP rank 共用文件，Mamba 等 TP 状态仍须按 rank 分片。变更文件 suffix 或淘汰接口时，成对检查 backend constructor、lazy factory、metadata warmup、读命中 touch、reserve/commit/abort 及启动扫描；不能只改写入文件名。用独立临时目录和真实字节读写保留旧实现反例，覆盖非零 rank 的有界写入、共享文件可读但不计入其 LRU、跨 rank 淘汰隔离，以及 pending 写入/失败回滚。公共 batch IO 使用真实 backend；若 host pool 为数据夹具须明确其边界，不把该测试记作控制器线程或完整模型 L3 命中验证。
+
+## KV 事件 namespace 的生产与消费
+
+LoRA 名称登记须发生在请求的最终 extra_key 确定之后，并与树使用同一张表。覆盖旧 IPC 仅有 adapter ID 的回退、LoRA 与 base 的 hash 隔离、store/remove/parent 链一致、GPU removal 后延迟 host store，以及名称不同的事件不能合并。测试须保留原生公共请求 handler 与树事件出口；昂贵 admission/allocator 若为夹具，单独声明。跨 AROUND 层传递临时 request 上下文时，验证嵌套、异常 finally 恢复及非 HCU 的有效 original。Python recorder 通过不代表 Rust tagged event、发布 socket 或 router 消费已验证。

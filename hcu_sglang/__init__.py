@@ -138,6 +138,9 @@ def register() -> None:
     from hcu_sglang.mem_cache import file_evictor, file_backend
     file_evictor.register_hooks()
     file_backend.register_hooks()
+    from hcu_sglang.mem_cache import kv_events, kv_event_admission
+    kv_events.register_hooks()
+    kv_event_admission.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

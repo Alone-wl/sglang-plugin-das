@@ -1510,5 +1510,31 @@
       "tests/runtime/file_backend_cpu.py"
     ],
     "validation_scope": "Real temporary files and byte readback, cross-rank eviction isolation, rank0 startup eviction across both owned suffixes, pending/abort/atomic-write failure. No full controller/storage/model validation claim."
+  },
+  "python/sglang/srt/mem_cache/events.py": {
+    "status": "implemented",
+    "rationale": "Complete Source Python events module copied byte-for-byte before hook registration, including all3 classes and persistent selected-namespace names. Source scheduler init/registration helper paired via native public handler and post-namespace seam;6 imported native hash helpers remain AST-equal to Source.",
+    "implementation": [
+      "hcu_sglang/mem_cache/kv_events.py",
+      "hcu_sglang/mem_cache/kv_event_admission.py"
+    ],
+    "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+    "tests": [
+      "tests/runtime/kv_events_cpu.py"
+    ],
+    "validation_scope": "Python table/recorder/native tree constructor and insert/leaf-eviction, default/Dynamo hashes, parent/store/remove, delayed host event, merge identity. Public native request entry/namespace retained with expensive internal admission as fixture. Rust tagged binding/publisher socket/router/model LoRA remain pending."
+  },
+  "python/sglang/srt/managers/scheduler.py": {
+    "status": "in_progress",
+    "rationale": "Full Source LoRA event table initialization and namespace registration helper integrated around native public generate/embedding entry and existing namespace seam, preserving effective original request processing. Remaining large Source scheduler delta is not claimed.",
+    "implementation": [
+      "hcu_sglang/mem_cache/kv_event_admission.py",
+      "hcu_sglang/mem_cache/kv_events.py"
+    ],
+    "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+    "tests": [
+      "tests/runtime/kv_events_cpu.py"
+    ],
+    "validation_scope": "Public request entry with explicit admission/elastic namespace data fixtures, real registered native namespace seam without elastic backend, exception/nested context and non-HCU fallback. Ordinary8GPU service separately; full Source scheduler/LoRA model/elastic deployment pending."
   }
 }
