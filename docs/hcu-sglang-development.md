@@ -1124,3 +1124,7 @@ git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
 ### KDA 配置、池与执行
 
 成对迁入配置生产、原生类型身份、Mamba slot/ring 语义、KDA backend、状态 kernel 与 verify/commit/rollback。配置 7 项、池 CPU 4 项、HIPGraph replay 及 KDA GPU 5 项通过；全模型尚未测试。
+
+### PD 与 DSpark
+
+统一 hidden state 所有权，补齐 prefill/decode/scheduler/ACK/drain/清理、描述符传输与 DSpark worker/model/injector。transport 8、frontend 7、HiCache 5、DSpark 6 项通过，覆盖真实 HTTP/ZMQ 与受控 CPU 字节复制；完整多进程 PD 服务和 TP GPU 传输未验证。
