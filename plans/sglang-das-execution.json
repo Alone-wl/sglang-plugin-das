@@ -13680,8 +13680,10 @@
       "validation_scope": "6 CPU tests include old public producer TypeError and fixed real producer,131 folded rows handed to vote and metadata,12-column protocol and dataclass copy/pickle. Real4-rank Gloo pack/reduction/mixed layout and nonzero global-root subgroup pass. New model run pending, not inferred from helper tests.",
       "evidence": [
         "docs/hcu-prefill-dev65-failure-20261101.json",
-        "docs/hcu-prefill-sync-collective-validation-20261101.json"
-      ]
+        "docs/hcu-prefill-sync-collective-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
+      ],
+      "dev66_model_scope": "Frozenc61fb5c/612 files: original8GPU DSPARK/DeepEP/decodeGraph recipe plus explicit BCG64/128/context256, all8 target prefill captures completed,6 strict requests and cleanup passed. No request-level BCG hit, CP/elastic model or full benchmark claim."
     },
     {
       "path": "python/sglang/srt/managers/scheduler_components/dynamic_chunk_sizer.py",
@@ -14715,8 +14717,10 @@
       ],
       "validation_scope": "13 CPU tests pass incl complete constructor with expensive base/buffer/backend fixtures, public load/execute, shared DP/local policy, nested scope and failures, output dataclass and replay identity. Isolated dev65 GPU executes real primitive Graph through public load/body/trim twice with changed prepared IDs and encoder metadata. Complete model prefill capture/replay and final artifact gates recorded separately, not inferred.",
       "evidence": [
-        "docs/hcu-prefill-runner-gates-validation-20261101.json"
-      ]
+        "docs/hcu-prefill-runner-gates-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
+      ],
+      "dev66_model_scope": "Frozenc61fb5c/612 files: original8GPU DSPARK/DeepEP/decodeGraph recipe plus explicit BCG64/128/context256, all8 target prefill captures completed,6 strict requests and cleanup passed. No request-level BCG hit, CP/elastic model or full benchmark claim."
     },
     {
       "path": "python/sglang/srt/model_executor/runner/row_bucket_graph_runner.py",
