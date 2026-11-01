@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev61` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev62` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -898,3 +898,17 @@ Source统计器验证：5项CPU与2项真实GPU/Graph通过，DeepEP auto normal
 
 
 隔离dev61最终门禁443/443 Hook、3个resolution seam、0 errors及85项仓库测试通过，L0/Skill/guide与实际宽窄屏交互验收通过。原始Source变更函数/class AST经native globals和staticmethod搬移规范化相同；新服务与EPLB真实模型统计仍保持待验，全DAS范围未关闭。
+
+
+## 74. 2026-11-01 DeepEP Graph capture/replay layout 所有权
+
+Source runner_utils/deepep_adapter.py完整4方法新增capture_end保存LL layout、replay先恢复layout再设置dispatch mode；Source decode runner.capture_one_shape在backend实际capture完成后调用capture_end。当前owned DeepEPBuffer已有layout API但缺少这对调用链，现迁入完整Source adapter（继承原native class以保留isinstance）及完整Source producer方法，仅将未变native globals显式限定。生产者和消费者同时接通，不只修改replay或假设上一模型布局仍正确。来源注释/版权/docstring保留，不新增说明性runtime注释。CPU顺序/跨模型状态与实际Graph/缓冲区/八卡复验待执行。
+
+
+实际dev61录制服务六项生成与start/stop成功，8rank均记录after all_reduce；rank0在file dump分支因搬移时遗漏time全局限定而NameError，API连接断开，服务判failed并清理。这是本轮实现缺口，保留原失败证据；修正为native N.time并新增原生_StatAccumulator.dump(file)端到端落盘测试，而不是只测_dump_to_file helper。新Graph producer测试目标类名纠正为当前DecodeCudaGraphRunner；不以Hook注册日志替代实际入口断言。
+
+
+[dev61真实服务失败摘要](hcu-recording-dev61-failure-20261101.json)记录602包文件与184ebf1/wheel/site相同、六项严格生成通过、start/stop200及全部8rank after-all_reduce；rank0最终time NameError导致dump失败/连接断开，进程与端口已清理。此结果保持失败，不因生成或归约成功冒称录制集成通过。修正后的Source完整file branch与free-global检查通过；隔离dev62的5项Graph protocol CPU通过。当前603包文件与源码/site一致，wheel SHA256 `ea5404376812f4e2c93a43222067123ad4ce2075116850f0aa00404774cf86d7`，最后门禁与同profile真实服务重验继续待完成。
+
+
+隔离dev62最终结果：5项Graph CPU protocol与7项recorder CPU（含public dump(file)、free globals）通过；445/445 Hook、3个resolution seam、0 errors及85项仓库测试通过，603包文件同源码/site。L0/Skill/guide与实际宽窄屏检索/阅读/菜单验收通过。新的layout控制无伪造GPU/RDMA结果，仍须同profile实际八卡Graph与start/stop/dump重跑确认；全DAS、数据集精度、实际dispatch负载/性能范围继续未完成。

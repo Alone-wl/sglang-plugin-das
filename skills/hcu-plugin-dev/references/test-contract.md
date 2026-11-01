@@ -164,3 +164,5 @@ JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.
 均衡solver不能只用手造replica表验收：必须从native元数据工厂走到真实solver，检查num_valid_copies/num_replicated，确认上游没有nearest折叠导致算法退化。不同算法的候选保留规则与静态policy分开验证；nearest保持旧行为，locality_fair保留完整候选并优先本GPU/本节点。保存旧函数用于差分时放在容器内，HookRegistry会替换模块级原函数别名，避免“旧/新”实际都调用新Hook。
 
 EPLB统计需验证实际dispatch计数与top-k选择计数的差别：auto模式跨normal/low-latency累加，padding权重0但ID可能有效，不能用原始ID假装实际工作量。归约前先本地汇总固定shape，并用int64覆盖长窗口；真实多rank测试包括窗口步数不等、空窗口和超过int32总数。GPU capture测试需实际进入CUDAGraph，确认Python collect/host append被跳过，不能只mock capture状态。
+
+Graph layout状态必须成对验收：capture完成后保存实际buffer layout，replay前恢复该layout再设置dispatch mode，插入另一模型layout后仍应回到原值。检查真实当前类名和完整producer入口，不以注册日志替代实际调用。方法迁出后既测object-return也测public file-output分支，并核对free-global解析；只测file helper不能证明调用者的time/Path等命名空间完整。

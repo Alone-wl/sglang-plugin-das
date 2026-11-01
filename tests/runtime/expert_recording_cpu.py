@@ -69,6 +69,31 @@ class ExpertRecordingCpuTests(unittest.TestCase):
         self.assertEqual(seen,[((1,2),torch.int64)])
         torch.testing.assert_close(result['logical_count'],torch.zeros(1,2,dtype=torch.int64),rtol=0,atol=0)
 
+
+    def test_public_accumulator_file_dump_writes_reduced_payload(self):
+        import os
+        from sglang.srt.eplb import expert_distribution as N
+        obj=self.accumulator([[1,2,3,4]])
+        with tempfile.TemporaryDirectory() as root,patch.dict(os.environ,{'SGLANG_EXPERT_DISTRIBUTION_RECORDER_DIR':root}),patch.object(N.torch.distributed,'all_reduce'):
+            self.assertIsNone(obj.dump('file'))
+            files=list(Path(root).glob('expert_distribution_recorder_*.pt'));self.assertEqual(len(files),1)
+            data=torch.load(files[0],map_location='cpu',weights_only=True)
+            torch.testing.assert_close(data['logical_count'],torch.tensor([[4,6]],dtype=torch.int64),rtol=0,atol=0)
+
+
+    def test_moved_source_method_global_names_resolve(self):
+        import builtins
+        import symtable
+        from hcu_sglang.eplb import recording as O
+        table=symtable.symtable(Path(O.__file__).read_text(),O.__file__,'exec')
+        missing=[]
+        for child in table.get_children():
+            if child.get_type()!='function':continue
+            for symbol in child.get_symbols():
+                name=symbol.get_name()
+                if symbol.is_global() and symbol.is_referenced() and name not in vars(O) and not hasattr(builtins,name):missing.append((child.get_name(),name))
+        self.assertEqual(missing,[])
+
     def test_dump_file_respects_configured_directory_and_preserves_payload(self):
         import os
         from sglang.srt.eplb import expert_distribution as N

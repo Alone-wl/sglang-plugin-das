@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2929,
-    "implemented": 21,
-    "in_progress": 34,
+    "pending": 2927,
+    "implemented": 22,
+    "in_progress": 35,
     "upstream": 26
   },
   "files": [
@@ -10933,7 +10933,8 @@
         "tests/runtime/expert_recording_gpu.py",
         "tests/runtime/expert_recording_gloo.py"
       ],
-      "validation_scope": "5 CPU contracts and2 real GPU/Graph checks pass. Real2-rank Gloo covers unequal1/3 and0/2 windows; isolated dev61 real8-rank NCCL/RCCL covers1..8 and seven-empty/one-nonempty windows. Fixed1x2 int64 reductions match[480,216] and[2**32,6] exactly on all8 ranks.602 package files match source/site. 443 hooks/3 seams/zero errors and85 repository tests passed; recorder-enabled service pending; no throughput or model-derived balance claim."
+      "validation_scope": "5 CPU contracts and2 real GPU/Graph checks pass. Real2-rank Gloo covers unequal1/3 and0/2 windows; isolated dev61 real8-rank NCCL/RCCL covers1..8 and seven-empty/one-nonempty windows. Fixed1x2 int64 reductions match[480,216] and[2**32,6] exactly on all8 ranks.602 package files match source/site. 443 hooks/3 seams/zero errors and85 repository tests passed; recorder-enabled service pending; no throughput or model-derived balance claim.",
+      "recording_file_branch_fix": "Actual dev61 service generated six correct responses and completed8-rank reduction, but rank0 file dump failed from missing time global qualification. Corrected to N.time; added complete native accumulator file-output and free-global resolution regressions. Keep original failure record; service integration remains pending."
     },
     {
       "path": "python/sglang/srt/eplb/expert_location.py",
@@ -14555,7 +14556,13 @@
       "relation": "changed",
       "fork_oid": "9bfe8f695117020ea706f0775c676d94e2270ab8",
       "official_oid": "321379c5a44308e3fe9c141d1aa3a034788dd07a",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Whole decode graph runner review remains open.",
+      "implementation": [
+        "hcu_sglang/deepep_graph.py"
+      ],
+      "tests": [],
+      "deep_ep_layout_delta": "Full Source capture_one_shape121-line method is AST-identical after qualifying unchanged native globals. Real backend capture is followed by capture_end inside the existing context. Other runner deltas remain unreviewed."
     },
     {
       "path": "python/sglang/srt/model_executor/runner/eager_runner.py",
@@ -14651,7 +14658,17 @@
       "relation": "changed",
       "fork_oid": "ca851440fca5858e127854e6dd6bdb427a8afb1f",
       "official_oid": "4f8e3b788f58a21eb0b9168db2dfddd3209b83aa",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own full Source adapter as native subclass with class-safe replacement. Capture-end snapshots actual low-latency layout; replay restores it before setting capture mode. Full Source capture_one_shape producer is paired, not a replay-only patch.",
+      "implementation": [
+        "hcu_sglang/deepep_graph.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-deepep-graph-layout-source-alignment.json",
+      "tests": [
+        "tests/runtime/deepep_graph_cpu.py"
+      ],
+      "validation_scope": "5 Source protocol CPU tests pass: class/pre-import alias/isinstance, target layout restored after draft change and before mode, normal/non-DeepEP, full native DecodeCudaGraphRunner producer order, non-HCU effective original. Isolated dev62 confirms5 protocol CPU,7 recorder CPU,445 hooks/3 seams/zero errors,603 matching package files and85 repository tests. Real8-GPU graph/recording serving replay pending; no fake RDMA cleanup is claimed."
     },
     {
       "path": "python/sglang/srt/model_executor/runner_utils/prefill_graph.py",

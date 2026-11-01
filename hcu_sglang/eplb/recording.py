@@ -147,7 +147,7 @@ def dump(self, output_mode: _OutputMode):
 
     if output_mode == "file":
         if self._rank == 0:
-            _dump_to_file(f"expert_distribution_recorder_{time.time()}.pt", output)
+            _dump_to_file(f"expert_distribution_recorder_{N.time.time()}.pt", output)
     elif output_mode == "object":
         return output
     else:

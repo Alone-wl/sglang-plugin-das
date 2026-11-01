@@ -1,0 +1,36 @@
+{
+  "status": "failed_recording_dump",
+  "run_id": "deepseekv4-fp8-tp8-load-aware-recording-dev61-20261101-attempt1",
+  "plugin_source_commit": "184ebf1ce49ff7de6b43df6485c4adbe4609d3ca",
+  "plugin_version": "0.3.2.dev61",
+  "wheel_sha256": "5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0",
+  "matching_commit_wheel_site_package_files": 602,
+  "strict_generation_requests_passed": 6,
+  "recording_controls": [
+    {
+      "endpoint": "start",
+      "http_status": 200
+    },
+    {
+      "endpoint": "stop",
+      "http_status": 200
+    }
+  ],
+  "observed_failure": "rank0 moved accumulator file branch raised NameError for unqualified time after all8 ranks completed int64 all_reduce",
+  "all_reduce_completed_ranks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "error": "RemoteDisconnected: Remote end closed connection without response",
+  "started_at": "2026-11-01T10:21:52+0800",
+  "finished_at": "2026-11-01T10:28:40+0800",
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "limits": "Six answered requests and successful reduction do not establish dump/API integration success. File branch fix and same-profile replay are required; no dataset accuracy claim."
+}
