@@ -1112,3 +1112,7 @@ git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
 ### 计算与量化
 
 迁入 MegaMoE、DeepEP INT8、Marlin 与 DP 数据流并修正 routed scaling、SlimQuant 返回契约。29 个 runtime 脚本 197 项、13 项针对性单元和 GPU W4A8 3 项通过；deepgemm.mega 完整数值/Graph 未验证。
+
+### Attention 与模型
+
+补齐 MLA/FLA/GDN、Qwen/Bailing/GLM 与多模态调用，保留上游接管及正确 KV/通信归属。CPU 15 项、FLA GPU 4 项通过；完整模型与所有 provider 未验证。
