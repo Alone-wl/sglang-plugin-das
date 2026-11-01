@@ -9,8 +9,14 @@ from hcu_sglang.utils.detection import is_hcu
 
 
 _ENV_SPECS: dict[str, tuple[type, Any]] = {
+    'SGLANG_DP_USE_MAX_LEN': (EnvBool, False),
+    'SGLANG_EXPERIMENTAL_DSV4_DECODE_RADIX_CACHE': (EnvBool, False),
+    'SGLANG_MOONCAKE_FINAL_POLL_TIMEOUT_MS': (EnvFloat, 0.0),
+    'SGLANG_PD_HIDDEN_RECV_POOL_TOKENS': (EnvInt, -1),
     "SGLANG_ENABLE_HICACHE_SWA_TAIL_ONLY_BACKUP": (EnvBool, False),
     "SGLANG_ENABLE_CP_V2": (EnvBool, False),
+    "SGLANG_LIGHTOP_KVALLOC_KERNEL": (EnvBool, False),
+    "SGLANG_USE_FUSED_SILU_MUL_CLAMP_QUANT": (EnvBool, False),
     'SGLANG_EXPERIMENTAL_LPLB_STATIC_PROBS': (EnvStr, None),
     'SGLANG_SIMULATED_EXPERT_BALANCE': (EnvBool, False),
     'SGLANG_MOE_ROUTER_USE_CONFIG_DTYPE': (EnvBool, False),
@@ -137,6 +143,7 @@ def register_envs() -> None:
     for name, alias in {
         "SGLANG_DSA_HCU_LIGHTOP_MASK_TOPK": "SGLANG_USE_LIGHTOP_MASK_TOPK",
         "SGLANG_DSA_HCU_REUSE_SORTED_TOPK": "SGLANG_NSA_HCU_REUSE_SORTED_TOPK",
+        "SGLANG_DSA_HCU_INT8_INDEX_K_CACHE": "SGLANG_NSA_HCU_INT8_INDEX_K_CACHE",
     }.items():
         if not hasattr(Envs, name):
             field = EnvBoolWithAlias(False, deprecated_name=alias)

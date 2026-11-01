@@ -67,7 +67,7 @@ REPO="$(pwd -P)"
 python3 tools/validate_plugin_runtime.py \
   --official-python "$OFFICIAL/python" --plugin-root "$REPO" \
   --plugin-package hcu_sglang \
-  --expected-targets docs/hcu-sglang-targets.json --output "$ARTIFACTS/hcu-runtime.json"
+  --expected-targets tests/contracts/hcu_source_alignment_targets.json --output "$ARTIFACTS/hcu-runtime.json"
 ```
 
 记录实际解释器、entry point、模块文件来源、目标集合与具名 seam、加载软错误，以及是否误导入旧包。当前 entry point 名为 `hcu`，由固定官方 loader 对 `SGLANG_PLUGINS` 中的名称精确匹配；不是 Python 包名后缀自动扫描，也不保留 `hcu` 别名。升级后须重新安装本仓或新 wheel 以刷新 metadata，再设置 `SGLANG_PLUGINS=hcu`。安装其他插件时同样核对实际白名单和模块来源，不能凭入口存在或目标数量认定通过。源码、隔离 wheel 和完整服务分别验收。
@@ -1099,3 +1099,12 @@ git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
 容器默认 site-packages 中的 SGLang 缺少 `ReplicatedParallelGroup`，不满足本仓固定接口；显式使用固定官方 `baa9befa38` 的 python 目录后，10 项 current_linear CPU 回归通过，真实入口加载注册并应用 487/487 个 Hook、4 个具名 resolution seam，加载错误为零。未安装、更新或修改官方源码与容器依赖。
 
 本轮为命名及文档清理，没有执行模型、GPU 数值或性能复验。界面控制权限未开启，网页实际浏览器截图、交互和窄屏视觉验收未执行；生成快照与 Markdown 路径/锚点检查不能替代该视觉验收。
+
+
+## DAS 分支逻辑对齐（2026-11-02）
+
+需求为 plugin-v3-fix，固定来源、方法处置、证据和未验证项见 [本轮对齐记录](source-alignment-20261102.md)。提交按模块组成同一变更系列，存在模块间依赖，使用完整系列进行集成验收。来源只读；仅本地提交。
+
+### 公共运行时与调度
+
+修正 HIP 检测及 FP8/provider 分支，补齐环境变量与 ServerArgs 派生选项；迁入 Req/ScheduleBatch/ForwardBatch 生命周期、CP 和 DSA helper，显式接通冻结配置、元数据和 hidden state 消费者。核心单元 9 项、生命周期 7 项、Forward/CP 13 项及既有 CPU 调度组 64 项通过。未执行完整模型服务；具体 GPU/配置边界见本轮记录与测试。

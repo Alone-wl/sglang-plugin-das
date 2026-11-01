@@ -11,10 +11,20 @@ from hcu_sglang.utils.detection import is_hcu
 
 
 def after_get_default_target_flags(flags: list[str], arch: Any = None) -> list[str]:
-    if not is_hcu():
+    if "-DUSE_ROCM" not in flags:
         return flags
+    fp8_flag = "-DHIP_FP8_TYPE_E4M3=1"
+    try:
+        device = torch.cuda.current_device()
+        gcn_arch = torch.cuda.get_device_properties(device).gcnArchName
+        if any(gfx in gcn_arch for gfx in (
+            "gfx90a", "gfx936", "gfx938", "gfx940", "gfx941", "gfx942"
+        )):
+            fp8_flag = "-DHIP_FP8_TYPE_FNUZ=1"
+    except Exception:
+        pass
     return [
-        "-DHIP_FP8_TYPE_FNUZ=1" if flag == "-DHIP_FP8_TYPE_E4M3=1" else flag
+        fp8_flag if flag in ("-DHIP_FP8_TYPE_E4M3=1", "-DHIP_FP8_TYPE_FNUZ=1") else flag
         for flag in flags
     ]
 
@@ -38,6 +48,19 @@ def around_assign_extend_cache_locs_func(
             batch_size,
             draft_token_num,
             device,
+        )
+
+    native = importlib.import_module("sglang.kernels.ops.speculative.cache_locs")
+    platform_fn = native._get_oot_speculative_cache_locs_fn()
+    if platform_fn is not None:
+        return platform_fn(
+            req_pool_indices=req_pool_indices,
+            req_to_token=req_to_token,
+            start_offset=start_offset,
+            end_offset=end_offset,
+            batch_size=batch_size,
+            draft_token_num=draft_token_num,
+            device=device,
         )
 
     from sglang.srt.utils import get_bool_env_var

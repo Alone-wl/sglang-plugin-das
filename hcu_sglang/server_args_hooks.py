@@ -12,6 +12,7 @@ from hcu_sglang.config import (configure_minimax_opt, minimax_opt_enabled,
 from typing import Any, Callable
 
 from hcu_sglang.utils.detection import is_hcu
+from hcu_sglang.config import hy3_sp_enabled, configure_hy3_sp
 
 logger = logging.getLogger(__name__)
 
@@ -213,6 +214,9 @@ def after_add_cli_args(result: Any, parser: Any) -> Any:
             default=None,
             help="Enable MiniMax M2 sequence-parallel prefill optimization.",
         )
+    if "--hy3-sp" not in existing:
+        parser.add_argument("--hy3-sp", action="store_true", default=None,
+                            help="Enable Hunyuan V3 sequence parallelism over TP ranks.")
     if "--enable-cp-cache-layer-split" not in existing:
         group=parser.add_mutually_exclusive_group()
         group.add_argument("--enable-cp-cache-layer-split", "--hcu-cp-cache-layer-split",
@@ -234,15 +238,18 @@ def before_add_cli_args(*args, **kwargs):
 def before_from_cli_args(cls, args):
     configure_custom_all_reduce_backend(getattr(args, "custom_all_reduce_backend", None))
     configure_minimax_opt(getattr(args, "minimax_opt", None))
+    configure_hy3_sp(getattr(args, "hy3_sp", None))
     configure_cp_cache_layer_split(getattr(args, "hcu_plugin_cp_cache_layer_split", None))
 
 
 def after_from_cli_args(result: Any, cls: Any, args: Any) -> Any:
     configure_custom_all_reduce_backend(getattr(args, "custom_all_reduce_backend", None))
     configure_minimax_opt(getattr(args, "minimax_opt", None))
+    configure_hy3_sp(getattr(args, "hy3_sp", None))
     configure_cp_cache_layer_split(getattr(args, "hcu_plugin_cp_cache_layer_split", None))
     if not is_record(result):
         result.minimax_opt = minimax_opt_enabled()
+        result.hy3_sp = hy3_sp_enabled()
     return result
 
 
