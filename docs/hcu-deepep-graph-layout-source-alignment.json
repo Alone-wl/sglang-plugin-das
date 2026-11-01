@@ -42,5 +42,14 @@
       "tests/runtime/expert_recording_cpu.py:test_moved_source_method_global_names_resolve"
     ],
     "failure_record": "docs/hcu-recording-dev61-failure-20261101.json"
+  },
+  "subsequent_service_validation": {
+    "version": "0.3.2.dev62",
+    "plugin_source_commit": "56043f05881ba48dd8adcd984a17a568d891b2ad",
+    "report": "docs/hcu-tp8-deepseekv4-load-aware-recording-dev62-validation-20261101.json",
+    "requests_passed": 6,
+    "recording_apis": "start/stop/dump HTTP200",
+    "dump": "int64[43,256],all43 layers positive,nonnegative",
+    "scope": "Actual8-GPU DSPARK/DeepEP/Graph serving and dump integration succeeds in this profile. A deliberately different target/draft RDMA layout remains a CPU protocol test, not a separately exercised GPU profile."
   }
 }

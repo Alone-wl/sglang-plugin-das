@@ -1028,7 +1028,8 @@
       "tests/runtime/expert_recording_gloo.py"
     ],
     "validation_scope": "5 CPU contracts and2 real GPU/Graph checks pass. Real2-rank Gloo covers unequal1/3 and0/2 windows; isolated dev61 real8-rank NCCL/RCCL covers1..8 and seven-empty/one-nonempty windows. Fixed1x2 int64 reductions match[480,216] and[2**32,6] exactly on all8 ranks.602 package files match source/site. 443 hooks/3 seams/zero errors and85 repository tests passed; recorder-enabled service pending; no throughput or model-derived balance claim.",
-    "recording_file_branch_fix": "Actual dev61 service generated six correct responses and completed8-rank reduction, but rank0 file dump failed from missing time global qualification. Corrected to N.time; added complete native accumulator file-output and free-global resolution regressions. Keep original failure record; service integration remains pending."
+    "recording_file_branch_fix": "Actual dev61 service generated six correct responses and completed8-rank reduction, but rank0 file dump failed from missing time global qualification. Corrected to N.time; added complete native accumulator file-output and free-global resolution regressions. Keep original failure record; service integration remains pending.",
+    "dev62_service_validation": "Frozen56043f0/dev62 passed6 requests andstart/stop/dump200 on8 GPUs with original DSPARK/DeepEP/Graph plus load-aware/redundant8/stat flags. Actual rank0 int64[43,256] dump is nonnegative and all43 layers positive; full report saved. No dataset accuracy, unique-token count or performance improvement claim."
   },
   "python/sglang/srt/model_executor/runner_utils/deepep_adapter.py": {
     "status": "implemented",
@@ -1041,7 +1042,8 @@
     "tests": [
       "tests/runtime/deepep_graph_cpu.py"
     ],
-    "validation_scope": "5 Source protocol CPU tests pass: class/pre-import alias/isinstance, target layout restored after draft change and before mode, normal/non-DeepEP, full native DecodeCudaGraphRunner producer order, non-HCU effective original. Isolated dev62 confirms5 protocol CPU,7 recorder CPU,445 hooks/3 seams/zero errors,603 matching package files and85 repository tests. Real8-GPU graph/recording serving replay pending; no fake RDMA cleanup is claimed."
+    "validation_scope": "5 Source protocol CPU tests pass: class/pre-import alias/isinstance, target layout restored after draft change and before mode, normal/non-DeepEP, full native DecodeCudaGraphRunner producer order, non-HCU effective original. Isolated dev62 confirms5 protocol CPU,7 recorder CPU,445 hooks/3 seams/zero errors,603 matching package files and85 repository tests. Real8-GPU graph/recording serving replay pending; no fake RDMA cleanup is claimed.",
+    "dev62_service_validation": "Frozen56043f0/dev62 passed6 requests andstart/stop/dump200 on8 GPUs with original DSPARK/DeepEP/Graph plus load-aware/redundant8/stat flags. Actual rank0 int64[43,256] dump is nonnegative and all43 layers positive; full report saved. No dataset accuracy, unique-token count or performance improvement claim."
   },
   "python/sglang/srt/model_executor/runner/decode_cuda_graph_runner.py": {
     "status": "in_progress",

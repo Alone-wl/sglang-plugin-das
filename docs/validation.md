@@ -99,3 +99,20 @@ python3 tools/validate_generation_response.py \
 工具返回 passed/failed、提取的最终文本、停止原因、模型和原文件 SHA256；0 表示该响应满足 oracle，1 表示响应读取/格式/语义失败，2 表示参数或报告写入错误。报告不得覆盖原响应，包括 symlink/hardlink 指向同一文件。原始证据不归一化、不改写。
 
 该工具不证明 HTTP 状态、监听者归属、cache hit、长上下文、其他样本或清理；这些仍在服务行分别记录。流式、多 choice、工具调用、开放题与数据集评分不属于此工具的接受范围，按任务选择其专门 oracle。服务里曾发生的包含数字误判及负例回放见 [V3 实践](v3-runtime-validation.md) §17；按症状的起步路线见 [排障入口](troubleshooting.md)，历史修复经验见 [经验索引](development-methodology.md)。
+
+## 固定 GSM8K 子集与原始响应验收
+
+本方法将六项短回答检查扩展到明确的数据集子集；不将子集分数解释为完整GSM8K、通用准确率或已完成的DAS对照。使用hcu-plugin-dev，提供本地数据/manifest、本人服务根URL、精确模型名、源码/权重版本及接受标准；无阈值时只报告测量。
+
+本次数据来自[官方GSM8K](https://github.com/openai/grade-school-math) commit 3101c7d5072418e28b9008a6636bde82a006892c 的grade_school_math/data/test.jsonl，SHA256为3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14。按当前SGLang GSM8KEval，前5题仅作prefix，评分索引5–132共128题且互斥。数据和原始响应保存在ignored产物，不复制到共享文档。
+
+在仓库根目录执行，显式设置EVAL_DATA、EVAL_MANIFEST、EVAL_OUTPUT、EVAL_SERVER、EVAL_MODEL后：
+
+    python3 tools/run_saved_gsm8k.py --dataset "$EVAL_DATA" --manifest "$EVAL_MANIFEST" --base-url "$EVAL_SERVER" --model "$EVAL_MODEL" --output "$EVAL_OUTPUT" --parallel 8 --max-tokens 1024 --chat-template-kwargs '{"enable_thinking":false}'
+    python3 tools/score_saved_gsm8k.py --dataset "$EVAL_DATA" --manifest "$EVAL_OUTPUT/manifest.json" --responses "$EVAL_OUTPUT/responses" --output "$EVAL_OUTPUT/rescored.json"
+
+[冻结输入模板](gsm8k-128-input-manifest.json)固定本次选择；Manifest提供dataset_sha256、sample_indices和shot_indices；runner固定expected_model与采样参数，要求新输出目录，核对服务模型身份后每题只请求一次，保存request/response/transport，不选择性重试。只发送prefix oracle和当前题面，不发送评分题答案。
+
+评分沿SGLang signed last-number规则，以Decimal处理负数、逗号和小数；提取前检查HTTP200、模型一致、单个assistant completion与正常stop。截断、错误模型、HTTP/网络/JSON错误和空回答均无效，不能因末尾数字碰巧正确而计分；错题与基础设施无效项分开报告，全部样本保留在分母。
+
+对照DAS与plugin时固定数据/索引、权重、temperature/max_tokens、thinking、并发和配方，逐题比较正确性/无效项后再解释差异。此工具不启动/停止或证明服务进程归属；仍按资源约定管理本人服务。

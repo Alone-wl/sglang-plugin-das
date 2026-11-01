@@ -912,3 +912,11 @@ Source runner_utils/deepep_adapter.py完整4方法新增capture_end保存LL layo
 
 
 隔离dev62最终结果：5项Graph CPU protocol与7项recorder CPU（含public dump(file)、free globals）通过；445/445 Hook、3个resolution seam、0 errors及85项仓库测试通过，603包文件同源码/site。L0/Skill/guide与实际宽窄屏检索/阅读/菜单验收通过。新的layout控制无伪造GPU/RDMA结果，仍须同profile实际八卡Graph与start/stop/dump重跑确认；全DAS、数据集精度、实际dispatch负载/性能范围继续未完成。
+
+## 75. 2026-11-01 dev62 录制服务结果与固定数学子集方法
+
+dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/dump，三端点均200，自有进程清空、端口关闭。603包文件与56043f0/wheel/site逐字节相同，全部8rank各43层solver计数[8]；[独立摘要](hcu-tp8-deepseekv4-load-aware-recording-dev62-validation-20261101.json)固定版本与dump。rank0文件为int64[43,256]、非负、43层全有计数，总和4548352，SHA256为9aaf3d3b872b1471a2a40ea57dcbf8c6b72a34bcbd12448d037bbd8e35d22cd4。它是dispatch计算工作，可能含expert对齐/padding，不当成唯一语义token或性能改善。旧dev61失败记录保留。
+
+新增一次请求、保存逐题原始数据的runner与离线scorer；模型身份/正常stop在数学提取前检查，错误和截断留在分母。冻结官方GSM8K commit与SHA256，按当前SGLang协议使用前5题prefix及后128题评分且互斥，共享库不复制整份数据。目前仅完成方法/协议测试与数据准备，真实128题和同配置DAS基线待执行，不预先声明精度通过。操作与范围见[验证指南](validation.md#固定-gsm8k-子集与原始响应验收)。
+
+新增工具的6项契约测试与本地/容器完整91项仓库测试通过：分离数学错误与传输无效、拒绝截断/错误模型、prefix隔离与索引检查、缺失样本留在分母，以及真实loopback测试HTTP服务验证逐题原始数据和500错误不重试。L0/Skill/guide与实际宽窄屏验收通过。此次只改方法/工具/证据，hcu_sglang运行时与冻结dev62的603文件不变；数据集采集仍待执行，不将工具测试或旧六题作为128题结果。

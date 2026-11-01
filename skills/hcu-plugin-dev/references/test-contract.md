@@ -166,3 +166,5 @@ JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.
 EPLB统计需验证实际dispatch计数与top-k选择计数的差别：auto模式跨normal/low-latency累加，padding权重0但ID可能有效，不能用原始ID假装实际工作量。归约前先本地汇总固定shape，并用int64覆盖长窗口；真实多rank测试包括窗口步数不等、空窗口和超过int32总数。GPU capture测试需实际进入CUDAGraph，确认Python collect/host append被跳过，不能只mock capture状态。
 
 Graph layout状态必须成对验收：capture完成后保存实际buffer layout，replay前恢复该layout再设置dispatch mode，插入另一模型layout后仍应回到原值。检查真实当前类名和完整producer入口，不以注册日志替代实际调用。方法迁出后既测object-return也测public file-output分支，并核对free-global解析；只测file helper不能证明调用者的time/Path等命名空间完整。
+
+数据集精度见[固定GSM8K子集验收](../../../docs/validation.md#固定-gsm8k-子集与原始响应验收)：冻结数据、prefix/评分索引、采样与模型身份；当前题oracle不可进prompt。先验证HTTP/模型/正常stop，再按固定协议评分；缺失/错误/截断不得丢出分母或选择性重试。无接受阈值时只报告测量，不把六项QA或128题子集冒称通用精度或DAS回归比较。
