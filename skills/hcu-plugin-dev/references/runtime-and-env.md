@@ -32,3 +32,5 @@ Python 启动兼容层只安装轻量注册/延迟 finder；不要在 usercustom
 来源DAS比固定官方版本多一个CLI字段时，先核对原始记录和发布后的namespace是否都具有该字段。不能只添加 argparse 选项后让记录构造丢弃它，也不能向冻结seed补写属性。若采用插件进程配置桥接，必须连接CLI消费、明确的覆盖/禁用规则、spawn继承、bootstrap及实际组构造，并声明程序化调用入口与每进程配置边界。
 
 用真实CLI parser/record、冷子进程、公共bootstrap和真实组构造检查整条链，验证显式选项、默认、禁用优先级及失败传播；参数成功不代表传输后端命中。严格后端策略应保留来源异常或拒绝条件，不以回落到另一个communicator伪装完成。当前例子与限制见[后端参数](../../../docs/configuration.md#当前-custom-all-reduce-参数)。
+
+固定版本的ServerArgs.__post_init__可能只构造未解析seed；CLI预检须检查实际launcher是否调用resolve_once，并显式执行同一阶段。resolved_view可读取seed，不能据此自称validated/effective配置；Node/平台/模型约束的拒绝结果需保存。旧快照phase说明错误时修正共享分析范围，保留原始产物，不修改原始模型响应或重新评分标签。

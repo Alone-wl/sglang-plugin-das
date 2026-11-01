@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2915,
-    "implemented": 26,
-    "in_progress": 43,
+    "pending": 2913,
+    "implemented": 27,
+    "in_progress": 44,
     "upstream": 26
   },
   "files": [
@@ -12180,7 +12180,17 @@
       "relation": "changed",
       "fork_oid": "2e3b44afb1ce88a4f4bf46b40d6231db809240d0",
       "official_oid": "71fc553dce59be93295b4a2a66098ba08797c60c",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full history_row helper migrated with explicit receiver for Source replay history; Engram class/host loading/kernel changes remain pending.",
+      "implementation": [
+        "hcu_sglang/encoder_swa_replay.py"
+      ],
+      "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+      "tests": [
+        "tests/runtime/encoder_swa_cpu.py",
+        "tests/runtime/encoder_swa_gpu.py"
+      ],
+      "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance."
     },
     {
       "path": "python/sglang/srt/layers/flashinfer_comm_fusion.py",
@@ -13763,7 +13773,20 @@
       "relation": "changed",
       "fork_oid": "c83f9a72a04822fe923534448c8afccfc7d21fc8",
       "official_oid": "c6b424ce8abfbbf324813a186ec175302fb7f6da",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full forward_batch_generation Source method migrated and tested, including hidden-before-norm override, folded FB and original KV-plan readout; tokenizer/GLM seed changes remain pending.",
+      "implementation": [
+        "hcu_sglang/encoder_swa_worker.py"
+      ],
+      "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+      "tests": [
+        "tests/runtime/encoder_swa_cpu.py",
+        "tests/runtime/encoder_swa_gpu.py"
+      ],
+      "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance.",
+      "evidence": [
+        "docs/hcu-encoder-swa-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/managers/utils.py",
@@ -14497,17 +14520,21 @@
       "relation": "changed",
       "fork_oid": "f5529abb1bde5e2f35b41ccb5b5d16176313e448",
       "official_oid": "3f96b7d6e688e1dba3d2617e9128e3a107e07f2f",
-      "status": "in_progress",
-      "rationale": "Only replay_len and folded_replay_rows accounting helpers migrated for producer; full fold/execution/worker caller still pending.",
+      "status": "implemented",
+      "rationale": "Full Source encoder replay module owned: frozen folded record, batched fallback, window reset, fold/drop, engram history and execution-count contracts. Worker full source method paired; scheduler budget and feature-validator changes remain separate pending scope.",
       "implementation": [
-        "hcu_sglang/cp_token_counts.py"
+        "hcu_sglang/encoder_swa_replay.py",
+        "hcu_sglang/encoder_swa_worker.py"
       ],
-      "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+      "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
       "tests": [
-        "tests/runtime/prefill_sync_cpu.py",
-        "tests/runtime/prefill_sync_gloo.py"
+        "tests/runtime/encoder_swa_cpu.py",
+        "tests/runtime/encoder_swa_gpu.py"
       ],
-      "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+      "validation_scope": "8 CPU contracts retain public worker fold/fallback, original plan identity, hidden/tail row mapping and one batched vs two legacy replay forwards. Isolated67 GPU real tensors and changed-input primitive Graph verify dense/tail output map. Full compatible-model feature validation not inferred.",
+      "evidence": [
+        "docs/hcu-encoder-swa-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/model_executor/forward_batch_info.py",

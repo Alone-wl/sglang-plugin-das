@@ -14,6 +14,7 @@
 
 from __future__ import annotations
 from typing import List
+from hcu_sglang.encoder_swa_replay import replay_len, folded_replay_rows
 from sglang.srt.layers.cp.utils import get_cp_strategy, ZigzagCPStrategy
 from sglang.srt.runtime_context import get_parallel
 
@@ -115,20 +116,8 @@ def compute_zigzag_cp_physical_token_count(
     return (max_tokens + cp_segment_num - 1) // cp_segment_num * cp_segment_num
 
 
-def replay_len(prefix_len: int) -> int:
-    """Cached tokens replayed in front of a hit's extend: the last SWA window.
-    The prefill budget, the MLP-sync row count and the fold all read this."""
-    return min(prefix_len, 128)
 
 
-def folded_replay_rows(batch) -> int:
-    if not batch.forward_mode.is_extend_without_speculative():
-        return 0
-    return sum(
-        replay_len(end)
-        for reset, end in zip(batch.encoder_swa_reset, batch.prefix_lens)
-        if reset
-    )
 
 
 def attn_replica_size() -> int:

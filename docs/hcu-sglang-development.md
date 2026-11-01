@@ -974,3 +974,15 @@ Source的8个完整同步函数/方法与7个完整计数/拓扑helper经native 
 [隔离dev66门禁](hcu-prefill-sync-gates-validation-20261101.json)：612包文件与源码/site相同，wheel SHA256 0f720444c16cd2ab081c8eee768c29ba950c99dc5d118893fc3d25cbdbc702e2；458/458 Hook、3个resolution seam、0 errors，6项同步CPU、13项prefill CPU及本地/容器95项仓库测试通过。Source Gloo证据字节与本产物相同，旧dev65 primitive GPU结果没有改记为dev66重跑。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过；相同BCG feature服务结果仍待完成。
 
 [dev66同配置八卡BCG服务摘要](hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json)：12:35:06–12:40:58完整通过，全部8rank完成目标prefill breakable64/128捕获，随后decode/verify捕获与六项严格生成通过，HTTP200、完整最终答案和正常stop均满足；自有进程清空、端口关闭。612包文件与c61fb5c/wheel/site相同。与dev65失败相比仅运行时修正及输出标识/端口变化，配方和BCG feature参数一致；没有关闭prefill、DSPARK、DeepEP或原优化来回避问题。该证据证明实际模型capture初始化与服务回归，不证明请求实际命中BCG replay、DP混合请求、CP/elastic模型、128题重跑或性能。旧dev65失败保留，全DAS迁移未完成。
+
+## 81. 2026-11-01 Encoder SWA replay 完整折叠与 worker 生命周期
+
+迁入Source完整encoder_swa_replay模块（FoldedExtend、批量legacy replay、fold/drop、window reset、Engram history与执行计数），并迁入完整TpModelWorker.forward_batch_generation方法，将新return_hidden_states_before_norm参数、折叠后FB生产、late-tail行号回映射及返回原调度KV plan成对接通。复用native未变GenerationBatchResult与其余worker方法；HCU AROUND，非HCU保留effective original。Engram history_row完整Source方法以显式receiver helper复用，避免给native类注入未声明方法；其余Engram变化仍待迁移。原计数模块导入唯一owned replay_len/folded_replay_rows，避免重复owner。保留来源注释/docstring/版权许可；旧backend缺可选folds属性按Source基类默认False。
+
+本阶段验收从公开worker入口检查折叠行生产、隐藏态/drop消费、return-kv plan身份和legacy先重播再extend顺序。ForwardBatch初始化/模型计算的昂贵fixture与真实张量/GPU/模型分开记录，不把源AST或Hook计数解释为cache-hit模型精度。
+
+8项CPU通过：137行fold回5个scheduled rows、batch未变、2个legacy replay合成1次forward、dense/late-tail行回映射、clamped Engram history、公开worker fold与非fold两种分发，以及原调度plan身份。隔离dev67的真实GPU张量与primitive CUDAGraph在变输入后dense/late-tail映射精确。源码14个encoder符号、完整worker方法与Engram history_row经native globals/owned import/receiver/docstring缩进规范化一致。调度PrefillAdder预算和模型feature validator仍有Source差异，不将本阶段声明为整个encoder feature链已完成。
+
+预检发现旧snapshot_control_resolution脚本只创建seed/读resolved_view，未调用resolve_once；已修正历史GSM8K共享分析范围，保留原始种子差异及分数，不把它解释为effective/live配置。新的显式resolve_once对当前0731 Flash配置拒绝encoder replay：requires DeepSeek-V4.1。model-query另找到匹配model_type=deepseek_v41的V4.1-Flash，配置与容器可见性已读验；完整模型feature仍待其合法参数与预算迁移验证。当前八卡BCG回归使用原0731模型且未启用encoder flag，不冒称encoder cache-hit服务验证。
+
+[dev67分范围门禁](hcu-encoder-swa-gates-validation-20261101.json)：614包文件与源码/site一致，wheel SHA256 b741efaa6649b133f4961d6147a47c206735bf8a222da56914044eead37b268e；460/460 Hook、3个resolution seam、0 errors，8项encoder CPU、6项同步CPU、1项真实GPU映射Graph及本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏验收通过。实际resolve_once对V4.1-Flash进一步拒绝当前硬件（CUDA/gfx950限制），与Source保留条件相同；没有绕过硬件/DP约束。当前HCU的完整encoder feature服务仍未验证，普通BCG服务回归另记，不将算法GPU primitive通过外推为该模型能力。

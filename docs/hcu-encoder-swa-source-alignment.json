@@ -1,0 +1,45 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "sources": [
+    {
+      "path": "python/sglang/srt/model_executor/encoder_swa_replay.py",
+      "blob": "f5529abb1bde5e2f35b41ccb5b5d16176313e448",
+      "sha256": "0ca1f3d0b654f3555659e6315691e704ffc61de4d99507c9e08a477c37080e51"
+    },
+    {
+      "path": "python/sglang/srt/managers/tp_worker.py",
+      "blob": "c83f9a72a04822fe923534448c8afccfc7d21fc8",
+      "sha256": "3225d00b05374b8e0121445d6ae9ff7cfffe2afccbcdfea55e836a309d91e335"
+    },
+    {
+      "path": "python/sglang/srt/layers/engram.py",
+      "blob": "2e3b44afb1ce88a4f4bf46b40d6231db809240d0",
+      "sha256": "3c3106e3a226e899dad72eaed58ff8237b6855d5f4e643a31b43a641419974eb"
+    }
+  ],
+  "encoder_full_class_and_functions_aligned": [
+    "FoldedExtend",
+    "fold_encoder_swa_replay",
+    "resets_swa_window",
+    "replay_len",
+    "folded_replay_rows",
+    "apply_folded_extend",
+    "drop_folded_rows",
+    "_tail_rows_on_original",
+    "run_encoder_swa_replay",
+    "_reset_windows_and_collect_hits",
+    "_build_replay_batch",
+    "_engram_history",
+    "_fold_batch",
+    "_set_execution_counts"
+  ],
+  "worker_full_method_aligned": "TpModelWorker.forward_batch_generation",
+  "engram_full_method_aligned": "EngramHasher.history_row",
+  "normalizations": [
+    "Unchanged native globals qualified via N.",
+    "Worker replay imports resolve to the owned module.",
+    "Optional backend folds attribute uses Source base defaultFalse.",
+    "Source history_row method is a helper with explicit receiver; its full body is unchanged, with dedented docstring normalized."
+  ],
+  "scope": "Full encoder module and one worker method, not all worker/Engram/scheduler-budget or feature-validator differences."
+}

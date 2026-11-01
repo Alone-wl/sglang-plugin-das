@@ -128,3 +128,5 @@ python3 tools/validate_generation_response.py \
 输出both_correct、baseline_only_correct、candidate_only_correct、both_incorrect及无效数，不把同分掩盖的相反错题吞掉，也不自行设定接受阈值。load-aware/冗余expert/stat功能变体与未带这些标志的基础DAS服务会被拒绝作成对回归。应另跑基础DAS与基础plugin控制组；功能变体单独报告，原始只读DAS不能为了成为基线被本任务修改。
 
 本轮固定128题的基础匹配对照为DAS 127/128、plugin 126/128，均0无效，相差1题；用户接受大致一致，结果记为本轮接受，不要求完全同题正确，也不据此设置所有后续任务的默认阈值。[测量与范围](hcu-gsm8k128-paired-controls-20261101.json)保留逐题差异。
+
+解析CLI并构造ServerArgs或读取resolved_view不等于已验证运行配置：固定官方版本的__post_init__有意保持未解析，须显式执行resolve_once()或由真实launcher完成，再检查实际配置。保留解析失败原样，不把种子中的None/默认值差异解释为live配置差异。本轮GSM8K历史种子快照的范围更正见[成对记录](hcu-gsm8k128-paired-controls-20261101.json)，原始响应、分数和声明参数比较不受此更正影响。

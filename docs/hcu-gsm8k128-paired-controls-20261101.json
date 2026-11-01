@@ -1100,7 +1100,7 @@
       "plugin": false
     }
   },
-  "resolved_reconstruction_scope": "Independent normal startup reconstruction, not saved live server_info; common-field diffs retained without pretending complete effective-state equality.",
+  "resolved_reconstruction_scope": "Historical snapshots are unresolved ServerArgs seeds before resolve_once, not effective resolved configuration or saved live server_info. Retain raw seed differences without interpreting them as validated runtime differences.",
   "das_only_resolved_fields": [
     "custom_all_reduce_backend",
     "dsa_prefill_cp_mode",
@@ -1141,5 +1141,10 @@
   "plugin_only_resolved_fields": [
     "speculative_skip_dp_mlp_sync"
   ],
-  "limits": "Pinned128-example subset only. One additional oracle mismatch accepted by user, not relabeled or retried away. No significance, full GSM8K, general accuracy or throughput claim; all-DAS migration remains incomplete."
+  "limits": "Pinned128-example subset only. One additional oracle mismatch accepted by user, not relabeled or retried away. No significance, full GSM8K, general accuracy or throughput claim; all-DAS migration remains incomplete.",
+  "reconstruction_phase_correction": {
+    "phase": "unresolved_seed_before_resolve_once",
+    "basis": "The snapshot script called ServerArgs.from_cli_args and resolved_view but omitted ServerArgs.resolve_once; fixed official __post_init__ intentionally leaves construction unresolved.",
+    "accuracy_comparison_impact": "Raw GSM8K scores and user acceptance unchanged. Paired comparator already limits comparability to declared serving args/environment and sets live_resolved_config_verified=false."
+  }
 }

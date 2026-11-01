@@ -1212,17 +1212,21 @@
     "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
   },
   "python/sglang/srt/model_executor/encoder_swa_replay.py": {
-    "status": "in_progress",
-    "rationale": "Only replay_len and folded_replay_rows accounting helpers migrated for producer; full fold/execution/worker caller still pending.",
+    "status": "implemented",
+    "rationale": "Full Source encoder replay module owned: frozen folded record, batched fallback, window reset, fold/drop, engram history and execution-count contracts. Worker full source method paired; scheduler budget and feature-validator changes remain separate pending scope.",
     "implementation": [
-      "hcu_sglang/cp_token_counts.py"
+      "hcu_sglang/encoder_swa_replay.py",
+      "hcu_sglang/encoder_swa_worker.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
     "tests": [
-      "tests/runtime/prefill_sync_cpu.py",
-      "tests/runtime/prefill_sync_gloo.py"
+      "tests/runtime/encoder_swa_cpu.py",
+      "tests/runtime/encoder_swa_gpu.py"
     ],
-    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+    "validation_scope": "8 CPU contracts retain public worker fold/fallback, original plan identity, hidden/tail row mapping and one batched vs two legacy replay forwards. Isolated67 GPU real tensors and changed-input primitive Graph verify dense/tail output map. Full compatible-model feature validation not inferred.",
+    "evidence": [
+      "docs/hcu-encoder-swa-gates-validation-20261101.json"
+    ]
   },
   "python/sglang/srt/elastic_ep/topology.py": {
     "status": "in_progress",
@@ -1236,5 +1240,34 @@
       "tests/runtime/prefill_sync_gloo.py"
     ],
     "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+  },
+  "python/sglang/srt/managers/tp_worker.py": {
+    "status": "in_progress",
+    "rationale": "Only full forward_batch_generation Source method migrated and tested, including hidden-before-norm override, folded FB and original KV-plan readout; tokenizer/GLM seed changes remain pending.",
+    "implementation": [
+      "hcu_sglang/encoder_swa_worker.py"
+    ],
+    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+    "tests": [
+      "tests/runtime/encoder_swa_cpu.py",
+      "tests/runtime/encoder_swa_gpu.py"
+    ],
+    "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance.",
+    "evidence": [
+      "docs/hcu-encoder-swa-gates-validation-20261101.json"
+    ]
+  },
+  "python/sglang/srt/layers/engram.py": {
+    "status": "in_progress",
+    "rationale": "Only full history_row helper migrated with explicit receiver for Source replay history; Engram class/host loading/kernel changes remain pending.",
+    "implementation": [
+      "hcu_sglang/encoder_swa_replay.py"
+    ],
+    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+    "tests": [
+      "tests/runtime/encoder_swa_cpu.py",
+      "tests/runtime/encoder_swa_gpu.py"
+    ],
+    "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance."
   }
 }
