@@ -17,7 +17,7 @@ from __future__ import annotations
 from typing import List, Optional, Tuple
 from sglang.srt.dllm.config import DllmConfig
 from sglang.srt.model_executor.runner import base_cuda_graph_runner as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def get_batch_sizes_to_capture(
@@ -69,13 +69,13 @@ def get_batch_sizes_to_capture(
 
 
 def around_batch_sizes(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return get_batch_sizes_to_capture(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.model_executor.runner.base_cuda_graph_runner.get_batch_sizes_to_capture", around_batch_sizes, HookType.AROUND)

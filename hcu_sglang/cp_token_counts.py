@@ -22,7 +22,7 @@ from sglang.srt.runtime_context import get_parallel
 def enable_cp_v2() -> bool:
     """Return whether the strategy-based generic prefill CP path is available."""
     from sglang.srt.utils import is_musa, is_npu
-    from hcu_sglang.utils.detection import is_dcu as is_hcu
+    from hcu_sglang.utils.detection import is_hcu as is_hcu
 
     if is_hcu():
         from sglang.srt.environ import envs

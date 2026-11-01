@@ -151,7 +151,7 @@ class CompressedFp8Tests(unittest.TestCase):
         with patch.object(C,'_use_lightop_channel_fp8',False):
             with self.assertRaisesRegex(RuntimeError,'SGLANG_USE_LIGHTOP_CHANNEL_FP8'):C.apply_fp8_lightop_channelwise_linear(None,None,None)
         original=Mock(return_value='baseline');m=self.scheme();l=self.layer(m)
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             self.assertEqual(C.around_process_weights(original,m,l),'baseline')
             self.assertEqual(C.around_apply_weights(original,m,l,self.q,self.bias),'baseline')
         self.assertEqual(l.weight.shape,(3,4))

@@ -21,7 +21,7 @@ from sglang.srt.managers import tp_worker as N
 from sglang.srt.model_executor.forward_batch_info import ForwardBatch, CaptureHiddenMode, PPProxyTensors
 from sglang.srt.managers.schedule_batch import ScheduleBatch
 from sglang.srt.managers.tp_worker import GenerationBatchResult
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def forward_batch_generation(
@@ -183,13 +183,13 @@ def forward_batch_generation(
 
 
 def around_generation(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return forward_batch_generation(self, *args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.managers.tp_worker.TpModelWorker.forward_batch_generation", around_generation, HookType.AROUND)

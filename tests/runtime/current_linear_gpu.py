@@ -24,7 +24,7 @@ class CurrentLinearGpuTests(unittest.TestCase):
         HookRegistry.reset();H.register_hooks();HookRegistry.apply_hooks()
 
     def setUp(self):
-        self.assertTrue(C.is_dcu());self.assertTrue(C._use_fused_rms_quant)
+        self.assertTrue(C.is_hcu());self.assertTrue(C._use_fused_rms_quant)
         self.assertTrue(F.is_lightop_sglang_rms_quant_available())
         self.scope=ExitStack();self.addCleanup(self.scope.close)
         self.scope.enter_context(patch.object(C.N,'get_parallel',return_value=SimpleNamespace(tp_group=None,tp_size=1,tp_rank=0)))

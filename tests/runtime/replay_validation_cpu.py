@@ -42,18 +42,18 @@ class ReplayValidationCpuTests(unittest.TestCase):
 
     def test_named_capability_seam_preserves_previous_and_instance_early_return(self):
         cfg=self.config(model_path='fixture',enable_encoder_swa_bounded_replay=True);calls=[];token=object()
-        with patch.object(C,'is_dcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=object()),patch.object(C.N,'model_config_of',return_value=S(hf_config=S(model_type='deepseek_v41'))),patch.object(O.N,'resolving_view',return_value=cfg):
+        with patch.object(C,'is_hcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=object()),patch.object(C.N,'model_config_of',return_value=S(hf_config=S(model_type='deepseek_v41'))),patch.object(O.N,'resolving_view',return_value=cfg):
             self.assertIs(C.capability_replay_budget(object(),lambda seed:calls.append('previous') or token),token)
             cfg.chunked_prefill_size=128
             with self.assertRaises(ValueError):C.capability_replay_budget(object(),lambda seed:calls.append('previous'))
         self.assertEqual(calls,['previous','previous'])
-        with patch.object(C,'is_dcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=C.N.ConnectorType.INSTANCE),patch.object(C.N,'model_config_of',side_effect=AssertionError('must not read model config')):self.assertIs(C.capability_replay_budget(object(),lambda seed:token),token)
+        with patch.object(C,'is_hcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=C.N.ConnectorType.INSTANCE),patch.object(C.N,'model_config_of',side_effect=AssertionError('must not read model config')):self.assertIs(C.capability_replay_budget(object(),lambda seed:token),token)
 
     def test_real_named_resolution_dispatcher_reaches_budget_after_previous(self):
         from sglang.srt.arg_groups import resolution_hooks as H
         cfg=self.config(model_path='fixture',enable_encoder_swa_bounded_replay=True,chunked_prefill_size=128);calls=[]
         def handle_model_capability_adjustments(seed):calls.append('builtin')
-        with patch.dict(H._HOOKS,{},clear=True),patch.object(C,'_REGISTERED',False),patch.object(C,'is_dcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=object()),patch.object(C.N,'model_config_of',return_value=S(hf_config=S(model_type='deepseek_v41'))),patch.object(O.N,'resolving_view',return_value=cfg):
+        with patch.dict(H._HOOKS,{},clear=True),patch.object(C,'_REGISTERED',False),patch.object(C,'is_hcu',return_value=True),patch.object(C.N,'resolving_view',return_value=cfg),patch.object(C.N,'parse_connector_type',return_value=object()),patch.object(C.N,'model_config_of',return_value=S(hf_config=S(model_type='deepseek_v41'))),patch.object(O.N,'resolving_view',return_value=cfg):
             C.register_hooks();C.register_hooks();self.assertEqual(len(H._HOOKS['handle_model_capability_adjustments']),1)
             with self.assertRaisesRegex(ValueError,'at least 144'):H.run_hook(handle_model_capability_adjustments,object())
         self.assertEqual(calls,['builtin'])

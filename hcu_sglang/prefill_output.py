@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from typing import Optional
 import torch
 from sglang.srt.layers.logits_processor import LogitsProcessorOutput as _NativeLogitsProcessorOutput
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 @dataclass
@@ -31,7 +31,7 @@ class LogitsProcessorOutput(_NativeLogitsProcessorOutput):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.layers.logits_processor.LogitsProcessorOutput", LogitsProcessorOutput, HookType.REPLACE)

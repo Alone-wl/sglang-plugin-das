@@ -7,11 +7,11 @@ from typing import Any, Callable
 
 import torch
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def after_get_default_target_flags(flags: list[str], arch: Any = None) -> list[str]:
-    if not is_dcu():
+    if not is_hcu():
         return flags
     return [
         "-DHIP_FP8_TYPE_FNUZ=1" if flag == "-DHIP_FP8_TYPE_E4M3=1" else flag
@@ -29,7 +29,7 @@ def around_assign_extend_cache_locs_func(
     draft_token_num: int,
     device: Any,
 ) -> torch.Tensor:
-    if not is_dcu():
+    if not is_hcu():
         return original(
             req_pool_indices,
             req_to_token,
@@ -71,7 +71,7 @@ def around_assign_extend_cache_locs_func(
 
 
 def _dispatch_mhc(name: str, original: Callable[..., Any], *args: Any, **kwargs: Any):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     from hcu_sglang.kernels import mhc
 
@@ -103,7 +103,7 @@ def around_mhc_fused_post_pre(
 def around_vision_flash3_init(
     original: Callable[..., Any], instance: Any, *args: Any, **kwargs: Any
 ):
-    if not is_dcu():
+    if not is_hcu():
         return original(instance, *args, **kwargs)
     vision = importlib.import_module("sglang.srt.layers.attention.vision")
     from hcu_sglang.layers.attention.flashattention_interface import (

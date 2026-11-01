@@ -72,7 +72,7 @@ class BlockFp8Tests(unittest.TestCase):
 
     def test_non_hcu_retains_effective_original(self):
         original=Mock(return_value='baseline')
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             self.assertEqual(C.around_auto_backend(original),'baseline')
             m=self.method();l=self.layer();self.assertEqual(C.around_process_block_weights(original,m,l),'baseline')
         self.assertEqual(l.weight.shape,(256,512))

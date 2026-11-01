@@ -109,7 +109,7 @@ class CompressedInt8Tests(unittest.TestCase):
 
     def test_non_hcu_delegates_effective_native_methods(self):
         original=Mock(return_value='baseline');m,l=self.create()
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             self.assertEqual(C.around_init(original,l.scheme,S.CHANNEL,False,True),'baseline')
             self.assertEqual(C.around_process(original,l.scheme,l),'baseline')
             self.assertEqual(C.around_apply(original,l.scheme,l,self.q,None),'baseline')

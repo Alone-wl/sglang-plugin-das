@@ -81,7 +81,7 @@ class Fp8FallbackTests(unittest.TestCase):
             result=self.call()
         self.assertEqual(result.shape,(1,2,3))
         marker=object();original=Mock(return_value=marker)
-        with patch('hcu_sglang.utils.detection.is_dcu',return_value=False):
+        with patch('hcu_sglang.utils.detection.is_hcu',return_value=False):
             self.assertIs(Q.around_fallback_scaled_mm(original,self.q,self.w,self.a,self.b,(2,4),(1,2,3),self.bias,torch.bfloat16),marker)
         original.assert_called_once()
 

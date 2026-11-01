@@ -21,7 +21,7 @@ from __future__ import annotations
 from sglang.srt.layers.moe.token_dispatcher.deepep import DeepEPBuffer
 from sglang.srt.model_executor.runner_utils import deepep_adapter as A
 from sglang.srt.model_executor.runner import decode_cuda_graph_runner as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from sglang.srt.layers.moe.utils import get_deepep_mode, get_moe_a2a_backend
 
 
@@ -179,13 +179,13 @@ def capture_one_shape(
 
 
 def around_capture(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return capture_one_shape(self, *args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.model_executor.runner_utils.deepep_adapter.DeepEPCudaGraphRunnerAdapter", DeepEPCudaGraphRunnerAdapter, HookType.REPLACE)

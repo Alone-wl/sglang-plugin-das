@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from sglang.srt.distributed import parallel_state as P
 from sglang.srt.utils import get_bool_env_var
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.config import resolved_custom_all_reduce_backend
 
 _CUSTOM_ALL_REDUCE_BACKEND = "auto"
@@ -460,25 +460,25 @@ def get_custom_all_reduce_backend() -> str:
 
 
 def around_coordinator_init(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return coordinator_init(self, *args, **kwargs)
 
 
 def around_init_world_group(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return init_world_group(*args, **kwargs)
 
 
 def around_init_model_parallel_group(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return init_model_parallel_group(*args, **kwargs)
 
 
 def after_set_all_reduce_flags(result):
-    if is_dcu():
+    if is_hcu():
         from sglang.srt.runtime_context import get_exec
         set_custom_all_reduce_backend(
             resolved_custom_all_reduce_backend(get_exec().comm.disable_custom_all_reduce)
@@ -488,7 +488,7 @@ def after_set_all_reduce_flags(result):
 
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
-    if is_dcu():
+    if is_hcu():
         P.set_custom_all_reduce_backend = set_custom_all_reduce_backend
         P.get_custom_all_reduce_backend = get_custom_all_reduce_backend
     for target, wrapper, kind in (

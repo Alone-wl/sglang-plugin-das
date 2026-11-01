@@ -3,9 +3,9 @@ from typing import Optional, Tuple
 import torch
 from sglang.kernels.ops.moe import dsv4 as N
 from sglang.kernels.jit.utils import is_hip_runtime
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _jit_hash_topk_module = N._jit_hash_topk_module
 _jit_mega_moe_pre_dispatch_module = N._jit_mega_moe_pre_dispatch_module
 
@@ -85,13 +85,13 @@ def mega_moe_pre_dispatch(
 
 
 def around_hash_topk(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return hash_topk(*args, **kwargs)
 
 
 def around_mega_moe_pre_dispatch(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return mega_moe_pre_dispatch(*args, **kwargs)
 

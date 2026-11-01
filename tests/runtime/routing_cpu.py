@@ -65,7 +65,7 @@ class RoutingContractTests(unittest.TestCase):
         token=object();seen=[]
         def implementation(*a,**k):raise AssertionError('HCU implementation must not execute')
         def original(*a,**k):seen.append((a,k));return token
-        with patch.object(R,'is_dcu',return_value=False):self.assertIs(R._around(implementation)(original,token,value=7),token)
+        with patch.object(R,'is_hcu',return_value=False):self.assertIs(R._around(implementation)(original,token,value=7),token)
         self.assertEqual(seen,[((token,),{'value':7})])
 
 

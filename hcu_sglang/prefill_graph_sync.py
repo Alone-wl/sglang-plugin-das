@@ -8,7 +8,7 @@ from typing import Callable, Optional, List
 from sglang.srt.managers.scheduler_components import dp_attn as N
 from sglang.srt.managers.schedule_batch import ScheduleBatch as _NativeScheduleBatch
 from hcu_sglang.cp_token_counts import folded_replay_rows
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 _NATIVE_INFO = [N.MLPSyncBatchInfo]
 
@@ -508,25 +508,25 @@ def prepare_mlp_sync_batch_raw(
 
 
 def around__resolve_elastic_world_num_dp_ranks(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return _resolve_elastic_world_num_dp_ranks(*args, **kwargs)
 
 
 def around__update_gather_batch(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return _update_gather_batch(*args, **kwargs)
 
 
 def around_prepare_mlp_sync_batch_raw(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return prepare_mlp_sync_batch_raw(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.managers.scheduler_components.dp_attn._resolve_elastic_world_num_dp_ranks", around__resolve_elastic_world_num_dp_ranks, HookType.AROUND)

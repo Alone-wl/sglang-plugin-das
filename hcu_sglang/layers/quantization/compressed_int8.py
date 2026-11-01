@@ -11,7 +11,7 @@ from typing import Optional
 import torch
 from sglang.srt.layers.quantization.compressed_tensors.schemes import compressed_tensors_w8a8_int8 as N
 from sglang.srt.utils import get_bool_env_var
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.layers.quantization import quant_ops as ops
 from hcu_sglang.layers.quantization.cache_config import W8a8GetCacheJSON
 from lightop.quant import per_token_quant_int8
@@ -308,26 +308,26 @@ _SUPPORTED_ARGS = frozenset(inspect.signature(apply_weights).parameters) - {"sel
 
 
 def around_init(original, self, strategy, is_static_input_scheme, input_symmetric):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, strategy, is_static_input_scheme, input_symmetric)
     return __init__(self, strategy, is_static_input_scheme, input_symmetric)
 
 
 def around_process(original, self, layer):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer)
     return process_weights_after_loading(self, layer)
 
 
 def around_apply(original, self, layer, x, bias, input_quant_args=None, silu_quant_args=None):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer, x, bias)
     return apply_weights(self, layer, x, bias, input_quant_args, silu_quant_args)
 
 
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
-    if not is_dcu():
+    if not is_hcu():
         return
     cls = N.CompressedTensorsW8A8Int8
     previous = cls.__dict__.get("_normalize_weight_scale")

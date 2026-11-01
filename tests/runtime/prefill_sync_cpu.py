@@ -69,7 +69,7 @@ class PrefillSyncCpuTests(unittest.TestCase):
         from hcu_sglang import prefill_graph_sync as O
         for name in ['_resolve_elastic_world_num_dp_ranks','_update_gather_batch','prepare_mlp_sync_batch_raw']:
             token=object();seen=[]
-            with patch.object(O,'is_dcu',return_value=False):self.assertIs(getattr(O,'around_'+name)(lambda *a,**k:seen.append((a,k)) or token,token,option=3),token)
+            with patch.object(O,'is_hcu',return_value=False):self.assertIs(getattr(O,'around_'+name)(lambda *a,**k:seen.append((a,k)) or token,token,option=3),token)
             self.assertEqual(seen,[((token,),{'option':3})])
 
 

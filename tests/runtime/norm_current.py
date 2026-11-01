@@ -132,9 +132,9 @@ class NormCurrentTests(unittest.TestCase):
         marker = object(); layer = object(); x = object()
         def original(owner, value, *args):
             self.assertIs(owner, layer); self.assertIs(value, x); return marker
-        with patch('hcu_sglang.utils.detection.is_dcu', return_value=False):
+        with patch('hcu_sglang.utils.detection.is_hcu', return_value=False):
             self.assertIs(Q.around_rms_norm_forward_hip(original, layer, x), marker)
-        with patch.object(C, 'is_dcu', return_value=False):
+        with patch.object(C, 'is_hcu', return_value=False):
             self.assertIs(C.around_gemma_forward_hip(original, layer, x), marker)
 
 

@@ -20,9 +20,9 @@ from lightop import gemm_ops as quant_ops
 from lightop.gemm_ops import BlockSize
 from lightop.quant import per_token_group_quant_fp8 as per_token_group_quant_fp8_hcu
 from sglang.srt.layers.quantization import fp8_utils as N, fp8 as P
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 
 def _dispatch_auto_backend() -> Callable:
     """Auto-select the best backend based on hardware capabilities."""
@@ -400,19 +400,19 @@ def torch_fp8_block_gemm(
     return c.to(out_dtype)
 
 def around_explicit_backend(original, backend):
-    if not is_dcu():
+    if not is_hcu():
         return original(backend)
     return _dispatch_explicit_backend(backend)
 
 
 def around_auto_backend(original):
-    if not is_dcu():
+    if not is_hcu():
         return original()
     return _dispatch_auto_backend()
 
 
 def around_process_block_weights(original, self, layer):
-    if not is_dcu() or self.w8a8_block_fp8_linear not in (hipblaslt_w8a8_block_fp8_linear, getattr(P, "aiter_w8a8_block_fp8_linear", None)):
+    if not is_hcu() or self.w8a8_block_fp8_linear not in (hipblaslt_w8a8_block_fp8_linear, getattr(P, "aiter_w8a8_block_fp8_linear", None)):
         return original(self, layer)
     return process_weights_after_loading_block_quant(self, layer)
 
@@ -427,7 +427,7 @@ def register_hooks():
         "sglang.srt.layers.quantization.fp8.Fp8LinearMethod.process_weights_after_loading_block_quant",
         around_process_block_weights, HookType.AROUND,
     )
-    if is_dcu():
+    if is_hcu():
         previous = getattr(N, "torch_fp8_block_gemm", torch_fp8_block_gemm)
         if previous is not torch_fp8_block_gemm:
             raise RuntimeError("Native FP8 block reference already exists; re-review the source contract")

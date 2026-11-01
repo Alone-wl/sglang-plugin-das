@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Union
 from sglang.srt.model_executor.runner import prefill_cuda_graph_runner as N
 from sglang.srt.environ import envs
 from hcu_sglang.prefill_graph_policy import prefill_graph_scope
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 _NATIVE = [N.PrefillCudaGraphRunner]
 
@@ -1274,7 +1274,7 @@ class PrefillCudaGraphRunner(_NATIVE[0]):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.model_executor.runner.prefill_cuda_graph_runner.PrefillCudaGraphRunner", PrefillCudaGraphRunner, HookType.REPLACE)

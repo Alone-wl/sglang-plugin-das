@@ -4,7 +4,7 @@ from typing import Optional
 from sglang.srt.mem_cache.buffer_mode import pipeline as N
 from hcu_sglang.mem_cache.window_plan import StagedPrefetchPlan, WindowLoadBackPlan
 from hcu_sglang.mem_cache.window_component import adapt_window_component, extend_storage_prefix
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 class BufferModePipeline(N.BufferModePipeline):
@@ -665,13 +665,13 @@ def validate_buffer_only_stack(
 
 
 def around_validate_stack(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return validate_buffer_only_stack(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.buffer_mode.pipeline.BufferModePipeline", BufferModePipeline, HookType.REPLACE)

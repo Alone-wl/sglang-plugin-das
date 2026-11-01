@@ -125,7 +125,7 @@ class NormCollectiveTests(unittest.TestCase):
 
     def test_non_hcu_wrappers_preserve_effective_original(self):
         marker = object(); original = Mock(return_value=marker)
-        with patch.object(C, 'is_dcu', return_value=False):
+        with patch.object(C, 'is_hcu', return_value=False):
             for method in [C.around_fused_norm, C.around_fused_norm_quant, C.around_norm_forward, C.around_norm_quant_forward]:
                 self.assertIs(method(original, 'input', setting='value'), marker)
                 original.assert_called_with('input', setting='value')

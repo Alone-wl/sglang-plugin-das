@@ -6,7 +6,7 @@ import shlex
 import subprocess
 import sys
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 _NATIVE_MODULE = 'sglang.srt.mem_cache.rust_tree_core.mem_cache'
 _OWNED_MODULE = 'hcu_sglang.mem_cache.rust_tree_core.mem_cache'
@@ -15,7 +15,7 @@ _CRATE = Path(__file__).resolve().parent / 'crate'
 
 
 def around_load(original, python_module, **kwargs):
-    if not is_dcu() or python_module != _NATIVE_MODULE or kwargs.get('workspace') is not None:
+    if not is_hcu() or python_module != _NATIVE_MODULE or kwargs.get('workspace') is not None:
         return original(python_module, **kwargs)
     extension = kwargs.get('extension_module')
     if extension not in (None, _NATIVE_MODULE, 'sglang.srt.mem_cache.rust_tree_core.mem_cache_inspection'):
@@ -53,7 +53,7 @@ def around_load(original, python_module, **kwargs):
 
 def around_fallback_reason(original, params):
     reason = original(params)
-    if not is_dcu() or reason is None:
+    if not is_hcu() or reason is None:
         return reason
     availability = reason in (
         "the requested Rust TreeCore source build has no sources",
@@ -86,7 +86,7 @@ def attach_event_recorder(core, params):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register('sglang.srt.rust_extensions.loader.load_rust_extension', around_load, HookType.AROUND)

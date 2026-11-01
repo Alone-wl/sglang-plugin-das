@@ -6,7 +6,7 @@ import os
 from sglang.srt.environ import envs
 from sglang.srt.mem_cache.hicache_storage import HiCacheFile as _NativeHiCacheFile
 from sglang.srt.mem_cache.hicache_storage import HiCacheStorageConfig, MetadataCache, PoolName
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class HiCacheFile(_NativeHiCacheFile):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.hicache_storage.HiCacheFile", HiCacheFile, HookType.REPLACE)

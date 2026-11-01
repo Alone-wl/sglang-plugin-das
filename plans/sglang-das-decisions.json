@@ -20,8 +20,8 @@
       "hcu_sglang/layers/norm_collectives.py"
     ],
     "source_alignment": [
-      "docs/hcu-norm-source-alignment.json",
-      "docs/hcu-norm-collectives-source-alignment.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-norm-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-norm-collectives-source-alignment.json"
     ],
     "tests": [
       "tests/runtime/norm_current.py",
@@ -38,7 +38,7 @@
       "hcu_sglang/layers/norm_collectives.py",
       "hcu_sglang/distributed.py"
     ],
-    "source_alignment": "docs/hcu-norm-collectives-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-norm-collectives-source-alignment.json",
     "tests": [
       "tests/runtime/norm_collectives.py",
       "tests/runtime/norm_collectives_gpu.py"
@@ -58,7 +58,7 @@
     ],
     "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
     "rationale": "Port the full selected HCU constructor, world/model factories and backend accessors; retain native class identity and strict-Fabric failure behavior. Other CP/topology/method differences remain separately incomplete.",
-    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-custom-allreduce-source-alignment.json"
   },
   "python/sglang/srt/distributed/bootstrap.py": {
     "status": "in_progress",
@@ -73,10 +73,10 @@
     ],
     "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
     "rationale": "Bridge resolved plugin-owned backend after the existing all-reduce flag initialization. Preserve native disable/other flags and keep remaining bootstrap changes unreviewed.",
-    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-custom-allreduce-source-alignment.json"
   },
   "python/sglang/srt/arg_groups/fields/exec_.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -103,7 +103,7 @@
     ],
     "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
     "rationale": "Preserve disable-wins and HCU legacy-auto promotion for the backend bridge; remaining serving/environment behavior is not claimed migrated.",
-    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-custom-allreduce-source-alignment.json"
   },
   "python/sglang/srt/server_args.py": {
     "status": "in_progress",
@@ -118,7 +118,7 @@
     ],
     "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
     "rationale": "Add source NSA deprecated aliases and current custom-allreduce CLI handoff without mutating raw ServerArgs fields. Other source-only CLI options remain unreviewed.",
-    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-custom-allreduce-source-alignment.json"
   },
   "python/sglang/srt/layers/activation.py": {
     "status": "implemented",
@@ -126,7 +126,7 @@
     "implementation": [
       "hcu_sglang/layers/norm_activation.py"
     ],
-    "source_alignment": "docs/hcu-activation-source-review-20261101.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-activation-source-review-20261101.json",
     "tests": [
       "tests/runtime/activation_hcu.py"
     ],
@@ -400,7 +400,7 @@
       "hcu_sglang/layers/row_fusion.py",
       "hcu_sglang/layers/linear_fusion.py"
     ],
-    "source_alignment": "docs/hcu-linear-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-linear-source-alignment.json",
     "tests": [
       "tests/runtime/current_linear.py",
       "tests/runtime/current_linear_gpu.py"
@@ -414,7 +414,7 @@
       "hcu_sglang/layers/fused_rms_quant.py",
       "hcu_sglang/layers/current_linear.py"
     ],
-    "source_alignment": "docs/hcu-linear-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-linear-source-alignment.json",
     "tests": [
       "tests/runtime/current_linear_gpu.py"
     ],
@@ -434,12 +434,12 @@
       "hcu_sglang/layers/quantization/compressed_fp8.py"
     ],
     "source_alignment": [
-      "docs/hcu-fp8-utils-source-alignment.json",
-      "docs/hcu-fp8-fallback-source-alignment.json",
-      "docs/hcu-fp8-linear-source-alignment.json",
-      "docs/hcu-block-fp8-source-alignment.json",
-      "docs/hcu-dense-mxscale-source-alignment.json",
-      "docs/hcu-compressed-fp8-source-alignment.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-fp8-utils-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-fp8-fallback-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-fp8-linear-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-block-fp8-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-dense-mxscale-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-compressed-fp8-source-alignment.json"
     ],
     "tests": [
       "tests/runtime/fp8_fallback.py",
@@ -465,7 +465,7 @@
       "hcu_sglang/layers/quantization/fp8_quant.py",
       "hcu_sglang/layers/quantization/w8a8_fp8.py"
     ],
-    "source_alignment": "docs/hcu-fp8-linear-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-fp8-linear-source-alignment.json",
     "tests": [
       "tests/runtime/fp8_linear.py",
       "tests/runtime/fp8_linear_gpu.py"
@@ -483,9 +483,9 @@
       "hcu_sglang/layers/quantization/fp8.py"
     ],
     "source_alignment": [
-      "docs/hcu-block-fp8-source-alignment.json",
-      "docs/hcu-dense-mxscale-source-alignment.json",
-      "docs/hcu-fp8-moe-source-alignment.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-block-fp8-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-dense-mxscale-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-fp8-moe-source-alignment.json"
     ],
     "tests": [
       "tests/runtime/fp8_block.py",
@@ -504,7 +504,7 @@
       "hcu_sglang/kernels/rmsnorm_fp8_e8m0.py",
       "hcu_sglang/models/deepseek/current_v4/execution/core.py"
     ],
-    "source_alignment": "docs/hcu-dense-mxscale-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-dense-mxscale-source-alignment.json",
     "tests": [
       "tests/runtime/fp8_mxscale_gpu.py"
     ],
@@ -517,7 +517,7 @@
       "hcu_sglang/layers/quantization/compressed_fp8.py",
       "hcu_sglang/layers/quantization/w8a8_fp8.py"
     ],
-    "source_alignment": "docs/hcu-compressed-fp8-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-compressed-fp8-source-alignment.json",
     "tests": [
       "tests/runtime/compressed_fp8.py",
       "tests/runtime/compressed_fp8_gpu.py"
@@ -532,7 +532,7 @@
       "hcu_sglang/layers/quantization/w8a8_fp8.py",
       "hcu_sglang/layers/quantization/compressed_int8.py"
     ],
-    "source_alignment": "docs/hcu-compressed-fp8-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-compressed-fp8-source-alignment.json",
     "tests": [
       "tests/runtime/compressed_fp8.py",
       "tests/runtime/compressed_fp8_gpu.py",
@@ -550,7 +550,7 @@
       "hcu_sglang/layers/quantization/quant_ops.py",
       "hcu_sglang/layers/quantization/cache_config.py"
     ],
-    "source_alignment": "docs/hcu-compressed-int8-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-compressed-int8-source-alignment.json",
     "tests": [
       "tests/runtime/compressed_int8.py",
       "tests/runtime/compressed_int8_gpu.py",
@@ -564,7 +564,7 @@
     "implementation": [
       "hcu_sglang/layers/quantization/quant_ops.py"
     ],
-    "source_alignment": "docs/hcu-quant-ops-targets-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-quant-ops-targets-source-alignment.json",
     "tests": [
       "tests/runtime/quant_ops_dispatch.py",
       "tests/runtime/quant_ops_gpu.py",
@@ -579,7 +579,7 @@
       "hcu_sglang/layers/quantization/compressed_targets.py",
       "hcu_sglang/layers/quantization/__init__.py"
     ],
-    "source_alignment": "docs/hcu-quant-ops-targets-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-quant-ops-targets-source-alignment.json",
     "tests": [
       "tests/runtime/compressed_targets.py"
     ],
@@ -592,7 +592,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/c_plan.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/csrc/deepseek_v4/fused_norm_rope_v2.cuh": {
@@ -602,7 +602,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/fused_norm_rope_v2.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/csrc/deepseek_v4/main_norm_rope.cuh": {
@@ -612,7 +612,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/main_norm_rope.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/csrc/deepseek_v4/silu_and_mul_masked_post_quant.cuh": {
@@ -622,7 +622,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/silu_and_mul_masked_post_quant.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/csrc/deepseek_v4/topk_v2.cuh": {
@@ -632,7 +632,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/topk_v2.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/fp4_utils.cuh": {
@@ -642,7 +642,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/fp4_utils.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/fp8_utils.cuh": {
@@ -652,7 +652,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/fp8_utils.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/kv_layout.cuh": {
@@ -662,7 +662,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/kv_layout.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/deepseek_v4/topk_impl.cuh": {
@@ -672,7 +672,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/deepseek_v4/topk_impl.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/runtime.cuh": {
@@ -682,7 +682,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/runtime.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/tensor.h": {
@@ -692,7 +692,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/tensor.h",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/utils.cuh": {
@@ -702,7 +702,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/utils.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/utils.h": {
@@ -712,7 +712,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/utils.h",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/include/sgl_kernel/warp.cuh": {
@@ -722,7 +722,7 @@
       "hcu_sglang/jit_overlay/include/sgl_kernel/warp.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-jit-resource-coverage.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json",
     "validation_scope": "Read-only committed-source and historical dependency-key/content review. No current-run execution inferred. Fresh block-amax validation is a separate resource, not evidence for this file."
   },
   "python/sglang/kernels/jit/csrc/deepseek_v4/block_amax.cuh": {
@@ -734,8 +734,8 @@
       "hcu_sglang/jit_overlay_loader.py"
     ],
     "source_alignment": [
-      "docs/hcu-jit-block-amax-source-alignment.json",
-      "docs/hcu-jit-resource-coverage.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-block-amax-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-jit-resource-coverage.json"
     ],
     "tests": [
       "tests/runtime/jit_overlay_contract.py",
@@ -751,7 +751,7 @@
       "hcu_sglang/models/deepseek/current_v4/hcu_backend/topk.py",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-bf16-topk-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-bf16-topk-source-alignment.json",
     "tests": [
       "tests/runtime/jit_bf16_topk_gpu.py"
     ],
@@ -759,12 +759,12 @@
   },
   "python/sglang/kernels/ops/moe/dsv4.py": {
     "status": "implemented",
-    "rationale": "Own the two changed full Source functions: HCU hash routing selects the source JIT and zero-token noncanonical pre-dispatch strides are normalized. Reuse unchanged native factories and public APIs; non-DCU delegates to the current effective original.",
+    "rationale": "Own the two changed full Source functions: HCU hash routing selects the source JIT and zero-token noncanonical pre-dispatch strides are normalized. Reuse unchanged native factories and public APIs; non-HCU delegates to the current effective original.",
     "implementation": [
       "hcu_sglang/layers/moe/dsv4_ops.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-dsv4-moe-ops-source-alignment.json",
     "tests": [
       "tests/runtime/dsv4_ops_cpu.py",
       "tests/runtime/dsv4_hash_topk_gpu.py"
@@ -778,7 +778,7 @@
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/hash_topk.cuh",
       "hcu_sglang/jit_overlay_loader.py"
     ],
-    "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-dsv4-moe-ops-source-alignment.json",
     "tests": [
       "tests/runtime/dsv4_hash_topk_gpu.py"
     ],
@@ -790,7 +790,7 @@
     "implementation": [
       "hcu_sglang/jit_overlay/csrc/deepseek_v4/linear_bf16_fp32.cuh"
     ],
-    "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-bf16-fp32-source-alignment.json",
     "tests": [
       "tests/runtime/linear_bf16_fp32_cpu.py",
       "tests/runtime/linear_bf16_fp32_gpu.py"
@@ -803,7 +803,7 @@
     "implementation": [
       "hcu_sglang/models/deepseek/current_v4/hcu_backend/hcu_linear_bf16_fp32.py"
     ],
-    "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-bf16-fp32-source-alignment.json",
     "tests": [
       "tests/runtime/linear_bf16_fp32_cpu.py",
       "tests/runtime/linear_bf16_fp32_gpu.py"
@@ -817,7 +817,7 @@
       "hcu_sglang/models/deepseek/current_v4/hcu_backend/bf16_fp32.py",
       "hcu_sglang/models/deepseek/current_v4/hcu_backend/integration.py"
     ],
-    "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-bf16-fp32-source-alignment.json",
     "tests": [
       "tests/runtime/linear_bf16_fp32_cpu.py",
       "tests/runtime/linear_bf16_fp32_gpu.py"
@@ -830,7 +830,7 @@
     "implementation": [
       "tests/runtime/linear_bf16_fp32_cpu.py"
     ],
-    "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-bf16-fp32-source-alignment.json",
     "tests": [
       "tests/runtime/linear_bf16_fp32_cpu.py"
     ],
@@ -844,7 +844,7 @@
       "hcu_sglang/environ.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-deepseek-gate-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-deepseek-gate-source-alignment.json",
     "tests": [
       "tests/runtime/deepseek_gate_cpu.py",
       "tests/runtime/deepseek_gate_gpu.py"
@@ -861,7 +861,7 @@
       "hcu_sglang/__init__.py",
       "hcu_sglang/environ.py"
     ],
-    "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-topk-routing-source-alignment.json",
     "tests": [
       "tests/runtime/routing_cpu.py",
       "tests/runtime/routing_gpu.py",
@@ -880,7 +880,7 @@
       "hcu_sglang/__init__.py",
       "hcu_sglang/environ.py"
     ],
-    "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-topk-routing-source-alignment.json",
     "tests": [
       "tests/runtime/routing_cpu.py",
       "tests/runtime/routing_gpu.py",
@@ -896,7 +896,7 @@
       "hcu_sglang/layers/moe/ep_balance.py",
       "hcu_sglang/environ.py"
     ],
-    "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-topk-routing-source-alignment.json",
     "tests": [
       "tests/runtime/ep_balance_cpu.py",
       "tests/runtime/routing_gpu.py"
@@ -904,7 +904,7 @@
     "validation_scope": "5 independent Python-oracle CPU tests and actual GPU TopK/HashTopK synthetic-mode tests validate routed IDs and preservation of router weights/shared columns. Synthetic IDs are performance-benchmark inputs, not accuracy evidence."
   },
   "python/sglang/srt/eplb/load_aware_dispatch.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -918,7 +918,7 @@
     "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/eplb/lplb_solver.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -933,7 +933,7 @@
     "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/eplb/expert_location_dispatch.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -948,7 +948,7 @@
     "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/model_executor/model_runner_components/moe_ep_setup.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -962,7 +962,7 @@
     "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/eplb/eplb_manager.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -976,7 +976,7 @@
     "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/arg_groups/parallel_hook.py": {
-    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-load-aware-source-alignment.json",
     "tests": [
       "tests/runtime/load_aware_cpu.py",
       "tests/runtime/load_aware_gpu.py",
@@ -1007,7 +1007,7 @@
       "hcu_sglang/config.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-expert-placement-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-expert-placement-source-alignment.json",
     "tests": [
       "tests/runtime/expert_placement_cpu.py",
       "tests/runtime/expert_placement_gpu.py"
@@ -1021,7 +1021,7 @@
       "hcu_sglang/eplb/recording.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-expert-recording-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-expert-recording-source-alignment.json",
     "tests": [
       "tests/runtime/expert_recording_cpu.py",
       "tests/runtime/expert_recording_gpu.py",
@@ -1038,7 +1038,7 @@
       "hcu_sglang/deepep_graph.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-deepep-graph-layout-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-deepep-graph-layout-source-alignment.json",
     "tests": [
       "tests/runtime/deepep_graph_cpu.py"
     ],
@@ -1061,12 +1061,12 @@
       "hcu_sglang/graph_batch.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-graph-batch-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-graph-batch-source-alignment.json",
     "tests": [
       "tests/runtime/graph_batch_cpu.py"
     ],
     "validation_scope": "6 CPU control-flow tests passed using real native DllmConfig and algorithms with fixture model metadata; pre-imported decode/runner alias identity checked. Source AST equal after qualifying native helper globals. No real diffusion model GPU or accuracy claim. Isolated dev63:604 identical package files,446 hooks/3 seams,95 repository tests; real8GPU ordinary DeepSeek base recipe passes6 strict requests and cleanup. This service does not exercise separate-context diffusion GPU capture.",
-    "ordinary_model_service_evidence": "docs/hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json"
+    "ordinary_model_service_evidence": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json"
   },
   "python/sglang/srt/model_executor/model_runner_components/cuda_graph_setup.py": {
     "status": "implemented",
@@ -1075,16 +1075,16 @@
       "hcu_sglang/graph_setup.py",
       "hcu_sglang/__init__.py"
     ],
-    "source_alignment": "docs/hcu-graph-setup-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-graph-setup-source-alignment.json",
     "tests": [
       "tests/runtime/graph_setup_cpu.py",
       "tests/runtime/graph_setup_gloo.py",
       "tests/runtime/graph_setup_gpu.py"
     ],
     "evidence": [
-      "docs/hcu-graph-setup-collective-validation-20261101.json",
-      "docs/hcu-graph-setup-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-graph-setup-collective-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-graph-setup-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json"
     ],
     "validation_scope": "9 CPU contracts pass incl public prefill/capture callers, aliases, native budget setter/state, PP group and lifecycle order; real4-rank Gloo native MIN plus separate earlier-stage collective passes, synthetic memory inquiries only. Isolated dev64 real GPU primitive Graph replays changed inputs after native platform cache release. Actual PP/hybrid/H16 models remain unverified; isolated605-file artifact,450 hooks/3 seams and95 repository tests pass. Frozen4873fea ordinary PP1 model8GPU original recipe passes6 strict requests with24 native budget log lines and owned cleanup. This is not PP/hybrid/H16 model evidence."
   },
@@ -1097,15 +1097,15 @@
       "hcu_sglang/prefill_output.py",
       "hcu_sglang/mega_moe_graph.py"
     ],
-    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_graph_cpu.py",
       "tests/runtime/prefill_graph_gpu.py"
     ],
     "validation_scope": "13 CPU tests pass incl complete constructor with expensive base/buffer/backend fixtures, public load/execute, shared DP/local policy, nested scope and failures, output dataclass and replay identity. Isolated dev65 GPU executes real primitive Graph through public load/body/trim twice with changed prepared IDs and encoder metadata. Complete model prefill capture/replay and final artifact gates recorded separately, not inferred.",
     "evidence": [
-      "docs/hcu-prefill-runner-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
     ],
     "dev66_model_scope": "Frozenc61fb5c/612 files: original8GPU DSPARK/DeepEP/decodeGraph recipe plus explicit BCG64/128/context256, all8 target prefill captures completed,6 strict requests and cleanup passed. No request-level BCG hit, CP/elastic model or full benchmark claim."
   },
@@ -1116,14 +1116,14 @@
       "hcu_sglang/prefill_graph_policy.py",
       "hcu_sglang/prefill_graph_runner.py"
     ],
-    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_graph_cpu.py",
       "tests/runtime/prefill_graph_gpu.py"
     ],
     "validation_scope": "Scope nesting/exception restoration, compile probe and actual runner context tested; public primitive GPU replay observes raw token count. Does not prove all pending DAS consumers migrated.",
     "evidence": [
-      "docs/hcu-prefill-runner-gates-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-gates-validation-20261101.json"
     ]
   },
   "python/sglang/srt/layers/logits_processor.py": {
@@ -1132,7 +1132,7 @@
     "implementation": [
       "hcu_sglang/prefill_output.py"
     ],
-    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_graph_cpu.py"
     ],
@@ -1144,7 +1144,7 @@
     "implementation": [
       "hcu_sglang/mega_moe_graph.py"
     ],
-    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-runner-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_graph_cpu.py"
     ],
@@ -1158,7 +1158,7 @@
       "hcu_sglang/prefill_graph_sync.py",
       "hcu_sglang/cp_token_counts.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_graph_cpu.py",
       "tests/runtime/prefill_sync_cpu.py",
@@ -1166,9 +1166,9 @@
     ],
     "validation_scope": "6 CPU tests include old public producer TypeError and fixed real producer,131 folded rows handed to vote and metadata,12-column protocol and dataclass copy/pickle. Real4-rank Gloo pack/reduction/mixed layout and nonzero global-root subgroup pass. New model run pending, not inferred from helper tests.",
     "evidence": [
-      "docs/hcu-prefill-dev65-failure-20261101.json",
-      "docs/hcu-prefill-sync-collective-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-dev65-failure-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-collective-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json"
     ],
     "dev66_model_scope": "Frozenc61fb5c/612 files: original8GPU DSPARK/DeepEP/decodeGraph recipe plus explicit BCG64/128/context256, all8 target prefill captures completed,6 strict requests and cleanup passed. No request-level BCG hit, CP/elastic model or full benchmark claim."
   },
@@ -1179,7 +1179,7 @@
       "hcu_sglang/prefill_graph_sync.py",
       "hcu_sglang/prefill_request.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_sync_cpu.py",
       "tests/runtime/prefill_sync_gloo.py",
@@ -1193,7 +1193,7 @@
     "implementation": [
       "hcu_sglang/cp_token_counts.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_sync_cpu.py",
       "tests/runtime/prefill_sync_gloo.py"
@@ -1206,7 +1206,7 @@
     "implementation": [
       "hcu_sglang/cp_token_counts.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_sync_cpu.py",
       "tests/runtime/prefill_sync_gloo.py"
@@ -1220,14 +1220,14 @@
       "hcu_sglang/encoder_swa_replay.py",
       "hcu_sglang/encoder_swa_worker.py"
     ],
-    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-encoder-swa-source-alignment.json",
     "tests": [
       "tests/runtime/encoder_swa_cpu.py",
       "tests/runtime/encoder_swa_gpu.py"
     ],
     "validation_scope": "8 CPU contracts retain public worker fold/fallback, original plan identity, hidden/tail row mapping and one batched vs two legacy replay forwards. Isolated67 GPU real tensors and changed-input primitive Graph verify dense/tail output map. Full compatible-model feature validation not inferred.",
     "evidence": [
-      "docs/hcu-encoder-swa-gates-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-encoder-swa-gates-validation-20261101.json"
     ]
   },
   "python/sglang/srt/elastic_ep/topology.py": {
@@ -1236,7 +1236,7 @@
     "implementation": [
       "hcu_sglang/cp_token_counts.py"
     ],
-    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_sync_cpu.py",
       "tests/runtime/prefill_sync_gloo.py"
@@ -1249,15 +1249,15 @@
     "implementation": [
       "hcu_sglang/encoder_swa_worker.py"
     ],
-    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-encoder-swa-source-alignment.json",
     "tests": [
       "tests/runtime/encoder_swa_cpu.py",
       "tests/runtime/encoder_swa_gpu.py"
     ],
     "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance.",
     "evidence": [
-      "docs/hcu-encoder-swa-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-encoder-swa-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json"
     ],
     "ordinary_model_service_scope": "Frozen cb69307/dev67/614 files passes ordinary8GPU BCG initialization plus6 strict requests and cleanup with encoder flagFalse. Not encoder cache-hit feature validation; currentV4.1 preflight retains CUDA/gfx950 rejection."
   },
@@ -1267,7 +1267,7 @@
     "implementation": [
       "hcu_sglang/encoder_swa_replay.py"
     ],
-    "source_alignment": "docs/hcu-encoder-swa-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-encoder-swa-source-alignment.json",
     "tests": [
       "tests/runtime/encoder_swa_cpu.py",
       "tests/runtime/encoder_swa_gpu.py"
@@ -1282,14 +1282,14 @@
       "hcu_sglang/prefill_memory_budget.py",
       "hcu_sglang/prefill_request.py"
     ],
-    "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-admission-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_admission_cpu.py"
     ],
     "validation_scope": "8 CPU contracts through real constructor/public add_one_req and native memory budget preserve prior overdraw(-10) counterexample,144-token first-page boundary, exact/DLLM charge, capacity defer and AUX legacy readout. Ordinary model and final gates recorded separately; native window-plan production/transport not claimed.",
     "evidence": [
-      "docs/hcu-prefill-admission-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-admission-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
     ],
     "ordinary_model_scope": "Frozen dd88288/dev68/619 files:8GPU BCG initialization and6 strict requests with cleanup passed, encoder flagFalse. Not encoder cache-hit/AUX transfer/BCG request-hit or dataset score."
   },
@@ -1299,14 +1299,14 @@
     "implementation": [
       "hcu_sglang/prefill_memory_budget.py"
     ],
-    "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-admission-source-alignment.json",
     "tests": [
       "tests/runtime/prefill_admission_cpu.py"
     ],
     "validation_scope": "Actual native Prefill/SWA/SharedSWA object methods accept new parameter; old native signature rejection retained. CPU capacity and public admission contracts, not complete AUX transfer.",
     "evidence": [
-      "docs/hcu-prefill-admission-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-admission-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
     ],
     "ordinary_model_scope": "Frozen dd88288/dev68/619 files:8GPU BCG initialization and6 strict requests with cleanup passed, encoder flagFalse. Not encoder cache-hit/AUX transfer/BCG request-hit or dataset score."
   },
@@ -1318,16 +1318,16 @@
       "hcu_sglang/v4_defaults.py",
       "hcu_sglang/models/deepseek/current_v4/hcu_backend/arg_groups.py"
     ],
-    "source_alignment": "docs/hcu-v4-defaults-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-v4-defaults-source-alignment.json",
     "tests": [
       "tests/runtime/replay_validation_cpu.py",
       "tests/runtime/v4_defaults_cpu.py"
     ],
     "validation_scope": "Final70:9 CPU policy/CP/alias contracts,467 hooks/4 seams,620 matching package files and95 repository tests. Actual0731/V4.1 resolve_once preserves sparse env1; old68 actual probe cleared it. Frozen69 prototype127/128 matches saved DAS per-case outcomes with0 invalid; attributed to prototype build, not final70 measurement. CP/SM100/mega actual models remain unverified.",
     "evidence": [
-      "docs/hcu-v4-defaults-gates-validation-20261101.json",
-      "docs/hcu-gsm8k128-sparse-default-dev69-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-v4-defaults-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-gsm8k128-sparse-default-dev69-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json"
     ],
     "final70_model_scope": "Frozen32fb304/620 files: plain original8GPU recipe,6 strict requests and cleanup pass, actual server log preserves explicit sparse. Prototype69 GSM127/128 remains separate; no actual CP/SM100/mega or full benchmark claim."
   },
@@ -1337,7 +1337,7 @@
     "implementation": [
       "hcu_sglang/model_replay_budget.py"
     ],
-    "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-prefill-admission-source-alignment.json",
     "tests": [
       "tests/runtime/replay_validation_cpu.py"
     ],
@@ -1349,7 +1349,7 @@
     "implementation": [
       "hcu_sglang/mem_cache/window_tree.py"
     ],
-    "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-tree-source-alignment.json",
     "tests": [
       "tests/runtime/window_tree_cpu.py",
       "tests/runtime/window_tree_gpu.py",
@@ -1357,8 +1357,8 @@
     ],
     "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
     "evidence": [
-      "docs/hcu-window-tree-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-tree-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json"
     ],
     "ordinary_model_scope": "Frozen2cb0f1b/dev71/623 files:6 strict ordinary8GPU requests and owned cleanup passed, explicit sparse preserved. No hicache/buffer/storage/cache-hit or dataset rerun claim."
   },
@@ -1371,8 +1371,8 @@
       "hcu_sglang/mem_cache/rust_tree_core/provider.py"
     ],
     "source_alignment": [
-      "docs/hcu-window-tree-source-alignment.json",
-      "docs/hcu-rust-events-source-alignment.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-tree-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json"
     ],
     "tests": [
       "tests/runtime/window_tree_cpu.py",
@@ -1383,9 +1383,9 @@
     ],
     "validation_scope": "Actual CPU native factory, owned compiled Source binding, event store/remove tuple and Python parity, existing SWA restoration. Full adapter or GPU model claim not made.",
     "evidence": [
-      "docs/hcu-window-tree-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json",
-      "docs/hcu-rust-events-gates-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-tree-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-gates-validation-20261101.json"
     ]
   },
   "python/sglang/srt/mem_cache/storage_prefetch.py": {
@@ -1395,7 +1395,7 @@
       "hcu_sglang/mem_cache/window_plan.py",
       "hcu_sglang/mem_cache/window_pipeline.py"
     ],
-    "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-tree-source-alignment.json",
     "tests": [
       "tests/runtime/window_tree_cpu.py",
       "tests/runtime/window_tree_gpu.py",
@@ -1405,7 +1405,7 @@
     ],
     "validation_scope": "Actual public pipeline prepares independent SWA/AUX ranges and Req AUX reader; same records consumed by allocation/insert/ACK control. Raw persistence/model cache-hit still unverified.",
     "evidence": [
-      "docs/hcu-window-pipeline-gates-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-gates-validation-20261101.json"
     ]
   },
   "python/sglang/srt/mem_cache/buffer_mode/pipeline.py": {
@@ -1417,15 +1417,15 @@
       "hcu_sglang/mem_cache/window_cache_init.py",
       "hcu_sglang/mem_cache/window_pool_name.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
       "tests/runtime/window_pipeline_gpu.py"
     ],
     "validation_scope": "9 CPU contracts through public prepare/load/ACK and full cache init/factory, real tree repair/match, explicit allocation/publication facade; allocation failure, fail-stop ownership, sidecar skip, shared reserve and legacy enum pickle. GPU fixture controller uses real pinned H2D stream/event and byte oracle. Not full native controller/L3/cache-hit model acceptance.",
     "evidence": [
-      "docs/hcu-window-pipeline-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
     ],
     "ordinary_model_scope": "Frozen8e01b89/dev72/627 files:6 strict ordinary8GPU requests and cleanup pass, sparse preserved. No hicache/buffer/storage/cache-hit configuration or dataset rerun claim."
   },
@@ -1435,15 +1435,15 @@
     "implementation": [
       "hcu_sglang/mem_cache/window_cache_init.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
       "tests/runtime/window_pipeline_gpu.py"
     ],
     "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim.",
     "evidence": [
-      "docs/hcu-window-pipeline-gates-validation-20261101.json",
-      "docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-gates-validation-20261101.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
     ],
     "ordinary_model_scope": "Frozen8e01b89/dev72/627 files:6 strict ordinary8GPU requests and cleanup pass, sparse preserved. No hicache/buffer/storage/cache-hit configuration or dataset rerun claim."
   },
@@ -1453,7 +1453,7 @@
     "implementation": [
       "hcu_sglang/mem_cache/window_cache_init.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
       "tests/runtime/window_pipeline_gpu.py"
@@ -1466,7 +1466,7 @@
     "implementation": [
       "hcu_sglang/mem_cache/window_component.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
       "tests/runtime/window_pipeline_gpu.py"
@@ -1479,7 +1479,7 @@
     "implementation": [
       "hcu_sglang/mem_cache/window_component.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
       "tests/runtime/window_pipeline_gpu.py"
@@ -1495,8 +1495,8 @@
       "hcu_sglang/mem_cache/file_evictor.py"
     ],
     "source_alignment": [
-      "docs/hcu-window-pipeline-source-alignment.json",
-      "docs/hcu-file-backend-source-alignment.json"
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-window-pipeline-source-alignment.json",
+      "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-file-backend-source-alignment.json"
     ],
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
@@ -1512,7 +1512,7 @@
       "hcu_sglang/mem_cache/file_evictor.py",
       "hcu_sglang/mem_cache/file_backend.py"
     ],
-    "source_alignment": "docs/hcu-file-backend-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-file-backend-source-alignment.json",
     "tests": [
       "tests/runtime/file_backend_cpu.py"
     ],
@@ -1525,7 +1525,7 @@
       "hcu_sglang/mem_cache/kv_events.py",
       "hcu_sglang/mem_cache/kv_event_admission.py"
     ],
-    "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-kv-events-source-alignment.json",
     "tests": [
       "tests/runtime/kv_events_cpu.py"
     ],
@@ -1538,7 +1538,7 @@
       "hcu_sglang/mem_cache/kv_event_admission.py",
       "hcu_sglang/mem_cache/kv_events.py"
     ],
-    "source_alignment": "docs/hcu-kv-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-kv-events-source-alignment.json",
     "tests": [
       "tests/runtime/kv_events_cpu.py"
     ],
@@ -1552,7 +1552,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1567,7 +1567,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1582,7 +1582,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1597,7 +1597,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1612,7 +1612,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1627,7 +1627,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1642,7 +1642,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1657,7 +1657,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"
@@ -1672,7 +1672,7 @@
       "hcu_sglang/mem_cache/cpp_utils",
       "hcu_sglang/mem_cache/window_rust.py"
     ],
-    "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+    "source_alignment": "git:de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-rust-events-source-alignment.json",
     "tests": [
       "tests/runtime/rust_provider_cpu.py",
       "tests/runtime/rust_events_native.py"

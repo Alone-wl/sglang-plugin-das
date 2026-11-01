@@ -1,7 +1,7 @@
 from __future__ import annotations
 from sglang.srt.mem_cache import unified_radix_cache as N
 from hcu_sglang.mem_cache.window_pipeline import validate_buffer_only_stack
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def create_buffer_pipeline(
@@ -165,19 +165,19 @@ def init_hicache(self, server_args: ServerArgs, params: CacheInitParams) -> None
 
 
 def around_create(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return create_buffer_pipeline(self, *args, **kwargs)
 
 
 def around_init(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return init_hicache(self, *args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.unified_cache.components.base.TreeComponent.create_buffer_pipeline", around_create, HookType.AROUND)

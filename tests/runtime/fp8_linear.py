@@ -115,7 +115,7 @@ class Fp8LinearTests(unittest.TestCase):
         with self.assertRaises(AssertionError):C.N.scaled_fp8_quant(torch.ones(1,2,4))
         with self.assertRaises(AssertionError):C.N.scaled_fp8_quant(torch.ones(2,4),torch.ones(2))
         marker=object();original=Mock(return_value=marker)
-        with patch.object(F,'is_dcu',return_value=False):self.assertIs(F.around_scaled_fp8_quant(original,'input',setting=True),marker)
+        with patch.object(F,'is_hcu',return_value=False):self.assertIs(F.around_scaled_fp8_quant(original,'input',setting=True),marker)
         original.assert_called_once_with('input',setting=True)
 
     def test_backend_failure_propagates_and_non_hcu_retains_original(self):
@@ -124,7 +124,7 @@ class Fp8LinearTests(unittest.TestCase):
             with self.assertRaises(RuntimeError) as caught:C.N.apply_fp8_linear(self.q,self.w,self.ws,input_scale=self.s,cutlass_fp8_supported=False)
         self.assertIs(caught.exception,error)
         marker=object();original=Mock(return_value=marker)
-        with patch.object(C,'is_dcu',return_value=False):self.assertIs(C.around_apply_fp8_linear(original,'input',setting=True),marker)
+        with patch.object(C,'is_hcu',return_value=False):self.assertIs(C.around_apply_fp8_linear(original,'input',setting=True),marker)
         original.assert_called_once_with('input',setting=True)
 
 

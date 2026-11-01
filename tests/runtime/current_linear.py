@@ -111,7 +111,7 @@ class CurrentLinearTests(unittest.TestCase):
         layer=self.layer();layer.weight.data.fill_(.5);x=torch.ones(2,8)
         output,bias=layer(x,rms_weight=torch.full((8,),2.));torch.testing.assert_close(output,torch.full((2,4),4.));self.assertIsNone(bias)
         marker=object();original=Mock(return_value=marker)
-        with patch.object(C,'is_dcu',return_value=False):self.assertIs(C._around(C.column_forward)(original,layer,x),marker)
+        with patch.object(C,'is_hcu',return_value=False):self.assertIs(C._around(C.column_forward)(original,layer,x),marker)
         original.assert_called_once_with(layer,x)
 
 

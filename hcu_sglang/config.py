@@ -51,12 +51,12 @@ def configure_custom_all_reduce_backend(value):
 
 
 def resolved_custom_all_reduce_backend(disabled=False):
-    from hcu_sglang.utils.detection import is_dcu
+    from hcu_sglang.utils.detection import is_hcu
     from sglang.srt.utils import get_bool_env_var
     backend = custom_all_reduce_backend()
     if disabled:
         return "off"
-    if backend == "auto" and is_dcu() and get_bool_env_var("SGLANG_USE_AITER_AR", default="false"):
+    if backend == "auto" and is_hcu() and get_bool_env_var("SGLANG_USE_AITER_AR", default="false"):
         return "aiter"
     return backend
 

@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 import torch
 from sglang.srt.eplb import expert_distribution as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def _on_forward_pass_end(self, forward_pass_id: int, outputs: Dict[str, Any]):
@@ -166,14 +166,14 @@ def _dump_to_file(name, data):
 
 def _around(implementation):
     def hook(original, *args, **kwargs):
-        if not is_dcu():
+        if not is_hcu():
             return original(*args, **kwargs)
         return implementation(*args, **kwargs)
     return hook
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     for target, implementation in [

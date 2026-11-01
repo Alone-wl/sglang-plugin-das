@@ -16,7 +16,7 @@ def reference(value, weight, eps):
 
 class NormGpuTests(unittest.TestCase):
     def setUp(self):
-        self.assertTrue(C.is_dcu())
+        self.assertTrue(C.is_hcu())
         self.assertFalse(C.N.is_batch_invariant_mode_enabled())
         torch.manual_seed(738)
 

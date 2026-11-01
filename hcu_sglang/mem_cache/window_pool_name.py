@@ -2,7 +2,7 @@ from __future__ import annotations
 from enum import Enum
 import copyreg
 from sglang.srt.mem_cache.hicache_storage import PoolName as _NativePoolName
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 _LEGACY = [_NativePoolName]
 
@@ -51,7 +51,7 @@ def _reduce_legacy(member):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     copyreg.pickle(_LEGACY[0], _reduce_legacy)

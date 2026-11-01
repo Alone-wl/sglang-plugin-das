@@ -18,7 +18,7 @@ class Fp8LinearGpuTests(unittest.TestCase):
         HookRegistry.reset();H.register_hooks();HookRegistry.apply_hooks()
 
     def setUp(self):
-        self.assertTrue(C.is_dcu());torch.manual_seed(818)
+        self.assertTrue(C.is_hcu());torch.manual_seed(818)
         self.q=(torch.randn(8,256,device='cuda')*.3).to(torch.float8_e4m3fn)
         self.s=torch.linspace(.25,.5,8,device='cuda').reshape(8,1)
         self.w=(torch.randn(128,256,device='cuda')*.3).to(torch.float8_e4m3fn).t()

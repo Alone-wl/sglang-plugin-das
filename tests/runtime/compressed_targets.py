@@ -50,7 +50,7 @@ class MatchingTargetTests(unittest.TestCase):
 
     def test_non_hcu_preserves_effective_original(self):
         original=Mock(return_value='native');obj=HiddenProjection()
-        with patch.object(C,'is_dcu',return_value=False):self.assertEqual(C.around_find_target(original,None,obj,[]),'native')
+        with patch.object(C,'is_hcu',return_value=False):self.assertEqual(C.around_find_target(original,None,obj,[]),'native')
         original.assert_called_once()
 
 

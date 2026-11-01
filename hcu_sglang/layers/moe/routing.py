@@ -1,16 +1,16 @@
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def _around(implementation):
     def hook(original, *args, **kwargs):
-        if not is_dcu():
+        if not is_hcu():
             return original(*args, **kwargs)
         return implementation(*args, **kwargs)
     return hook
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     from hcu_sglang.layers.moe import topk_source as T, hash_topk_source as H

@@ -19,7 +19,7 @@ from sglang.srt.runtime_context import get_exec
 from hcu_sglang.eplb.lplb_solver import LoadAwareReplicaSolver, LPLBSolver, assert_lplb_supported_model, clear_global_lplb_solvers, set_global_lplb_solver, get_global_lplb_solver
 from sglang.srt.eplb import eplb_manager as M
 from sglang.srt.arg_groups import parallel_hook as P
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 logger = logging.getLogger(__name__)
 
@@ -182,14 +182,14 @@ def update_expert_location_with_recovery(
 
 def _around(implementation):
     def hook(original, *args, **kwargs):
-        if not is_dcu():
+        if not is_hcu():
             return original(*args, **kwargs)
         return implementation(*args, **kwargs)
     return hook
 
 
 def after_cli(result, parser):
-    if is_dcu():
+    if is_hcu():
         action = parser._option_string_actions.get("--ep-dispatch-algorithm")
         if action is not None and action.choices is not None and "load_aware" not in action.choices:
             action.choices = list(action.choices) + ["load_aware"]
@@ -198,7 +198,7 @@ def after_cli(result, parser):
 
 def around_dispatch_validation(original, server_args):
     result = original(server_args)
-    if not is_dcu():
+    if not is_hcu():
         return result
     cfg = P.resolving_view(server_args)
     if cfg.ep_dispatch_algorithm == "load_aware":
@@ -212,14 +212,14 @@ def around_dispatch_validation(original, server_args):
 
 
 def around_info_init(original, cls, layer_id):
-    if not is_dcu():
+    if not is_hcu():
         return original(cls, layer_id)
     from hcu_sglang.eplb.expert_location_dispatch import ExpertLocationDispatchInfo
     return ExpertLocationDispatchInfo.init_new(layer_id)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     from hcu_sglang.eplb import expert_location_dispatch as D

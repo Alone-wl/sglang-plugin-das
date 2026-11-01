@@ -19,7 +19,7 @@ class CompressedFp8GpuTests(unittest.TestCase):
     def setUpClass(cls):HookRegistry.reset();H.register_hooks();HookRegistry.apply_hooks()
 
     def setUp(self):
-        self.assertTrue(C.is_dcu());self.assertTrue(C._use_lightop_channel_fp8);torch.manual_seed(4701)
+        self.assertTrue(C.is_hcu());self.assertTrue(C._use_lightop_channel_fp8);torch.manual_seed(4701)
         self.w=(torch.randn(256,512,device='cuda')*.25).to(torch.float8_e4m3fn)
         self.ws=torch.linspace(.125,.75,256,device='cuda').reshape(256,1)
         self.q=(torch.randn(17,512,device='cuda')*.25).to(torch.float8_e4m3fn)

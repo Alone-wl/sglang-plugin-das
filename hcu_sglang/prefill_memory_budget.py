@@ -13,7 +13,7 @@
 
 from __future__ import annotations
 from sglang.srt.mem_cache import prefill_budget as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def PrefillBudget_check_prefill(
@@ -111,25 +111,25 @@ def SharedSWAPrefillBudget_check_prefill(
 
 
 def around_PrefillBudget(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return PrefillBudget_check_prefill(self, *args, **kwargs)
 
 
 def around_SWAPrefillBudget(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return SWAPrefillBudget_check_prefill(self, *args, **kwargs)
 
 
 def around_SharedSWAPrefillBudget(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return SharedSWAPrefillBudget_check_prefill(self, *args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.prefill_budget.PrefillBudget.check_prefill", around_PrefillBudget, HookType.AROUND)

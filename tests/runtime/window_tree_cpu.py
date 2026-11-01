@@ -88,13 +88,13 @@ class WindowTreeCpuTests(unittest.TestCase):
         key=N.RadixKey(array('q',[1,2]),None)
         with self.assertRaisesRegex(NotImplementedError,'one SWA window'):O.swa_tombstone_ranges(S(),key,0,2,component_type=N.ComponentType.AUXILIARY_SWA)
         with self.assertRaises(NotImplementedError):O.attach_swa_window(S(),key,0,2,torch.arange(2),component_type=N.ComponentType.AUXILIARY_SWA)
-        with patch.object(O,'is_dcu',return_value=False):self.assertIs(O.around_get_factory(lambda name:factory,'rust'),factory)
+        with patch.object(O,'is_hcu',return_value=False):self.assertIs(O.around_get_factory(lambda name:factory,'rust'),factory)
 
     def test_non_hcu_window_wrappers_preserve_effective_original(self):
         from hcu_sglang.mem_cache import window_tree as O
         for fn in [O.around_swa_tombstone_ranges,O.around_attach_swa_window,O.around__attach_swa_segment]:
             seen=[];token=object()
-            with patch.object(O,'is_dcu',return_value=False):self.assertIs(fn(lambda *a,**k:seen.append((a,k)) or token,token,1,tag=2),token)
+            with patch.object(O,'is_hcu',return_value=False):self.assertIs(fn(lambda *a,**k:seen.append((a,k)) or token,token,1,tag=2),token)
             self.assertEqual(seen,[((token,1),{'tag':2})])
 
 

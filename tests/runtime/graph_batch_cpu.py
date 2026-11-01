@@ -55,7 +55,7 @@ class GraphBatchCpuTests(unittest.TestCase):
     def test_non_hcu_uses_effective_wrapped_original(self):
         from hcu_sglang import graph_batch as O
         seen=[];token=object()
-        with patch.object(O,'is_dcu',return_value=False):
+        with patch.object(O,'is_hcu',return_value=False):
             result=O.around_batch_sizes(lambda *a,**k:seen.append((a,k)) or token,token,3,gathered_buffer_required=True)
         self.assertIs(result,token)
         self.assertEqual(seen,[((token,3),{'gathered_buffer_required':True})])

@@ -18,7 +18,7 @@ from typing import List, Optional, Tuple
 import torch
 from torch.nn import Module
 from sglang.srt.layers.quantization import fp8_utils as N, fp8 as P
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 if N._use_aiter:
     from aiter.ops.quant import per_group_quant_hip
@@ -277,14 +277,14 @@ def _maybe_prepare_dense_mxscale(self, layer: Module) -> None:
         )
 
 def around_aiter_block_linear(original, input, weight, block_size, weight_scale, input_scale=None, bias=None):
-    if not is_dcu():
+    if not is_hcu():
         return original(input, weight, block_size, weight_scale, input_scale, bias)
     return aiter_w8a8_block_fp8_linear(input, weight, block_size, weight_scale, input_scale, bias)
 
 
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
-    if not is_dcu():
+    if not is_hcu():
         return
     for name in (
         "aiter_has_dense_mxscale", "set_dense_mxscale", "_dense_mxscale_shapes",

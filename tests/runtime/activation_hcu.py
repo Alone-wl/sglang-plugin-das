@@ -22,13 +22,13 @@ class ActivationTests(unittest.TestCase):
 
     def test_constructor_matches_hcu_aiter_and_deterministic_gates(self):
         with patch.object(N,'_use_aiter',True),patch.object(N,'publish_role',return_value=None),envs.SGLANG_OPT_USE_AITER_SILU_MUL.override(True):
-            with patch.object(H,'is_dcu',return_value=True):self.assertEqual(N.SiluAndMul()._forward_method.__name__,'forward_cuda')
-            with patch.object(H,'is_dcu',return_value=False):self.assertEqual(N.SiluAndMul()._forward_method.__name__,'forward_aiter')
+            with patch.object(H,'is_hcu',return_value=True):self.assertEqual(N.SiluAndMul()._forward_method.__name__,'forward_cuda')
+            with patch.object(H,'is_hcu',return_value=False):self.assertEqual(N.SiluAndMul()._forward_method.__name__,'forward_aiter')
         with patch.object(N,'_use_aiter',True),patch.object(N,'publish_role',return_value='target'),patch.object(N,'get_exec',return_value=SimpleNamespace(deterministic=SimpleNamespace(rl_on_policy_target='fsdp'))):
             self.assertEqual(N.SiluAndMul()._forward_method.__name__,'forward_native')
 
     def test_actual_lightop_public_forward_matches_fp32_reference(self):
-        self.assertTrue(H.is_dcu());torch.manual_seed(316)
+        self.assertTrue(H.is_hcu());torch.manual_seed(316)
         for dtype in (torch.bfloat16,torch.float16):
             for batch,hidden in [(1,256),(8,2048),(64,512)]:
                 with self.subTest(dtype=dtype,batch=batch,hidden=hidden):
@@ -50,7 +50,7 @@ class ActivationTests(unittest.TestCase):
 
     def test_non_hcu_preserves_effective_original(self):
         marker=object();original=Mock(return_value=marker);layer=object();value=object()
-        with patch.object(H,'is_dcu',return_value=False):self.assertIs(H.around_silu_and_mul_forward_cuda(original,layer,value),marker)
+        with patch.object(H,'is_hcu',return_value=False):self.assertIs(H.around_silu_and_mul_forward_cuda(original,layer,value),marker)
         original.assert_called_once_with(layer,value)
 
 

@@ -25,7 +25,7 @@ class Fp8FallbackGpuTests(unittest.TestCase):
         HookRegistry.reset();Q.register_hooks();HookRegistry.apply_hooks()
 
     def setUp(self):
-        self.assertTrue(C.is_dcu());C.TORCH_DEVICE_IDENTITY=None;C._HIPBLASLT_UNSUPPORTED_FP8_SHAPES.clear();torch.manual_seed(708)
+        self.assertTrue(C.is_hcu());C.TORCH_DEVICE_IDENTITY=None;C._HIPBLASLT_UNSUPPORTED_FP8_SHAPES.clear();torch.manual_seed(708)
 
     def inputs(self,m,k,n):
         q=(torch.randn(m,k,device='cuda')*.5).to(torch.float8_e4m3fn)

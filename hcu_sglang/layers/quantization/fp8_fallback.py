@@ -3,11 +3,11 @@ from __future__ import annotations
 import logging
 import torch
 from sglang.srt.layers.quantization import fp8_utils as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.layers.quantization.fp8_scaled_mm import triton_scaled_mm
 
 logger = logging.getLogger(__name__)
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 TORCH_DEVICE_IDENTITY = None
 _HIPBLASLT_UNSUPPORTED_FP8_SHAPES: set[tuple] = set()
 

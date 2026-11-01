@@ -24,9 +24,9 @@ import torch
 from torch import nn
 from lightop import op
 from sglang.srt.layers import layernorm as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _use_hcu_lightop_gemma_rmsnorm = _is_hcu and N.get_bool_env_var(
     "SGLANG_USE_LIGHTOP_GEMMA_RMSNORM"
 )
@@ -242,7 +242,7 @@ def gemma_forward_with_lightop_fp8_quant(
 
 
 def around_gemma_forward_hip(original, self, x, residual=None, post_residual_addition=None):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, x, residual, post_residual_addition)
     return gemma_forward_hip(self, x, residual, post_residual_addition)
 

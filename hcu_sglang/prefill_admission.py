@@ -18,7 +18,7 @@ from typing import Optional
 from sglang.srt.managers import schedule_policy as N
 from sglang.srt.managers.schedule_batch import Req, ScheduleBatch
 from hcu_sglang import encoder_swa_replay
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 @dataclass(frozen=True, slots=True)
@@ -700,7 +700,7 @@ class PrefillAdder(N.PrefillAdder):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.managers.schedule_policy.PrefillAdder", PrefillAdder, HookType.REPLACE)

@@ -90,7 +90,7 @@ class V4DefaultsCpuTests(unittest.TestCase):
         from hcu_sglang import v4_defaults as O
         for fn in [O.around_defaults]:
             token=object();seen=[]
-            with patch.object(O,'is_dcu',return_value=False):self.assertIs(fn(lambda *a,**k:seen.append((a,k)) or token,token,flag=1),token)
+            with patch.object(O,'is_hcu',return_value=False):self.assertIs(fn(lambda *a,**k:seen.append((a,k)) or token,token,flag=1),token)
             self.assertEqual(seen,[((token,),{'flag':1})])
 
 

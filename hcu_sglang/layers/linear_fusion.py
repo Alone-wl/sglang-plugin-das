@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import torch
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def normalize_projection_input(hidden, weight, residual=None, eps=1e-6, update=True):

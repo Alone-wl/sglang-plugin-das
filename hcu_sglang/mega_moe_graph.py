@@ -19,9 +19,9 @@ from __future__ import annotations
 import torch
 from sglang.srt.environ import envs
 from sglang.srt.layers.moe import mega_moe as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _HCU_MEGA_MOE_RUNTIME_DEEP_GEMM = "deep_gemm"
 _HCU_MEGA_MOE_RUNTIME_MEGAMOE = "megamoe"
 _HCU_MEGA_MOE_RUNTIMES = {

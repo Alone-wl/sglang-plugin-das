@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from typing import Literal
 from sglang.srt.layers import linear as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.layers.fused_rms_quant import (
     fused_rms_norm_per_token_quant as lm_faster_rmsquant,
 )
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _use_fused_rms_quant = N.get_bool_env_var("SGLANG_USE_LEGACY_FUSED_RMS_QUANT")
 
 
@@ -354,7 +354,7 @@ def merged_forward(
 
 def _around(method):
     def call(original, *args, **kwargs):
-        if not is_dcu():
+        if not is_hcu():
             return original(*args, **kwargs)
         return method(*args, **kwargs)
     return call
@@ -362,7 +362,7 @@ def _around(method):
 
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
-    if is_dcu():
+    if is_hcu():
         N.LinearParallelGroup = Literal["tp", "attn_tp", "attn_cp", "replicated", "shared_experts_tp"] | N.ReplicatedParallelGroup
     for target, method in (
         ("_resolve_linear_group", _resolve_linear_group),

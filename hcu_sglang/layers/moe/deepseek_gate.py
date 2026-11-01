@@ -17,7 +17,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 from sglang.srt.models import deepseek_v2 as N
-from hcu_sglang.utils.detection import is_dcu as is_hcu
+from hcu_sglang.utils.detection import is_hcu as is_hcu
 from hcu_sglang.models.deepseek.deepseek_nextn.methods.model import enable_cp_v2
 from sglang.srt.layers.attention.dsa.utils import dsa_use_prefill_cp
 from hcu_sglang.models.deepseek.current_v4.hcu_backend.hcu_cp_utils import mla_use_prefill_cp

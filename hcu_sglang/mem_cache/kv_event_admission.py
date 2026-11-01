@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from sglang.srt.runtime_context import get_lora
 from hcu_sglang.mem_cache.kv_events import KvEventLoraNames
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 if TYPE_CHECKING:
     from sglang.srt.managers.schedule_batch import Req
@@ -31,13 +31,13 @@ def _record_kv_event_lora_name(self, req: Req, lora_name: Optional[str]) -> None
 
 
 def around_init(original, self):
-    if not is_dcu():
+    if not is_hcu():
         return original(self)
     return init_kv_event_lora_names(self)
 
 
 def around_admission(original, self, recv_req, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, recv_req, *args, **kwargs)
     token = _ADMISSION.set((self, recv_req))
     try:
@@ -49,13 +49,13 @@ def around_admission(original, self, recv_req, *args, **kwargs):
 def around_namespace(original, self, req):
     result = original(self, req)
     admission = _ADMISSION.get()
-    if is_dcu() and admission is not None and admission[0] is self:
+    if is_hcu() and admission is not None and admission[0] is self:
         _record_kv_event_lora_name(self, req, getattr(admission[1], "lora_name", None))
     return result
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     root = "sglang.srt.managers.scheduler.Scheduler."

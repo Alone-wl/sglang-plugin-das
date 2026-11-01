@@ -98,7 +98,7 @@ class ExpertPlacementCpuTests(unittest.TestCase):
         with patch.dict(os.environ,{'HCU_PLUGIN_EP_STATIC_DISPATCH_POLICY':'locality_fair'}),patch.object(P.P,'resolving_view',return_value=S(ep_dispatch_algorithm='load_aware')):
             with self.assertRaises(ValueError):P.around_validation(lambda _:7,object())
         token=object()
-        with patch.object(P,'is_dcu',return_value=False):self.assertIs(P._around(lambda *a:None)(lambda *a:token,object()),token)
+        with patch.object(P,'is_hcu',return_value=False):self.assertIs(P._around(lambda *a:None)(lambda *a:token,object()),token)
 
 
 if __name__=='__main__':unittest.main()

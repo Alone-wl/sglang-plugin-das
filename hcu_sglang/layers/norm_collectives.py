@@ -23,7 +23,7 @@ from typing import Optional, Tuple, Union
 import torch
 from sglang.srt.distributed import parallel_state as P
 from sglang.srt.layers import layernorm as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def tensor_model_parallel_fused_allreduce_rmsnorm(
@@ -308,25 +308,25 @@ def _forward_with_allreduce_fusion_quant_per_group(
 
 
 def around_fused_norm(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return tensor_model_parallel_fused_allreduce_rmsnorm(*args, **kwargs)
 
 
 def around_fused_norm_quant(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return tensor_model_parallel_fused_allreduce_rmsnorm_quant_per_group(*args, **kwargs)
 
 
 def around_norm_forward(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return _forward_with_allreduce_fusion(*args, **kwargs)
 
 
 def around_norm_quant_forward(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return _forward_with_allreduce_fusion_quant_per_group(*args, **kwargs)
 

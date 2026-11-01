@@ -12,7 +12,7 @@ from hcu_sglang import graph_setup as O
 @unittest.skipUnless(os.environ.get('HCU_PLUGIN_RUN_GPU_TESTS')=='1','explicit GPU opt-in required')
 class GraphSetupGpuTests(unittest.TestCase):
     def test_real_graph_replays_changed_input_after_native_cache_release(self):
-        self.assertTrue(O.is_dcu())
+        self.assertTrue(O.is_hcu())
         x=torch.arange(256,dtype=torch.float32,device='cuda');out=torch.empty_like(x)
         stream=torch.cuda.Stream();stream.wait_stream(torch.cuda.current_stream())
         with torch.cuda.stream(stream):

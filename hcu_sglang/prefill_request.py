@@ -19,7 +19,7 @@ from __future__ import annotations
 from sglang.srt.managers import schedule_batch as N
 from sglang.srt.mem_cache.storage_prefetch import StagedPrefetchPlan as _LegacyStagedPrefetchPlan
 from sglang.srt.mem_cache.unified_cache.components import ComponentType
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 _LEGACY_PLAN = [_LegacyStagedPrefetchPlan]
@@ -46,7 +46,7 @@ class Req(N.Req):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.managers.schedule_batch.Req", Req, HookType.REPLACE)

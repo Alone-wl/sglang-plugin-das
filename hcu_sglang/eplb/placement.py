@@ -21,7 +21,7 @@ from typing import List, Optional
 import torch
 from sglang.srt.eplb import expert_location as N
 from sglang.srt.arg_groups import parallel_hook as P
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.config import ep_static_dispatch_policy, configure_ep_static_dispatch_policy
 
 
@@ -319,32 +319,32 @@ def _choose_least_assigned_expert(
 
 def _around(implementation):
     def hook(original, *args, **kwargs):
-        if not is_dcu():
+        if not is_hcu():
             return original(*args, **kwargs)
         return implementation(*args, **kwargs)
     return hook
 
 
 def after_cli(result, parser):
-    if is_dcu() and "--ep-static-dispatch-policy" not in parser._option_string_actions:
+    if is_hcu() and "--ep-static-dispatch-policy" not in parser._option_string_actions:
         parser.add_argument("--ep-static-dispatch-policy", dest="hcu_plugin_ep_static_dispatch_policy", choices=("nearest", "locality_fair"), default=None, help="Choose nearest or locality-fair static replica placement.")
     return result
 
 
 def before_seed(cls, args):
-    if is_dcu():
+    if is_hcu():
         configure_ep_static_dispatch_policy(getattr(args, "hcu_plugin_ep_static_dispatch_policy", None))
 
 
 def around_validation(original, server_args):
     result = original(server_args)
-    if is_dcu() and ep_static_dispatch_policy() != "nearest" and P.resolving_view(server_args).ep_dispatch_algorithm != "static":
+    if is_hcu() and ep_static_dispatch_policy() != "nearest" and P.resolving_view(server_args).ep_dispatch_algorithm != "static":
         raise ValueError("locality_fair replica policy requires static expert dispatch")
     return result
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     for name in ("_compute_logical_to_all_physical_map", "compute_logical_to_rank_dispatch_physical_map"):

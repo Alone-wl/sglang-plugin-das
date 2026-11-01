@@ -17,11 +17,11 @@ from __future__ import annotations
 import torch
 import deepgemm
 from sglang.srt.layers.quantization import fp8_utils as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.layers.quantization.fp8_fallback import _apply_fallback_scaled_mm
 from hcu_sglang.layers.quantization.fp8_scaled_mm import triton_scaled_mm
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _sglang_enable_torch_compile = N.get_bool_env_var("SGLANG_ENABLE_TORCH_COMPILE")
 
 
@@ -333,7 +333,7 @@ def apply_fp8_linear(
 
 
 def around_apply_fp8_linear(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return apply_fp8_linear(*args, **kwargs)
 

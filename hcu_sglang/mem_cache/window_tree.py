@@ -3,7 +3,7 @@ from sglang.srt.mem_cache.unified_cache import unified_tree_core as N
 from sglang.srt.mem_cache.radix_cache import RadixKey
 from sglang.srt.mem_cache.unified_cache.unified_tree_core import UnifiedTreeNode
 from sglang.srt.mem_cache.unified_cache.cache_action import CacheAction, ComponentAction
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def swa_tombstone_ranges(
@@ -98,25 +98,25 @@ def _attach_swa_segment(
 
 
 def around_swa_tombstone_ranges(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return swa_tombstone_ranges(self, *args, **kwargs)
 
 
 def around_attach_swa_window(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return attach_swa_window(self, *args, **kwargs)
 
 
 def around__attach_swa_segment(original, self, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, *args, **kwargs)
     return _attach_swa_segment(self, *args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.unified_cache.unified_tree_core.UnifiedTreeCore.swa_tombstone_ranges", around_swa_tombstone_ranges, HookType.AROUND)

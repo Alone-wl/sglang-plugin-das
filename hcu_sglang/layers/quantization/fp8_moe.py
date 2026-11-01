@@ -8,9 +8,9 @@
 from __future__ import annotations
 import torch
 from sglang.srt.layers.quantization import fp8 as P
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _is_shuffle_moe_mxfp4 = P._is_gfx95_supported and not _is_hcu
 SGLANG_USE_AITER_FP8_ASM_MOE = False
 
@@ -1005,25 +1005,25 @@ def process_weights_after_loading_block_quant(self, layer: P.Module) -> None:
                 )
 
 def around_create_weights(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return create_fp8_moe_weight_(*args, **kwargs)
 
 
 def around_quant_info(original, self, layer, no_combine=False):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer, no_combine)
     return maybe_get_hip_aiter_quant_info(self, layer, no_combine)
 
 
 def around_process_weights(original, self, layer):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer)
     return process_weights_after_loading(self, layer)
 
 
 def around_process_block_weights(original, self, layer):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer)
     return process_weights_after_loading_block_quant(self, layer)
 

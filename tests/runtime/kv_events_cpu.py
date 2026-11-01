@@ -242,7 +242,7 @@ class KvEventsCpuTests(unittest.TestCase):
 
     def test_non_hcu_admission_preserves_effective_original(self):
         calls = []
-        with patch.object(A, 'is_dcu', return_value=False):
+        with patch.object(A, 'is_hcu', return_value=False):
             result = A.around_admission(lambda receiver, req, **kw:calls.append((receiver, req, kw)) or 17, 'self', 'req', flag=3)
         self.assertEqual(result, 17)
         self.assertEqual(calls, [('self', 'req', {'flag': 3})])

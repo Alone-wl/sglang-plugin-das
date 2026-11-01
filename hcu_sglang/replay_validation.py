@@ -1,8 +1,8 @@
 from __future__ import annotations
 from sglang.srt.arg_groups import deepseek_v4_hook as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 
 
 def validate_deepseek_v41_encoder_replay_budget(server_args: ServerArgs) -> None:
@@ -220,13 +220,13 @@ def validate_deepseek_v41_features(server_args: ServerArgs) -> None:
 
 
 def around_features(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return validate_deepseek_v41_features(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.arg_groups.deepseek_v4_hook.validate_deepseek_v41_features", around_features, HookType.AROUND)

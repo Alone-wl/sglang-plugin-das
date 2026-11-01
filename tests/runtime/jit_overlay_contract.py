@@ -48,7 +48,7 @@ class JitOverlayContractTests(unittest.TestCase):
 
     def test_non_hcu_effective_original_and_caller_keyword_lists_are_preserved(self):
         original=Mock(return_value='native');files=['deepseek_v4/c_plan.cuh'];includes=['caller-include']
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             self.assertEqual(C.around_load_jit(original,'name',cuda_files=files,extra_include_paths=includes),'native')
         self.assertIs(original.call_args.kwargs['cuda_files'],files);self.assertIs(original.call_args.kwargs['extra_include_paths'],includes)
         original=Mock(return_value='owned')

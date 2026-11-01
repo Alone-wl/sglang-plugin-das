@@ -11,10 +11,10 @@ import torch
 from sglang.srt.layers.quantization import fp8_utils as U
 from sglang.srt.layers.quantization.compressed_tensors.schemes import compressed_tensors_w8a8_fp8 as Q
 from sglang.srt.utils import get_bool_env_var
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from hcu_sglang.layers.quantization import fp8_block as B
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 _use_lightop_channel_fp8 = get_bool_env_var("SGLANG_USE_LIGHTOP_CHANNEL_FP8") and _is_hcu
 if _use_lightop_channel_fp8:
     from lightop.gemm_ops import hipblaslt_w8a8_channelwise_gemm, hipblaslt_w8a8_channelwise_gemm_kme
@@ -323,7 +323,7 @@ _SCHEME_APPLY_PARAMETERS = frozenset(inspect.signature(apply_weights).parameters
 
 
 def around_linear_apply(original, self, layer, x, bias=None, input_quant_args=None, silu_quant_args=None):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer, x, bias)
     if type(layer.scheme) is Q.CompressedTensorsW8A8Fp8:
         layer.scheme._apply_weights_supported_kwargs = _SCHEME_APPLY_PARAMETERS
@@ -331,13 +331,13 @@ def around_linear_apply(original, self, layer, x, bias=None, input_quant_args=No
 
 
 def around_process_weights(original, self, layer):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer)
     return process_weights_after_loading(self, layer)
 
 
 def around_apply_weights(original, self, layer, x, bias=None, input_quant_args=None, silu_quant_args=None):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, layer, x, bias)
     return apply_weights(self, layer, x, bias, input_quant_args, silu_quant_args)
 
@@ -347,7 +347,7 @@ _PREQUANTIZED_CAPABILITY = property(supports_fp8_prequantized_input)
 
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
-    if not is_dcu():
+    if not is_hcu():
         return
     previous = getattr(U, "apply_fp8_lightop_channelwise_linear", apply_fp8_lightop_channelwise_linear)
     if previous is not apply_fp8_lightop_channelwise_linear:

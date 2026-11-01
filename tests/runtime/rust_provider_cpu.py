@@ -18,7 +18,7 @@ class RustProviderCpuTests(unittest.TestCase):
         env = {'CXXFLAGS': '-O3 -DNAME="two words" -include "/old path/torch_compat.h"',
                'RUSTFLAGS': '-C link-arg=-Wl,-rpath,$ORIGIN/../../../../torch/lib', 'OTHER': 'kept'}
         fp = {'caller': 'kept'}
-        with patch.object(P, 'is_dcu', return_value=True):
+        with patch.object(P, 'is_hcu', return_value=True):
             module, kw = P.around_load(lambda module, **kw:(module, kw), P._NATIVE_MODULE,
                 mode='never', cache_dir=Path('/cache'), additional_features=('inspection',),
                 build_environment=env, build_fingerprint=fp)
@@ -37,7 +37,7 @@ class RustProviderCpuTests(unittest.TestCase):
         self.assertIn('/old path', env['CXXFLAGS'])
 
     def test_inspection_name_maps_to_separate_owned_module(self):
-        with patch.object(P, 'is_dcu', return_value=True):
+        with patch.object(P, 'is_hcu', return_value=True):
             _, kw = P.around_load(lambda m, **kw:(m, kw), P._NATIVE_MODULE,
                 extension_module='sglang.srt.mem_cache.rust_tree_core.mem_cache_inspection',
                 build_environment={'CXXFLAGS':'-O2'}, mode='force')
@@ -50,13 +50,13 @@ class RustProviderCpuTests(unittest.TestCase):
                 (True, 'another.extension', {}), (True, P._NATIVE_MODULE, {'workspace':Path('/custom')}),
                 (True, P._NATIVE_MODULE, {'extension_module':'custom.extension'})]:
             calls = []
-            with patch.object(P, 'is_dcu', return_value=enabled):
+            with patch.object(P, 'is_hcu', return_value=enabled):
                 result = P.around_load(lambda m, **kw:calls.append((m, kw)) or 17, module, **kwargs)
             self.assertEqual(result, 17)
             self.assertEqual(calls, [(module, kwargs)])
 
     def test_fresh_environment_uses_real_torch_build_configuration(self):
-        with patch.object(P, 'is_dcu', return_value=True):
+        with patch.object(P, 'is_hcu', return_value=True):
             _, kw = P.around_load(lambda m, **kw:(m, kw), P._NATIVE_MODULE)
         self.assertEqual(shlex.split(kw['build_environment']['CXXFLAGS'])[-1], str(P._CRATE / 'torch_compat.h'))
         self.assertIn('torch_version', kw['build_fingerprint'])
@@ -66,7 +66,7 @@ class RustProviderCpuTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='hcu rust space ') as root:
             crate = Path(root)
             (crate/'torch_compat.h').write_text('')
-            with patch.object(P, '_CRATE', crate), patch.object(P, 'is_dcu', return_value=True):
+            with patch.object(P, '_CRATE', crate), patch.object(P, 'is_hcu', return_value=True):
                 _, kw = P.around_load(lambda m, **kw:(m, kw), P._NATIVE_MODULE,
                     build_environment={'CXXFLAGS':'-O2'})
             self.assertEqual(shlex.split(kw['build_environment']['CXXFLAGS'])[-1], str(crate/'torch_compat.h'))
@@ -100,16 +100,16 @@ class RustProviderCpuTests(unittest.TestCase):
 
     def test_preflight_preserves_capability_and_custom_reasons(self):
         for reason in [None, 'session-aware caching requires the Python TreeCore', 'custom policy']:
-            with patch.object(P, 'is_dcu', return_value=True):
+            with patch.object(P, 'is_hcu', return_value=True):
                 self.assertEqual(P.around_fallback_reason(lambda params:reason, S()), reason)
 
     def test_preflight_uses_owned_workspace_when_native_sources_missing(self):
         reason = 'this installation contains neither the Rust TreeCore extension nor its sources'
-        with patch.object(P, 'is_dcu', return_value=True), patch.object(P.subprocess, 'run') as run:
+        with patch.object(P, 'is_hcu', return_value=True), patch.object(P.subprocess, 'run') as run:
             self.assertIsNone(P.around_fallback_reason(lambda params:reason, S()))
             self.assertEqual(run.call_count, 2)
             self.assertTrue(all(call.kwargs['cwd'] == P._CRATE for call in run.call_args_list))
-        with patch.object(P, 'is_dcu', return_value=True), patch.object(P.subprocess, 'run', side_effect=OSError('toolchain')):
+        with patch.object(P, 'is_hcu', return_value=True), patch.object(P.subprocess, 'run', side_effect=OSError('toolchain')):
             self.assertEqual(P.around_fallback_reason(lambda params:reason, S()), reason)
 
     def test_optional_native_rust_module_not_eagerly_imported(self):

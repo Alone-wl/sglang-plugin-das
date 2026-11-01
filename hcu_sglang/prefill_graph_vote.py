@@ -5,7 +5,7 @@
 from __future__ import annotations
 from typing import Optional
 from sglang.srt.managers.scheduler_components import dp_attn as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def _local_prefill_cuda_graph_vote(
@@ -109,13 +109,13 @@ def _local_prefill_cuda_graph_vote(
 
 
 def around_vote(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return _local_prefill_cuda_graph_vote(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.managers.scheduler_components.dp_attn._local_prefill_cuda_graph_vote", around_vote, HookType.AROUND)

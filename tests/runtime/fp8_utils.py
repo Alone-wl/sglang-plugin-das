@@ -31,7 +31,7 @@ class Fp8UtilsTests(unittest.TestCase):
 
     def test_non_hcu_retains_effective_dispatcher(self):
         original=Mock(return_value='baseline')
-        with patch.object(C,'is_dcu',return_value=False):self.assertEqual(C.around_explicit_backend(original,'backend'),'baseline')
+        with patch.object(C,'is_hcu',return_value=False):self.assertEqual(C.around_explicit_backend(original,'backend'),'baseline')
         original.assert_called_once_with('backend')
 
     def test_reference_preserves_ragged_block_boundaries_and_inputs(self):

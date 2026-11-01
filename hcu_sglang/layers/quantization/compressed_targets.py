@@ -9,7 +9,7 @@ from typing import Optional, Iterable, Mapping, List
 from types import MappingProxyType
 from torch.nn import Module
 from sglang.srt.layers.quantization.compressed_tensors import utils as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 def find_matched_target(
     layer_name: Optional[str],
@@ -68,7 +68,7 @@ def find_matched_target(
 
 
 def around_find_target(original, layer_name, module, targets, fused_mapping=MappingProxyType({})):
-    if not is_dcu():
+    if not is_hcu():
         return original(layer_name, module, targets, fused_mapping)
     return find_matched_target(layer_name, module, targets, fused_mapping)
 

@@ -97,7 +97,7 @@ class Fp8MoeTests(unittest.TestCase):
 
     def test_non_hcu_all_entry_points_retain_effective_original(self):
         original=Mock(return_value='baseline');m=self.method();l=torch.nn.Module()
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             self.assertEqual(C.around_create_weights(original,l,2),'baseline')
             self.assertEqual(C.around_quant_info(original,m,l,True),'baseline')
             self.assertEqual(C.around_process_weights(original,m,l),'baseline')

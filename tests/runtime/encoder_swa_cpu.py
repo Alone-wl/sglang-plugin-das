@@ -98,7 +98,7 @@ class EncoderSwaCpuTests(unittest.TestCase):
     def test_non_hcu_effective_fallback_preserves_signature_arguments(self):
         from hcu_sglang import encoder_swa_worker as O
         seen=[];token=object()
-        with patch.object(O,'is_dcu',return_value=False):self.assertIs(O.around_generation(lambda *a,**k:seen.append((a,k)) or token,token,token,is_verify=True),token)
+        with patch.object(O,'is_hcu',return_value=False):self.assertIs(O.around_generation(lambda *a,**k:seen.append((a,k)) or token,token,token,is_verify=True),token)
         self.assertEqual(seen,[((token,token),{'is_verify':True})])
 
 

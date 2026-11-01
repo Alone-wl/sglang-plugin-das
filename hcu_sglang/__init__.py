@@ -1,4 +1,4 @@
-"""SGLang DCU general plugin - model and layer adaptations."""
+"""SGLang HCU general plugin - model and layer adaptations."""
 
 import logging
 
@@ -147,8 +147,8 @@ def register() -> None:
     kv_event_admission.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
-    from hcu_sglang.utils.detection import is_dcu
-    if is_dcu():
+    from hcu_sglang.utils.detection import is_hcu
+    if is_hcu():
         from hcu_sglang.layers.moe import deepep_current, deepep_fp8
         deepep_current.register_hooks()
         deepep_fp8.register_hooks()

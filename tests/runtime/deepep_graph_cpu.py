@@ -75,7 +75,7 @@ class DeepEPGraphCpuTests(unittest.TestCase):
     def test_non_hcu_capture_keeps_effective_original(self):
         from hcu_sglang import deepep_graph as O
         token=object();seen=[]
-        with patch.object(O,'is_dcu',return_value=False):
+        with patch.object(O,'is_hcu',return_value=False):
             self.assertIs(O.around_capture(lambda *a,**k:seen.append((a,k)) or token,token,4,variant_label='x'),token)
         self.assertEqual(seen,[((token,4),{'variant_label':'x'})])
 

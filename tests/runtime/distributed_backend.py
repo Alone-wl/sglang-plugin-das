@@ -154,7 +154,7 @@ class BackendTests(unittest.TestCase):
 
     def test_non_hcu_preserves_original_group_callable(self):
         marker=object();original=Mock(return_value=marker)
-        with patch.object(C,'is_dcu',return_value=False):
+        with patch.object(C,'is_hcu',return_value=False):
             for wrapper in [C.around_init_model_parallel_group,C.around_init_world_group]:
                 self.assertIs(wrapper(original,setting='value'),marker)
             self.assertIs(C.around_coordinator_init(original,marker,setting='value'),marker)

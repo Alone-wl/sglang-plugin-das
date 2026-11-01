@@ -63,11 +63,11 @@ class GraphSetupCpuTests(unittest.TestCase):
     def test_h16_cache_release_requires_both_feature_and_backend_and_sync_order(self):
         from hcu_sglang import graph_setup as O
         events=[];platform=S(synchronize=lambda:events.append('sync'),empty_cache=lambda:events.append('empty'))
-        with patch.object(N,'current_platform',platform),patch.object(O,'is_dcu',return_value=True),patch.dict(os.environ,{'SGLANG_HCU_FLASHMLA_DECODE_H16':'1'}):
+        with patch.object(N,'current_platform',platform),patch.object(O,'is_hcu',return_value=True),patch.dict(os.environ,{'SGLANG_HCU_FLASHMLA_DECODE_H16':'1'}):
             self.assertFalse(O.release_hcu_flashmla_decode_h16_capture_cache(S()))
             self.assertTrue(O.release_hcu_flashmla_decode_h16_capture_cache(S(attn_backend=S(_hcu_flashmla_decode_h16_enabled=True))))
         self.assertEqual(events,['sync','empty'])
-        with patch.object(O,'is_dcu',return_value=False):self.assertFalse(O.release_hcu_flashmla_decode_h16_capture_cache(S(attn_backend=S(_hcu_flashmla_decode_h16_enabled=True))))
+        with patch.object(O,'is_hcu',return_value=False):self.assertFalse(O.release_hcu_flashmla_decode_h16_capture_cache(S(attn_backend=S(_hcu_flashmla_decode_h16_enabled=True))))
 
     def test_public_capture_lifecycle_releases_cache_after_finalization(self):
         from hcu_sglang import graph_setup as O
@@ -99,7 +99,7 @@ class GraphSetupCpuTests(unittest.TestCase):
         from hcu_sglang import graph_setup as O
         for name in ['index_attention_layers_by_global_id','refresh_deep_gemm_layout_memory_budget','capture_cuda_graphs','capture_prefill_graph']:
             seen=[];token=object()
-            with patch.object(O,'is_dcu',return_value=False):self.assertIs(getattr(O,'around_'+name)(lambda *a,**k:seen.append((a,k)) or token,token,option=7),token)
+            with patch.object(O,'is_hcu',return_value=False):self.assertIs(getattr(O,'around_'+name)(lambda *a,**k:seen.append((a,k)) or token,token,option=7),token)
             self.assertEqual(seen,[((token,),{'option':7})])
 
 

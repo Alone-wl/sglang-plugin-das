@@ -17,7 +17,7 @@ class BlockFp8GpuTests(unittest.TestCase):
         HookRegistry.reset();C.register_hooks();HookRegistry.apply_hooks()
 
     def setUp(self):
-        self.assertTrue(C.is_dcu());self.assertFalse(C.N._use_aiter);torch.manual_seed(846)
+        self.assertTrue(C.is_hcu());self.assertFalse(C.N._use_aiter);torch.manual_seed(846)
         self.method=object.__new__(Fp8LinearMethod)
         self.method.use_marlin=False;self.method.block_fp8_as_mxfp8=False;self.method.use_mxfp8=False
         self.method.convert_mxfp8_to_block=False;self.method.weight_block_size=[128,128]

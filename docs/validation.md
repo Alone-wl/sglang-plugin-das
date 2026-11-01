@@ -111,7 +111,7 @@ python3 tools/validate_generation_response.py \
     python3 tools/run_saved_gsm8k.py --dataset "$EVAL_DATA" --manifest "$EVAL_MANIFEST" --base-url "$EVAL_SERVER" --model "$EVAL_MODEL" --output "$EVAL_OUTPUT" --parallel 8 --max-tokens 1024 --chat-template-kwargs '{"enable_thinking":false}'
     python3 tools/score_saved_gsm8k.py --dataset "$EVAL_DATA" --manifest "$EVAL_OUTPUT/manifest.json" --responses "$EVAL_OUTPUT/responses" --output "$EVAL_OUTPUT/rescored.json"
 
-[冻结输入模板](gsm8k-128-input-manifest.json)固定本次选择；Manifest提供dataset_sha256、sample_indices和shot_indices；runner固定expected_model与采样参数，要求新输出目录，核对服务模型身份后每题只请求一次，保存request/response/transport，不选择性重试。只发送prefix oracle和当前题面，不发送评分题答案。
+[冻结输入模板](hcu-sglang-development.md#历史-json-快照)（`gsm8k-128-input-manifest.json`）固定本次选择；Manifest提供dataset_sha256、sample_indices和shot_indices；runner固定expected_model与采样参数，要求新输出目录，核对服务模型身份后每题只请求一次，保存request/response/transport，不选择性重试。只发送prefix oracle和当前题面，不发送评分题答案。
 
 评分沿SGLang signed last-number规则，以Decimal处理负数、逗号和小数；提取前检查HTTP200、模型一致、单个assistant completion与正常stop。截断、错误模型、HTTP/网络/JSON错误和空回答均无效，不能因末尾数字碰巧正确而计分；错题与基础设施无效项分开报告，全部样本保留在分母。
 
@@ -127,6 +127,6 @@ python3 tools/validate_generation_response.py \
 
 输出both_correct、baseline_only_correct、candidate_only_correct、both_incorrect及无效数，不把同分掩盖的相反错题吞掉，也不自行设定接受阈值。load-aware/冗余expert/stat功能变体与未带这些标志的基础DAS服务会被拒绝作成对回归。应另跑基础DAS与基础plugin控制组；功能变体单独报告，原始只读DAS不能为了成为基线被本任务修改。
 
-本轮固定128题的基础匹配对照为DAS 127/128、plugin 126/128，均0无效，相差1题；用户接受大致一致，结果记为本轮接受，不要求完全同题正确，也不据此设置所有后续任务的默认阈值。[测量与范围](hcu-gsm8k128-paired-controls-20261101.json)保留逐题差异。
+本轮固定128题的基础匹配对照为DAS 127/128、plugin 126/128，均0无效，相差1题；用户接受大致一致，结果记为本轮接受，不要求完全同题正确，也不据此设置所有后续任务的默认阈值。[测量与范围](hcu-sglang-development.md#历史-json-快照)（`hcu-gsm8k128-paired-controls-20261101.json`）保留逐题差异。
 
-解析CLI并构造ServerArgs或读取resolved_view不等于已验证运行配置：固定官方版本的__post_init__有意保持未解析，须显式执行resolve_once()或由真实launcher完成，再检查实际配置。保留解析失败原样，不把种子中的None/默认值差异解释为live配置差异。本轮GSM8K历史种子快照的范围更正见[成对记录](hcu-gsm8k128-paired-controls-20261101.json)，原始响应、分数和声明参数比较不受此更正影响。
+解析CLI并构造ServerArgs或读取resolved_view不等于已验证运行配置：固定官方版本的__post_init__有意保持未解析，须显式执行resolve_once()或由真实launcher完成，再检查实际配置。保留解析失败原样，不把种子中的None/默认值差异解释为live配置差异。本轮GSM8K历史种子快照的范围更正见[成对记录](hcu-sglang-development.md#历史-json-快照)（`hcu-gsm8k128-paired-controls-20261101.json`），原始响应、分数和声明参数比较不受此更正影响。

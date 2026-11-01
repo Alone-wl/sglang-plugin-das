@@ -5,7 +5,7 @@ from sglang.srt.mem_cache.radix_cache import RadixKey
 from sglang.srt.mem_cache.unified_cache.cache_action import CacheAction, ComponentAction
 from functools import wraps
 from types import MethodType
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 from sglang.srt.mem_cache.unified_cache import tree_core_registry
 
 _NATIVE_FACTORY = [tree_core_registry._rust_tree_core_factory]
@@ -60,7 +60,7 @@ def attach_swa_window(
 
 def around_get_factory(original, name):
     factory = original(name)
-    if not is_dcu() or name != "rust" or factory is not _NATIVE_FACTORY[0]:
+    if not is_hcu() or name != "rust" or factory is not _NATIVE_FACTORY[0]:
         return factory
 
     @wraps(factory)
@@ -78,7 +78,7 @@ def around_get_factory(original, name):
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.unified_cache.tree_core_registry.get_tree_core_factory", around_get_factory, HookType.AROUND)

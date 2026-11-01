@@ -4,7 +4,7 @@ from typing import Any, Optional
 import msgspec
 import torch
 from sglang.srt.managers.schedule_batch import MM_PAD_SHIFT_VALUE
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 class FoldedExtend(msgspec.Struct, frozen=True):
@@ -289,13 +289,13 @@ def history_row(self, ids: list[int]) -> list[int]:
 
 
 def around_run_replay(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return run_encoder_swa_replay(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.model_executor.encoder_swa_replay.run_encoder_swa_replay", around_run_replay, HookType.AROUND)

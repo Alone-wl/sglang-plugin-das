@@ -10,9 +10,9 @@
 | distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev62` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
-| 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
+| 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_hcu_plugin` |
 | 官方接口基线 | `baa9befa381511cd4d56f83980951e5a45fffc6d`，SGLang 0.5.22 |
-| 来源清单 | [逐文件迁入快照](hcu-sglang-import-manifest.json)，用于本次迁入审计，不是未来文件完整性锁 |
+| 来源清单 | [逐文件迁入快照](hcu-sglang-development.md#历史-json-快照)（`hcu-sglang-import-manifest.json`），用于本次迁入审计，不是未来文件完整性锁 |
 
 复制来源仅为输出仓的运行时包。没有复制外部 docs、tools、tests 或其他生成脚本。包内 7 份不参与运行的来源说明 JSON 未放入运行时目录；源路径、哈希与排除理由保存在迁入清单。保留原生资源、继承的注释/docstring、版权与 vendor LICENSE。
 
@@ -21,7 +21,7 @@
 
 ## 当前八卡验证汇总
 
-本轮四类代表服务已按各自原八卡配方完成六个严格请求；每行属于对应隔离wheel，不能外推到其他版本或全量DAS。汇总哈希与运行ID见[结构化摘要](hcu-eight-gpu-validation-20261101.json)，原始请求/响应/日志保留在指定test-model目录。
+本轮四类代表服务已按各自原八卡配方完成六个严格请求；每行属于对应隔离wheel，不能外推到其他版本或全量DAS。汇总哈希与运行ID见[结构化摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-eight-gpu-validation-20261101.json`），原始请求/响应/日志保留在指定test-model目录。
 
 | 服务 | 实际版本 | 并行与关键模式 | 请求/清理 |
 |---|---|---|---|
@@ -37,12 +37,12 @@
 | 日期 / 步骤 | 完成内容 | 提交记录 | 验证与边界 |
 |---|---|---|---|
 | 2026-10-28 / M01 运行时代码迁入 | 525 个来源文件；180 个 Python 文件仅改命名空间；239 个源 Python 文件 AST 对照；286 个原生资源/许可证按原字节保留 | [`4d82a16`](https://github.com/Sherlolo/hcu-sglang-plugin/commit/4d82a1663a54c5d4075c5215acc2d91dcfc66750) | 本次静态迁入对照通过；不把旧 GPU/模型结果记为新包验证 |
-| 2026-10-28 / M02 安装与启动入口 | 本仓打包定义、`dcu` 入口、显式 launcher、命名空间可选严格加载工具、阶段门禁及当前使用文档 | 同一代码提交 `4d82a16` | 65 项仓库测试、源码/wheel 各 363/363 项 Hook 和 3 个具名接口通过；完整服务未执行 |
-| 2026-10-28 / M03 HCU 发现入口 | entry point 改为 `hcu = hcu_sglang:register`；版本 `0.3.2.dev7`；同步当前安装与开发说明 | [`443eb83`](https://github.com/Sherlolo/hcu-sglang-plugin/commit/443eb83eb56d91ec5a86c1c53989419fb0077667) | 源码/wheel 各 363/363 项 Hook、3 个具名接口；旧 `dcu` 名称隔离通过 |
+| 2026-10-28 / M02 安装与启动入口 | 本仓打包定义、`hcu` 入口、显式 launcher、命名空间可选严格加载工具、阶段门禁及当前使用文档 | 同一代码提交 `4d82a16` | 65 项仓库测试、源码/wheel 各 363/363 项 Hook 和 3 个具名接口通过；完整服务未执行 |
+| 2026-10-28 / M03 HCU 发现入口 | entry point 改为 `hcu = hcu_sglang:register`；版本 `0.3.2.dev7`；同步当前安装与开发说明 | [`443eb83`](https://github.com/Sherlolo/hcu-sglang-plugin/commit/443eb83eb56d91ec5a86c1c53989419fb0077667) | 源码/wheel 各 363/363 项 Hook、3 个具名接口；旧 `hcu` 名称隔离通过 |
 
 代码提交：`4d82a1663a54c5d4075c5215acc2d91dcfc66750`，标题 `feat: import HCU runtime as hcu_sglang with isolated packaging`，共 557 个变更文件。范围包括 526 个运行时包文件、根打包定义、迁入清单、当前使用文档与 Skill、结构门禁和运行验证工具/测试；未迁入输出仓的 docs、scripts 或 tests。其后提交 `c8ba45a` 仅回填该代码 SHA 并重建导览。
 
-当前入口在 M03 改为 `hcu`；M01/M02 中的 `dcu` 与 dev6 验证结果保留历史含义。
+当前入口在 M03 改为 `hcu`；M01/M02 中的 `hcu` 与 dev6 验证结果保留历史含义。
 
 当前代码来源是已存在实现的迁入，不是宣称整个 DAS fork 已完成转换。模型能力、Native、CP/EP/PD 的历史范围仍以对应来源记录为线索，本命名空间必须建立自己的产物与运行证据。
 
@@ -70,11 +70,11 @@ python3 tools/validate_plugin_runtime.py \
   --expected-targets docs/hcu-sglang-targets.json --output "$ARTIFACTS/hcu-runtime.json"
 ```
 
-记录实际解释器、entry point、模块文件来源、目标集合与具名 seam、加载软错误，以及是否误导入旧包。当前 entry point 名为 `hcu`，由固定官方 loader 对 `SGLANG_PLUGINS` 中的名称精确匹配；不是 Python 包名后缀自动扫描，也不保留 `dcu` 别名。升级后须重新安装本仓或新 wheel 以刷新 metadata，再设置 `SGLANG_PLUGINS=hcu`。安装其他插件时同样核对实际白名单和模块来源，不能凭入口存在或目标数量认定通过。源码、隔离 wheel 和完整服务分别验收。
+记录实际解释器、entry point、模块文件来源、目标集合与具名 seam、加载软错误，以及是否误导入旧包。当前 entry point 名为 `hcu`，由固定官方 loader 对 `SGLANG_PLUGINS` 中的名称精确匹配；不是 Python 包名后缀自动扫描，也不保留 `hcu` 别名。升级后须重新安装本仓或新 wheel 以刷新 metadata，再设置 `SGLANG_PLUGINS=hcu`。安装其他插件时同样核对实际白名单和模块来源，不能凭入口存在或目标数量认定通过。源码、隔离 wheel 和完整服务分别验收。
 
 ## 4. 实际验证记录
 
-### M01/M02：首次迁入（dev6 / dcu）
+### M01/M02：首次迁入（dev6 / hcu）
 
 验证日期：2026-10-28。实际环境为 Python 3.10.12 与既有 HCU/DTK 依赖容器；官方源码固定在上述 `baa9befa`。安装、构建和仓库测试使用源码所属用户；真实 Hook 加载使用容器原有的可访问设备的执行身份。没有修改设备权限或共享 site-packages。
 
@@ -82,7 +82,7 @@ python3 tools/validate_plugin_runtime.py \
 |---|---|---|
 | 在线来源核验 | 525 个来源/目标 SHA256 一致；official、fork、来源 plugin 的 HEAD 与干净状态保持 | `artifacts/v3-20261028/provenance.json` |
 | 结构及仓库测试 | L0：261 个 Python、8 个 Skill；65 项 unittest 通过 | `artifacts/v3-20261028/l0.log`、`tests.log` |
-| 源码隔离安装与冷导入 | distribution `hcu-sglang-plugin==0.3.2.dev6`，唯一 `dcu = hcu_sglang:register`；冷导入未载入 Torch/AITER/旧包 | `artifacts/v3-20261028/source-install.log`、`source-cold-import.log` |
+| 源码隔离安装与冷导入 | distribution `hcu-sglang-plugin==0.3.2.dev6`，唯一 `hcu = hcu_sglang:register`；冷导入未载入 Torch/AITER/旧包 | `artifacts/v3-20261028/source-install.log`、`source-cold-import.log` |
 | 源码真实加载 | 363 项目标集合完全匹配且全部应用；3 个具名 resolution 接口；软错误与未应用列表为空；未导入旧包 | `artifacts/v3-20261028/source-hooks.json`、`source-hooks.log` |
 | wheel 构建与完整性 | wheel 内 526 个包文件路径/字节与源码一致；未携带外部 docs/tools、旧包或全局 Python 启动文件 | `artifacts/v3-20261028/runtime-validation.json`、`build-wheel.log` |
 | 隔离 wheel 安装与冷导入 | 从独立 target、仓库外 cwd 导入；唯一新入口；冷导入无 Torch/AITER/旧包 | `artifacts/v3-20261028/wheel-install.log`、`wheel-cold-import.log` |
@@ -117,11 +117,11 @@ wheel 加载进程在仓库外执行，只将固定官方 `python/` 与本次 `w
 | 安装 metadata 与冷导入 | dev7 仅提供 `hcu → hcu_sglang:register`；源码及 wheel 冷导入均无 Torch/AITER/旧包 | `source-cold-import.log`、`wheel-cold-import.log` |
 | `SGLANG_PLUGINS=hcu` 源码加载 | 363/363 目标全部应用、3 个具名接口，无加载软错误或旧包导入 | `source-hooks.json`、`source-hooks.log` |
 | `SGLANG_PLUGINS=hcu` wheel 加载 | 从仓库外 cwd、隔离 wheel target 加载，363/363 和 3 个具名接口通过 | `wheel-hooks.json`、`wheel-hooks.log` |
-| 旧名称隔离 | 新进程设置 `SGLANG_PLUGINS=dcu`，0 项 Hook，新包未导入 | `old-name-isolation.log` |
+| 旧名称隔离 | 新进程设置 `SGLANG_PLUGINS=hcu`，0 项 Hook，新包未导入 | `old-name-isolation.log` |
 | wheel 完整性 | 526 个包文件路径及字节与源码一致，无旧包或全局启动文件 | `runtime-validation.json` |
 | 仓库门禁 | L0 与 65 项 unittest 通过；两个更新的 Skill、链接/锚点和导览快照校验通过 | `l0.log`、`tests.log`、`guide-qa.json` |
 
-本次 wheel：`hcu_sglang_plugin-0.3.2.dev7-py3-none-any.whl`，SHA256：`5d61be21697b03c9c5e21cf26c7ec74a161357f7af15e93b0bf2c2e911740ecd`。新版本更新安装元数据后采用 `export SGLANG_PLUGINS=hcu`；dev6 的 `dcu` 结果不作为 dev7 的实际加载证据。本轮未执行模型服务、数值或 Graph 复验。
+本次 wheel：`hcu_sglang_plugin-0.3.2.dev7-py3-none-any.whl`，SHA256：`5d61be21697b03c9c5e21cf26c7ec74a161357f7af15e93b0bf2c2e911740ecd`。新版本更新安装元数据后采用 `export SGLANG_PLUGINS=hcu`；dev6 的 `hcu` 结果不作为 dev7 的实际加载证据。本轮未执行模型服务、数值或 Graph 复验。
 
 构建首次使用设备执行身份时被 Git 所有权校验拒绝，已改用源码所属用户完成构建；保留失败日志，未修改全局 Git 信任配置。
 
@@ -147,7 +147,7 @@ wheel 加载进程在仓库外执行，只将固定官方 `python/` 与本次 `w
 
 来源 `python/sglang/srt/layers/moe/token_dispatcher/standard.py` 的 helper 与 dispatch 方法迁入 `hcu_sglang/layers/moe/standard_dispatcher.py`。只把官方模块全局名显式限定为 `S.*`，保留来源注释；新增 HCU AROUND 门控与顶层注册。非 HCU 交还传入 original，保留前序包装。没有从 DAS 动态导入。
 
-原始反例：映射 `[0, 1, -1, -1, 2]` 下，输入 `-1` 被 Python 负索引映射为共享专家 `2`；修复后负数与超出全局表的 ID 均保持 `-1`。正常 routed/shared IDs、DP pad 的后置屏蔽、空 batch 和跳过映射分别验证。当前完整目标集合为 [当前合同](hcu-sglang-targets.json)；原迁入 manifest 的 363 项保持历史快照。
+原始反例：映射 `[0, 1, -1, -1, 2]` 下，输入 `-1` 被 Python 负索引映射为共享专家 `2`；修复后负数与超出全局表的 ID 均保持 `-1`。正常 routed/shared IDs、DP pad 的后置屏蔽、空 batch 和跳过映射分别验证。当前完整目标集合为 [当前合同](hcu-sglang-development.md#历史-json-快照)（`hcu-sglang-targets.json`）；原迁入 manifest 的 363 项保持历史快照。
 
 运行测试要求固定 official python 与本仓在 PYTHONPATH，使用已有兼容 HCU/Torch 容器，从仓库根执行：
 
@@ -449,9 +449,9 @@ DeepSeek dev34 attempt12 的日志明确记录 HCU owned DeepseekV4AttnBackend�
 
 ## 34. 2026-10-30 HCU 安装命名与文档一致性核验
 
-当前 `pyproject.toml` 的 distribution、Python 包和 general plugin 入口分别为 `hcu-sglang-plugin`、`hcu_sglang`、`hcu`。本轮从干净代码提交构建 `hcu_sglang_plugin-0.3.2.dev34-py3-none-any.whl`，检查 wheel metadata/entry_points 和包目录，再隔离安装并在源码目录外检查 import 来源。唯一 general plugin 入口为 `hcu = hcu_sglang:register`，console script 为 `hcu-sglang-serve`；无旧包目录或 `dcu` 入口。该 wheel 的 SHA256 为 `79150616eb8c55e984317554addeed9faad82af42fe811d2f76516e8fc012675`，与前文远程历史构建分别记录，不因版本号相同替换历史文件哈希。
+当前 `pyproject.toml` 的 distribution、Python 包和 general plugin 入口分别为 `hcu-sglang-plugin`、`hcu_sglang`、`hcu`。本轮从干净代码提交构建 `hcu_sglang_plugin-0.3.2.dev34-py3-none-any.whl`，检查 wheel metadata/entry_points 和包目录，再隔离安装并在源码目录外检查 import 来源。唯一 general plugin 入口为 `hcu = hcu_sglang:register`，console script 为 `hcu-sglang-serve`；无旧包目录或 `hcu` 入口。该 wheel 的 SHA256 为 `79150616eb8c55e984317554addeed9faad82af42fe811d2f76516e8fc012675`，与前文远程历史构建分别记录，不因版本号相同替换历史文件哈希。
 
-修正安装指南的 wheel/editable、metadata、严格加载合同、服务及卸载示例，当前合同显式指定 `--plugin-package hcu_sglang` 并先初始化 AITER 兼容。同步配置、回溯、排障、README 和相关 Skill 中仍将当前实现称作旧包的说明；旧版本实施记录、来源清单、兼容工具接口和历史文件名保持其来源语义。硬件接口 `is_dcu()` 不属于插件入口改名范围。
+修正安装指南的 wheel/editable、metadata、严格加载合同、服务及卸载示例，当前合同显式指定 `--plugin-package hcu_sglang` 并先初始化 AITER 兼容。同步配置、回溯、排障、README 和相关 Skill 中仍将当前实现称作旧包的说明；旧版本实施记录、来源清单、兼容工具接口和历史文件名保持其来源语义。硬件接口 `is_hcu()` 不属于插件入口改名范围。
 
 本轮仓库 72 项离线测试、L0 的 333 个 Python 文件/8 个 Skill、全部 Skill 元信息及 Markdown 链接/标题锚点检查通过。网页从原始文档重新构建，不直接修改生成 HTML。检查证据保存在本次 ignored artifacts 中。本轮未修改运行时行为、未在本机执行 HCU Hook/模型服务；wheel 名称与入口检查不作为模型精度或设备可用性验收。
 
@@ -461,7 +461,7 @@ DeepSeek dev34 attempt12 的日志明确记录 HCU owned DeepseekV4AttnBackend�
 
 原插件 RMSNorm 在 residual 非空时直接调用 native；当前 DAS 明确进入 LightOp `fused_add_rms_norm_opt`，保留实际 residual 原地更新和 post-residual 的独立张量语义。本轮迁入该完整 HIP 方法，并将当前 Gemma HIP 方法、显式 `forward_with_lightop_fp8_quant` 与其 vLLM ABI 辅助函数放入 owned `norm_current`；只限定官方 provider 全局名、函数命名和惰性 vendor 导入。AITER Gemma 优先级、`1 + weight` 缓冲、batch-invariant、FP8 门控与 `(quantized, residual)` 返回结构沿用来源。非 HCU 保留传入 original，不改官方文件，也不动态导入 DAS。
 
-[源码对照](hcu-norm-source-alignment.json) 固定源文件哈希和五个选择定义；去除导入限定并规范化抽取 docstring 缩进后 AST 相同。这只证明选择的方法，不能证明整个 layernorm 文件已迁移。全文件处置保持 in_progress；AR/RMSNorm 的通信组与 per-group quant 融合仍需独立处理。
+[源码对照](hcu-sglang-development.md#历史-json-快照)（`hcu-norm-source-alignment.json`） 固定源文件哈希和五个选择定义；去除导入限定并规范化抽取 docstring 缩进后 AST 相同。这只证明选择的方法，不能证明整个 layernorm 文件已迁移。全文件处置保持 in_progress；AR/RMSNorm 的通信组与 per-group quant 融合仍需独立处理。
 
 `tests/runtime/norm_current.py` 在指定容器内通过六项 CPU 回归，真实公共 RMSNorm/Gemma 类、注册与 forward 调用保留，昂贵 LightOp kernel 用可观察数学夹具替代。覆盖非连续输入、融合分支命中、residual/post-residual 存储语义、batch-invariant、Gemma 权重加载/AITER 优先级、FP8 carrier/gate 与非 HCU original 委托；不据此宣称 vendor GPU 数学、Graph 或模型精度通过。当前准备版本 dev35、Hook 合同 386 项，产物和完整运行验证结果待本次执行后补充。原始日志位于本次 ignored `artifacts/plugin-v3-1028-20261101/`。
 
@@ -476,14 +476,14 @@ DeepSeek dev34 attempt12 的日志明确记录 HCU owned DeepseekV4AttnBackend�
 
 运行 `qwen3-235b-instruct-tp8-dev34-20261101-attempt1` 于 00:02:07–00:13:40 完成。六个算术/中文/英文/阅读/代码/重复请求的 HTTP200、模型身份、完整最终答案和正常 stop 均通过；默认 Graph 捕获从 batch512 开始。结束时自有进程为空、端口关闭。对提交 `b97b4d9`、实际 dev34 wheel 与隔离安装的574个包文件重新逐字节核验一致。
 
-[可提交验收摘要](hcu-tp8-qwen3-validation-20261101.json) 保存 cookbook 来源、版本、wheel与响应哈希、每个实际最终答案和清理结果；原始日志/请求/响应继续留在用户指定 test-model/runs 目录。该结果证明 dev34 的八卡短请求配方，不是数据集精度、吞吐、全 DAS 功能等价，也不归因于本阶段 dev35。
+[可提交验收摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-qwen3-validation-20261101.json`） 保存 cookbook 来源、版本、wheel与响应哈希、每个实际最终答案和清理结果；原始日志/请求/响应继续留在用户指定 test-model/runs 目录。该结果证明 dev34 的八卡短请求配方，不是数据集精度、吞吐、全 DAS 功能等价，也不归因于本阶段 dev35。
 
 
 ## 37. 2026-11-01 归一化通信组与量化 handoff
 
 dev36 将固定 DAS 的两个 communication_op fused norm 入口和两个 layernorm AR/norm/quant helper 接入本仓，按 `tp` / `attn_tp` / `moe_tp` 选择真实 coordinator，不能把 MoE EP 大小当作 MoE TP 大小，也不能在选定 attention/MoE 组后退回全 TP 组。计算 AITER 开关与 communicator 融合开关分开，融合拒绝时仅在来源规定的组上归约一次；post-residual 只加一次。
 
-量化路径保留 FP8 tensor/scale 和可选 BF16 side output、bpreshuffle 的 transpose/materialize 区别及 `None` 拒绝约定。[四个 helper 对照](hcu-norm-collectives-source-alignment.json)还原 provider 限定后 AST 与 DAS 相同；两个真实 GroupCoordinator 方法 AST 在官方与 DAS 中完全相同，直接复用。注册通过官方 Hook 传播机制更新已导入别名，未修改两个输入仓。
+量化路径保留 FP8 tensor/scale 和可选 BF16 side output、bpreshuffle 的 transpose/materialize 区别及 `None` 拒绝约定。[四个 helper 对照](hcu-sglang-development.md#历史-json-快照)（`hcu-norm-collectives-source-alignment.json`）还原 provider 限定后 AST 与 DAS 相同；两个真实 GroupCoordinator 方法 AST 在官方与 DAS 中完全相同，直接复用。注册通过官方 Hook 传播机制更新已导入别名，未修改两个输入仓。
 
 | 检查 | 本阶段实际结果 |
 |---|---|
@@ -493,7 +493,7 @@ dev36 将固定 DAS 的两个 communication_op fused norm 入口和两个 layern
 | 隔离 wheel | SHA256 `7df1214bbc0f347c8b3cacf83ecaf240de8fbf7d360cc11a6e02b28d1383b6b9`；576 个包文件与源码、隔离安装一致 |
 | 完整加载合同 | 390/390 Hook、3 个具名 seam，通过；软错误、未应用与旧包导入为空 |
 
-八进程探针显式创建 Gloo 元数据组、NCCL 参考组和真实 AITER communicator，并将其提供给原生 GroupCoordinator 方法；只注入组 getter，未替换通信或归一化数学。该探针不验收完整 coordinator 构造、CLI 后端选择、Fabric 或 collective Graph replay；细节与原始日志哈希见[可提交摘要](hcu-norm-collectives-gpu-validation-20261101.json)。模型验收按各自实际 wheel 版本记录。
+八进程探针显式创建 Gloo 元数据组、NCCL 参考组和真实 AITER communicator，并将其提供给原生 GroupCoordinator 方法；只注入组 getter，未替换通信或归一化数学。该探针不验收完整 coordinator 构造、CLI 后端选择、Fabric 或 collective Graph replay；细节与原始日志哈希见[可提交摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-norm-collectives-gpu-validation-20261101.json`）。模型验收按各自实际 wheel 版本记录。
 
 执行台账新增两个已实现文件处置，当前为3007 pending、3 implemented；这是逐文件审阅状态，不是全量完成率。parallel_state 的新后端选择/strict-Fabric、CP/PD，以及其他领域仍需分阶段继续，不能由本阶段或八卡代表模型结果关闭这些范围。
 
@@ -501,14 +501,14 @@ dev36 将固定 DAS 的两个 communication_op fused norm 入口和两个 layern
 
 隔离 dev35（代码 `fefb5fc`）按同一 cookbook 固定版本的完整 MiniMax BF16 单机八卡配方运行，保留 TP8、fa3、FP8 KV、内存比例0.9、131072上下文、prefill16384、max-running-requests512 和默认 Graph。运行 `minimax-m25-bf16-tp8-dev35-20261101-attempt1` 于00:16:58–00:27:48完成，六请求完整最终答案及 stop 全通过，自有进程为空、端口关闭。
 
-对实际 dev35 wheel、隔离安装与已提交源码的575个包文件再次逐字节核验一致。[验收摘要](hcu-tp8-minimax-validation-20261101.json)保留来源配方、版本、wheel/响应哈希、实际答案和清理结果。该结果属于dev35；不冒充dev36通信组路径、数据集精度、长上下文压力或性能基准。
+对实际 dev35 wheel、隔离安装与已提交源码的575个包文件再次逐字节核验一致。[验收摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-minimax-validation-20261101.json`）保留来源配方、版本、wheel/响应哈希、实际答案和清理结果。该结果属于dev35；不冒充dev36通信组路径、数据集精度、长上下文压力或性能基准。
 
 
 ## 39. 2026-11-01 原配方后端参数与组构造链路
 
 原GLM八卡配方的 `--custom-all-reduce-backend aiter` 在dev36真实parser上被拒绝（exit2）。本阶段新增完整四选项CLI、worker继承与distributed bootstrap桥接，保留来源的disable优先级和legacy auto提升规则。官方0.5.22原始/comm记录无该字段，采用本仓进程配置，不写入冻结字段；程序化调用方式及单进程边界见[配置说明](configuration.md#当前-custom-all-reduce-参数)。同时迁入来源的两个deprecated NSA别名，保持canonical字段、选择及默认语义。
 
-新增 `distributed_backend` owned实现，提取DAS完整GroupCoordinator构造器、world/model group工厂和backend setter/getter；限定现有官方provider后，[五个选择定义](hcu-custom-allreduce-source-alignment.json)规范化AST相同。保留原类身份、原有comm属性和进程组创建路径；只在HCU调用owned实现，其他平台保留传入original。strict-Fabric构造失败保留原异常，disabled明确拒绝，QuickAllReduce沿独立门控及transport排除规则。
+新增 `distributed_backend` owned实现，提取DAS完整GroupCoordinator构造器、world/model group工厂和backend setter/getter；限定现有官方provider后，[五个选择定义](hcu-sglang-development.md#历史-json-快照)（`hcu-custom-allreduce-source-alignment.json`）规范化AST相同。保留原类身份、原有comm属性和进程组创建路径；只在HCU调用owned实现，其他平台保留传入original。strict-Fabric构造失败保留原异常，disabled明确拒绝，QuickAllReduce沿独立门控及transport排除规则。
 
 `tests/runtime/distributed_backend.py` 在指定容器内13项通过，包含真实CLI/原始record、冷子进程继承、公共bootstrap与GroupCoordinator构造，昂贵进程组/communicator分配使用可观察夹具；不将CPU构造测试记为Fabric硬件通过。首次导入发现官方parallel_state没有re-export来源所用get_bool_env_var，已显式引用真实utils provider，原始失败保留。完整GLM八卡参数解析已通过，未删除 `aiter`、EAGLE或旧NSA选项。
 
@@ -519,11 +519,11 @@ dev36 将固定 DAS 的两个 communication_op fused norm 入口和两个 layern
 
 代码提交 `89ac151`（dev37）完成后，运行 `glm5-int4-tp8-dev37-20261101-attempt1` 于00:59:54–01:08:40通过六个严格请求：HTTP200、正确模型标识、完整最终答案及stop均通过。TP8/DP1/EP1、旧NSA参数、INT4 quantization、EAGLE、FP8 KV、内存比例0.85和默认Graph保留，无四卡smoke的context/KV-token/graph-size覆盖。只使用本地模型路径、loopback端口及任务Rust/cache；未修改主机NUMA sysctl。
 
-八个rank日志均确认 `custom_all_reduce_backend=aiter requested_transport=ipc selected_transport=ipc disabled=False`；W4A8按原配方`auto`解析为LightOp，未设置TPMOE backend覆盖。权重后处理与target/draft Graph完成，服务结束时自有PID为空、端口关闭。实际wheel/隔离安装与已提交577个包文件逐字节一致，[验收摘要](hcu-tp8-glm5-validation-20261101.json)保存版本、wheel/响应哈希、实际答案与后端日志计数。该结果不外推Fabric、数据集精度或性能。
+八个rank日志均确认 `custom_all_reduce_backend=aiter requested_transport=ipc selected_transport=ipc disabled=False`；W4A8按原配方`auto`解析为LightOp，未设置TPMOE backend覆盖。权重后处理与target/draft Graph完成，服务结束时自有PID为空、端口关闭。实际wheel/隔离安装与已提交577个包文件逐字节一致，[验收摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-glm5-validation-20261101.json`）保存版本、wheel/响应哈希、实际答案与后端日志计数。该结果不外推Fabric、数据集精度或性能。
 
 ## 41. 2026-11-01 已有SiLU迁移实现复核
 
-固定DAS的activation模块只有 `SiluAndMul.forward_cuda` Python定义与官方不同，另在module级 `_use_aiter` 选择上排除HCU。已有 `norm_activation` 的CUDA AROUND与构造AFTER分别覆盖同一LightOp调用和HCU构造选择；确定性/native及其他平台的effective original保留。其他Python定义AST与官方相同。具体审阅及环境边界见[记录](hcu-activation-source-review-20261101.json)。
+固定DAS的activation模块只有 `SiluAndMul.forward_cuda` Python定义与官方不同，另在module级 `_use_aiter` 选择上排除HCU。已有 `norm_activation` 的CUDA AROUND与构造AFTER分别覆盖同一LightOp调用和HCU构造选择；确定性/native及其他平台的effective original保留。其他Python定义AST与官方相同。具体审阅及环境边界见[记录](hcu-sglang-development.md#历史-json-快照)（`hcu-activation-source-review-20261101.json`）。
 
 `tests/runtime/activation_hcu.py` 四项通过：HCU/AITER/确定性构造选择，真实公开LightOp BF16/FP16输出在三组形状下与FP32 SiLU×up参考比较，变更gate/up输入的Graph replay，以及非HCUoriginal委托。未改运行时数学或容差；本阶段补充验证与处置，不重建相同版本wheel。
 
@@ -536,7 +536,7 @@ DeepSeek-V4原八卡配方正在复验，保留TP8/DP8/EP8、DSPARK、DeepEP、c
 
 隔离dev37（代码 `89ac151`）运行 `deepseekv4-fp8-tp8-dev37-20261101-attempt1`，01:26:47–01:34:20完成六请求，HTTP200、模型身份、完整最终答案及stop全部通过。保留TP8/DP8/EP8、DSPARK、多stream/fast sampling、DeepEP、max-running32、context32768、graph32、内存0.90与64线程加载，无四卡KV/context/graph缩减。八个DP rank日志明确命中owned HCU `DeepseekV4AttnBackend`；结束时自有进程为空、端口关闭。
 
-[验收摘要](hcu-tp8-deepseekv4-validation-20261101.json)保存实际版本、577个包文件的源码/wheel/隔离安装核验、响应哈希、backend路径/ranks与DeepEP配置哈希。网卡/模型/draft/profiler/config占位符按节点实际值填写；EP8推荐配置由实际vendor工厂读取数值、重建真实Config验证，并保留独立来源哈希。首个日志提取器误用了历史文案，修正为实际logger的 `HCU dsv4 backend:` 模式后确认八rank；没有重启或改变通过的模型运行来修补证据。
+[验收摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-validation-20261101.json`）保存实际版本、577个包文件的源码/wheel/隔离安装核验、响应哈希、backend路径/ranks与DeepEP配置哈希。网卡/模型/draft/profiler/config占位符按节点实际值填写；EP8推荐配置由实际vendor工厂读取数值、重建真实Config验证，并保留独立来源哈希。首个日志提取器误用了历史文案，修正为实际logger的 `HCU dsv4 backend:` 模式后确认八rank；没有重启或改变通过的模型运行来修补证据。
 
 ## 43. 2026-11-01 完整 Python AST 文件复核
 
@@ -549,7 +549,7 @@ DeepSeek-V4原八卡配方正在复验，保留TP8/DP8/EP8、DSPARK、DeepEP、c
 
 从干净 `5082647` 继续M1。旧Column包装器没有 `input_quant_args`，公开接口在dev37上实际抛出unexpected keyword；同时它对rms_weight执行单独归一化，没有来源的fused INT8消费契约。本阶段迁入来源的Replicated/Column/Merged forward、Column构造/partition、Merged构造和attn_cp group解析，保留原生类身份和准确super owner。完整helper原已在本仓与来源同字节，本次将其接入实际投影消费者，不另写数学fallback。
 
-显式q/scale不依赖legacy开关，unsupported消费者按来源拒绝；保留epsilon、input/residual更新、Merged fused分支五值返回和普通分支二值返回。Row的来源位置参数及swiglu_limit也接到已有完整forward；普通无扩展调用与旧位置output buffer保持effective original。[对照记录](hcu-linear-source-alignment.json)包含全部十个改变/新增Python定义，去除provider限定和显式owner适配后AST相同，helper原始字节相同。
+显式q/scale不依赖legacy开关，unsupported消费者按来源拒绝；保留epsilon、input/residual更新、Merged fused分支五值返回和普通分支二值返回。Row的来源位置参数及swiglu_limit也接到已有完整forward；普通无扩展调用与旧位置output buffer保持effective original。[对照记录](hcu-sglang-development.md#历史-json-快照)（`hcu-linear-source-alignment.json`）包含全部十个改变/新增Python定义，去除provider限定和显式owner适配后AST相同，helper原始字节相同。
 
 | 验证 | 实际结果与范围 |
 |---|---|
@@ -561,7 +561,7 @@ DeepSeek-V4原八卡配方正在复验，保留TP8/DP8/EP8、DSPARK、DeepEP、c
 
 GPU首轮的投影夹具错放为连续[K,N]，不符合真实INT8 GEMM post-load[N,K]布局。修正为调用真实process_weights_after_loading后通过；生产GEMM、来源数学和测试容差未改。3项GPU结果只归于dev38；dev39路由由新增CPU公共调用覆盖，不将其冒充新GPU执行。原始证据在ignored `artifacts/plugin-v3-1028-linear-20261101/`。
 
-[原八卡Qwen3-235B的dev38运行摘要](hcu-tp8-qwen3-dev38-validation-20261101.json)记录六请求通过、进程/端口已清理；该中间artifact来自独立build-dev38源码快照，不伪装为含后续Row修复的dev39提交。后续按最终代码版本记录完整服务。
+[原八卡Qwen3-235B的dev38运行摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-qwen3-dev38-validation-20261101.json`）记录六请求通过、进程/端口已清理；该中间artifact来自独立build-dev38源码快照，不伪装为含后续Row修复的dev39提交。后续按最终代码版本记录完整服务。
 
 本阶段77项仓库unittest、L0、执行台账快照、Skill校验及实际宽/窄屏检索/阅读/导航检查通过。GPU证据与源码快照按版本分开，未推送远程。
 
@@ -570,7 +570,7 @@ GPU首轮的投影夹具错放为连续[K,N]，不符合真实INT8 GEMM post-loa
 
 从本地 `9976f34` 继续M1。旧FP8包装器在HCU上固定调用LightOp channelwise GEMM，未覆盖当前DAS的torch._scaled_mm探测、逐形状BLASLt失败缓存与选择性Triton分支。本阶段迁入完整 `_apply_fallback_scaled_mm`：仅RuntimeError且文本包含blaslt才记录失败形状；其他异常保留原对象抛出。key包含device type/index、M/N/K、输入/输出dtype，成功probe不污染cache。
 
-缩放、bias、padding裁剪、旧tuple输出和dtype转换按来源执行；非HCU保留effective original。[源码证据](hcu-fp8-fallback-source-alignment.json)去除两个provider限定后AST相同，复用的Triton wrapper、kernel、scale适配与weak-contiguous检查四个定义在固定DAS/官方中AST完全相同。没有用另一个数学实现伪装fallback成功。
+缩放、bias、padding裁剪、旧tuple输出和dtype转换按来源执行；非HCU保留effective original。[源码证据](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-fallback-source-alignment.json`）去除两个provider限定后AST相同，复用的Triton wrapper、kernel、scale适配与weak-contiguous检查四个定义在固定DAS/官方中AST完全相同。没有用另一个数学实现伪装fallback成功。
 
 `tests/runtime/fp8_fallback.py` 6项CPU公共入口回归通过：成功路径scale/bias一次、BLASLt失败只probe一次、dtype cache隔离、padding/tuple输出、非BLASLt与非Runtime异常原样传播，以及非HCU委托。昂贵backend在CPU夹具中可观察替代，GPU数学/Graph另测。
 
@@ -581,7 +581,7 @@ GPU首轮的投影夹具错放为连续[K,N]，不符合真实INT8 GEMM post-loa
 
 dev40真实GPU探针暴露两个固定source/native共有的问题：先把[M,N]恢复为多维输出后再乘per-token[M,1] scale，广播失败；原Triton kernel的 `c += bias` 在FP16输出与FP32 bias下导致分支SSA类型不一致、无法编译。dev41保持二维行域完成scale/bias后最终reshape；在同源优化kernel的bias分支显式执行原store本应完成的输出类型转换，保持先转换accumulator再加bias的顺序，不替换成普通矩阵乘法或外部逐元素fallback。
 
-迁入wrapper时provider别名N又被局部输出维度N遮蔽，已改成native_fp8_kernel，并在方法抽取工具加入replacement/owner目标命名与局部绑定的预检及两个实际执行/拒绝回归。原始失败保留。更新后的[对照](hcu-fp8-fallback-source-alignment.json)明确这两处有意适配，反向归一后恢复source fallback、wrapper、kernel AST，不再声称逐字源相同。
+迁入wrapper时provider别名N又被局部输出维度N遮蔽，已改成native_fp8_kernel，并在方法抽取工具加入replacement/owner目标命名与局部绑定的预检及两个实际执行/拒绝回归。原始失败保留。更新后的[对照](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-fallback-source-alignment.json`）明确这两处有意适配，反向归一后恢复source fallback、wrapper、kernel AST，不再声称逐字源相同。
 
 源树真实GPU三项已通过：输出[2,14,128]的per-token scale/bias/padding与BF16参考；M17/K6144/N768数值与变更scale的Graph replay；显式预置已知cache条目的M19真实Triton FP16+FP32 bias。当前设备对M17的真实hipBLASLt调用成功，不能冒充自然触发的失败/cache；选择/异常策略由公共CPU夹具独立验证。没有改变测试容差。
 
@@ -589,7 +589,7 @@ dev40真实GPU探针暴露两个固定source/native共有的问题：先把[M,N]
 
 ## 47. 2026-11-01 dev39 MiniMax 八卡复验
 
-本地代码 `9976f34` 的隔离dev39按原MiniMax BF16八卡配方，02:52:18–03:02:41完成六个严格请求，正常stop、自有进程为空、端口关闭。TP8、FP8 KV、context131072、max-running512与默认Graph保留；578包文件与该已提交代码/实际wheel/site逐字节相同。[运行摘要](hcu-tp8-minimax-dev39-validation-20261101.json)保存实际artifact与响应哈希，不归到后续dev41。
+本地代码 `9976f34` 的隔离dev39按原MiniMax BF16八卡配方，02:52:18–03:02:41完成六个严格请求，正常stop、自有进程为空、端口关闭。TP8、FP8 KV、context131072、max-running512与默认Graph保留；578包文件与该已提交代码/实际wheel/site逐字节相同。[运行摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-minimax-dev39-validation-20261101.json`）保存实际artifact与响应哈希，不归到后续dev41。
 
 隔离dev41实际结果：7项CPU、3项GPU数值/Graph与400/400 Hook、3seam通过；79项仓库unittest、L0、Skill和实际宽/窄屏检索/阅读/导航检查通过。真实M17与M32均未进入失败cache，已知cache夹具用真实同源优化Triton kernel。仅当前选择范围通过，其余fp8_utils定义及完整模型dev41验收不由此关闭。
 
@@ -598,7 +598,7 @@ dev40真实GPU探针暴露两个固定source/native共有的问题：先把[M,N]
 
 本阶段从本地 `1951b9e` 延续FP8迁移。来源 `apply_fp8_linear` 在HCU上使用真实DeepGEMM接口并支持预量化输入，原插件没有该路径接入。现提取完整来源函数并沿公开Hook更新已导入alias；原生 `Fp8LinearMethod.apply` AST与DAS相同，直接保留其consumer，验证从原生类入口到新apply，而非旁路私有quant_method。
 
-[源码/边界证据](hcu-fp8-linear-source-alignment.json)明确两处受控buffer适配：直接carrier统一flatten token维及scale、还原输出leading维；output按实际q行数（包括padding）分配，截取真实token行后还原shape。源函数此前用未补齐行数分配GEMM输出，CPU严格backend夹具在q17/out2时失败，未在GPU上冒险执行越界配置。
+[源码/边界证据](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-linear-source-alignment.json`）明确两处受控buffer适配：直接carrier统一flatten token维及scale、还原输出leading维；output按实际q行数（包括padding）分配，截取真实token行后还原shape。源函数此前用未补齐行数分配GEMM输出，CPU严格backend夹具在q17/out2时失败，未在GPU上冒险执行越界配置。
 
 真实GPU进一步发现Native ROCm scaled_fp8_quant在input8行/scale17行copy失败。DAS对此已有实际条件HCU分支：LightOp dynamic per-token返回未补齐且匹配的q/scale，tensor/static helper只写真实行。已将该分支及三个配套helper原样提取到owned fp8_quant，沿公开函数Hook传播到所有早期alias；保留Source capability/dtype/shape和错误边界，不只修consumer掩盖producer缺口。
 
@@ -608,7 +608,7 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 
 ## 49. 2026-11-01 dev41 DeepSeek-V4 八卡复验
 
-代码 `1951b9e` 的隔离dev41运行 `deepseekv4-fp8-tp8-dev41-20261101-attempt1`，六请求严格通过，自有进程与端口清理。保留原TP8/DP8/EP8、DSPARK/DeepEP、context32768、graph32及64线程加载；580包文件与源码commit/wheel/site逐字节核验。[独立验收摘要](hcu-tp8-deepseekv4-dev41-validation-20261101.json)保存实际版本、响应/配置哈希和HCU backend日志，不归因于后续dev43。
+代码 `1951b9e` 的隔离dev41运行 `deepseekv4-fp8-tp8-dev41-20261101-attempt1`，六请求严格通过，自有进程与端口清理。保留原TP8/DP8/EP8、DSPARK/DeepEP、context32768、graph32及64线程加载；580包文件与源码commit/wheel/site逐字节核验。[独立验收摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev41-validation-20261101.json`）保存实际版本、响应/配置哈希和HCU backend日志，不归因于后续dev43。
 
 本阶段隔离dev43实际结果：12项公开CPU producer/consumer、4项真实DeepGEMM GPU数值/Graph、401/401 Hook与3seam通过；582包文件与源码/site一致，wheel SHA256 `d04f014e94f3dbd32784902d9ac53805a0570587baeeea72674185affcd3a2e3`。79项仓库unittest、L0、执行台账、Skill及实际宽/窄屏检索/阅读/导航检查通过。测试只证明选择路径，block/mxscale/post-load及全量目标仍未完。
 
@@ -620,7 +620,7 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 
 从已提交 `469976c` 继续迁移。DAS在DeepGEMM、FlashInfer、AITER优先项均不命中时，HCU auto选择LightOp hipBLASLt；对应加载方法把checkpoint [N,K]及[N/128,K/128]转成连续[K,N]与[K/128,N/128]。缺任一端都会形成错误consumer契约。
 
-完整提取auto dispatcher、两个量化/GEMM helper和block post-load方法，[来源对照](hcu-block-fp8-source-alignment.json)对4个函数归一native命名空间及本仓owner导入后AST相等。post-load Hook仅在实际选择本仓hipBLASLt callable时使用该来源方法；其他backend沿用有效原生方法，不提前替换其权重布局。计算仍使用来源LightOp per-token-group quant与hipblaslt blockwise GEMM，不替换优化backend。
+完整提取auto dispatcher、两个量化/GEMM helper和block post-load方法，[来源对照](hcu-sglang-development.md#历史-json-快照)（`hcu-block-fp8-source-alignment.json`）对4个函数归一native命名空间及本仓owner导入后AST相等。post-load Hook仅在实际选择本仓hipBLASLt callable时使用该来源方法；其他backend沿用有效原生方法，不提前替换其权重布局。计算仍使用来源LightOp per-token-group quant与hipblaslt blockwise GEMM，不替换优化backend。
 
 源树7项CPU覆盖优先级、早期alias、原生加载/消费、参数identity、权重与非方形scale转置、backend参数和异常；3项真实GPU覆盖M1/17/32、BF16/FP16与bias、多维token输入，以及改变输入的Graph replay，全部通过。数学参考将真实量化activation与逐128块scale解码，再独立FP32乘积；容差rtol/atol均0.025。保留原来源忽略传入input_scale而重新量化的接口语义；不扩大为tuple carrier支持。
 
@@ -630,13 +630,13 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 
 ## 51. 2026-11-01 dev45 DeepSeek-V4 八卡复验
 
-本地 `0995491` 的隔离dev45从04:02:42至04:08:13完成原TP8/DP8/EP8、DSPARK/DeepEP、Graph32、context32768及64线程加载配方；六项严格请求均以stop结束，自有进程为空、端口关闭。583包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-deepseekv4-dev45-validation-20261101.json)保存版本、配置和响应哈希。仅六项确定性生成检查，不是数据集精度或吞吐指标，亦不归到后续dev46。
+本地 `0995491` 的隔离dev45从04:02:42至04:08:13完成原TP8/DP8/EP8、DSPARK/DeepEP、Graph32、context32768及64线程加载配方；六项严格请求均以stop结束，自有进程为空、端口关闭。583包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev45-validation-20261101.json`）保存版本、配置和响应哈希。仅六项确定性生成检查，不是数据集精度或吞吐指标，亦不归到后续dev46。
 
 ## 52. 2026-11-01 dense mxscale 准备、生产与消费
 
 从已提交 `0995491` 继续：模型已有dense_mxscale_ready/set_dense_mxscale调用，却缺少公共符号和融合RMSNorm/e8m0来源模块。现迁入8个公共/配套helper、AITER完整consumer及加载后准备方法，绑定原生模块/类的缺失符号并检测冲突；block post-load仅对实际hipBLASLt或AITER consumer采用完整来源方法。保持capability检查、gfx95 bpreshuffle条件、shape白名单和正normal二次幂scale的无损判定；先shuffle权重，再附加e8m0 scale副本，共享生产端要求全部consumer ready。
 
-模型融合生产端改用本仓byte-identical RMSNorm/e8m0 kernel；不假装官方存在缺失模块。[源码对照](hcu-dense-mxscale-source-alignment.json)归一native owner后10个函数AST相等，模型helper仅重绑定import，融合kernel整文件逐字节相同。源树11项CPU路由/数据契约、7项block回归、3项真实gfx938融合GPU/Graph通过，覆盖权重/scale准备、早期alias、混合scale保留fp32 backend、缺失scale拒绝、空rank不launch、M1/17/8、K256/384/7168、零输入与改变input/weight的Graph replay。数值参考独立计算RMSNorm及ceil(log2(amax/448))量化，实际scale字节按column-major storage解释。
+模型融合生产端改用本仓byte-identical RMSNorm/e8m0 kernel；不假装官方存在缺失模块。[源码对照](hcu-sglang-development.md#历史-json-快照)（`hcu-dense-mxscale-source-alignment.json`）归一native owner后10个函数AST相等，模型helper仅重绑定import，融合kernel整文件逐字节相同。源树11项CPU路由/数据契约、7项block回归、3项真实gfx938融合GPU/Graph通过，覆盖权重/scale准备、早期alias、混合scale保留fp32 backend、缺失scale拒绝、空rank不launch、M1/17/8、K256/384/7168、零输入与改变input/weight的Graph replay。数值参考独立计算RMSNorm及ceil(log2(amax/448))量化，实际scale字节按column-major storage解释。
 
 实际SGLANG_USE_AITER=1导入发现安装的vendor缺少gemm_a8w8_blockscale，来源/原生fp8_utils也无法导入，原始失败保留。CPU测试在实际可导入环境验证数据流并显式模拟gfx95条件，不能证明优化GEMM数学或性能；gfx938上的融合Triton生产端是真实执行，不能替代gfx95 mxscale bpreshuffle GEMM。未升级或替换vendor，未禁用优化分支掩盖失败。
 
@@ -646,15 +646,15 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 
 ## 53. 2026-11-01 dev46 DeepSeek-V4 八卡复验
 
-提交 `5ba8e96` 的隔离dev46，04:17:30至04:23:01按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32、context32768、64线程加载完成六项严格请求，全部正常stop、自有进程为空、端口关闭。585包文件与提交/wheel/site逐字节相同。[运行摘要](hcu-tp8-deepseekv4-dev46-validation-20261101.json)保存实际版本、配置与响应哈希，不归到dev47，不代表数据集精度或性能。
+提交 `5ba8e96` 的隔离dev46，04:17:30至04:23:01按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32、context32768、64线程加载完成六项严格请求，全部正常stop、自有进程为空、端口关闭。585包文件与提交/wheel/site逐字节相同。[运行摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev46-validation-20261101.json`）保存实际版本、配置与响应哈希，不归到dev47，不代表数据集精度或性能。
 
 ## 54. 2026-11-01 compressed FP8 的完整调用与加载契约
 
 从本地 `5ba8e96` 继续。进程启动前显式设置 `SGLANG_USE_LIGHTOP_CHANNEL_FP8=1` 启用该路径，缺省关闭；它只选择compressed CHANNEL路径，不能代替block/tensor配置或全模型兼容验收。LightOp channelwise opt-in要求OCP E4M3权重[N,K]，不能继续使用普通HCU转置/FNUZ布局。完整提取来源helper、scheme capability/post-load/apply与上层CompressedTensorsLinearMethod.apply；复用来源与官方AST相等的6个native构造/建参/入口方法。公开capability限定HCU、非AITER、dynamic channel、非block；channel opt-in保留连续OCP权重，动态调用真实LightOp quantizer或直接复用tuple，并保留来源RuntimeError→KME重试及其他错误传播。
 
-[来源对照](hcu-compressed-fp8-source-alignment.json)归一namespace、property绑定和抽取方法名后恢复5个函数AST，并显式列出受控适配。AROUND保留legacy函数反射签名，为owned scheme提供来源参数元信息，其他scheme仍按来源inspect/cache过滤参数；不mock掉上层native wrapper入口。
+[来源对照](hcu-sglang-development.md#历史-json-快照)（`hcu-compressed-fp8-source-alignment.json`）归一namespace、property绑定和抽取方法名后恢复5个函数AST，并显式列出受控适配。AROUND保留legacy函数反射签名，为owned scheme提供来源参数元信息，其他scheme仍按来源inspect/cache过滤参数；不mock掉上层native wrapper入口。
 
-真实CPU反例发现两个来源逻辑缺口：compressed caller已传pre_quant_output_dtype，但generic HCU tuple分支固定BF16；compressed block后端选择来源hipBLASLt时，加载后权重/scale未做其要求的成对转置。现分别令allocation遵守forwarded dtype（缺省仍BF16），仅对该block consumer转换weight及scale，保留Parameter对象与其他backend布局。[generic对照](hcu-fp8-linear-source-alignment.json)追加dtype适配，不再把这处修复称作逐字源相同。
+真实CPU反例发现两个来源逻辑缺口：compressed caller已传pre_quant_output_dtype，但generic HCU tuple分支固定BF16；compressed block后端选择来源hipBLASLt时，加载后权重/scale未做其要求的成对转置。现分别令allocation遵守forwarded dtype（缺省仍BF16），仅对该block consumer转换weight及scale，保留Parameter对象与其他backend布局。[generic对照](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-linear-source-alignment.json`）追加dtype适配，不再把这处修复称作逐字源相同。
 
 源树14项CPU从实际native构造/建参/加载/包装apply到backend验证通过：compat kwargs、其他scheme旧签名、capability矩阵、动态/预量化/FNUZ、opt-out DeepGEMM dtype、KME复用同一operand、错误传播和非方形block布局。初始fixture缺tp_group已补TP1上下文；原始dtype与布局失败保留。GPU初次bias使用FP32违反LightOp的bias.dtype==out_dtype契约，已改为实际模型对应dtype，未改运行时规避检查或放宽容差。真实GPU/Graph、隔离wheel和全Hook按实际结果补记；不据此关闭所有compressed schemes或全部DAS。
 
@@ -664,7 +664,7 @@ fp8_utils、quantization/fp8_kernel的其余dispatch、post-load、block/mxscale
 
 ## 55. 2026-11-01 dev47 两组原配方八卡复验
 
-提交 `d2dc00d` 的隔离dev47先后完成[DeepSeek-V4](hcu-tp8-deepseekv4-dev47-validation-20261101.json)与[GLM-5 INT4](hcu-tp8-glm5-dev47-validation-20261101.json)八卡配方，各六项严格请求均正常stop，已清理自有进程与监听端口。两次586包文件与提交/wheel/site逐字节相同，分别04:41:59–04:47:30、04:48:50–04:57:01，均只归到dev47。
+提交 `d2dc00d` 的隔离dev47先后完成[DeepSeek-V4](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev47-validation-20261101.json`）与[GLM-5 INT4](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-glm5-dev47-validation-20261101.json`）八卡配方，各六项严格请求均正常stop，已清理自有进程与监听端口。两次586包文件与提交/wheel/site逐字节相同，分别04:41:59–04:47:30、04:48:50–04:57:01，均只归到dev47。
 
 DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加载。GLM保留原TP8、INT4、EAGLE、FP8KV、默认Graph、memory0.85和显式AITER custom-AR；八rank IPC选择记录与multimem all-gather运行时capability降级日志独立计数，没有手动取消优化参数。GLM SlimQuant使用独立LinearMethod，属于组合回归，不能用它替代所有compressed schemes的验证。
 
@@ -672,7 +672,7 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 
 从本地 `d2dc00d` 继续，迁入完整显式backend选择函数与公开torch_fp8_block_gemm参考函数。HCU请求不可用AITER时，错误现在按来源指出HCU设备及SGLANG_USE_AITER=1，其他backend返回有效native/已hooked consumer；非HCU保留有效原分派。公开参考函数按来源使用per-row/per-K-block及per-K/N-block scale，不把参考Torch矩阵乘法接入优化计算fallback。
 
-[定义/global对照](hcu-fp8-utils-source-alignment.json)覆盖17个变化的顶层定义与62个AST未变的native定义，并核对7个顶层global及conditional import归属。Native CK表保留来源2行并额外保留(4096,2048):2048与(4608,4096):512两条上游ROCm7.0 NaN防护，不能为了消掉旧DAS差异删除这些已存在保护。其gfx95性能/数学依然未经当前gfx938验证。
+[定义/global对照](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-utils-source-alignment.json`）覆盖17个变化的顶层定义与62个AST未变的native定义，并核对7个顶层global及conditional import归属。Native CK表保留来源2行并额外保留(4096,2048):2048与(4608,4096):512两条上游ROCm7.0 NaN防护，不能为了消掉旧DAS差异删除这些已存在保护。其gfx95性能/数学依然未经当前gfx938验证。
 
 递归FunctionDef检查发现顶层盘点外的CUDA-only _fp8_blockwise_scaled_mm_abstract，另有CUDA raw FlashInfer BMM从eager变LazyImport的来源差异，均尚未迁入。它们不会在当前HCU条件命中，但仍在本文件处置范围内，因此fp8_utils继续in_progress，不把顶层17定义核对称为整个模块完成。
 
@@ -684,7 +684,7 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 
 ## 57. 2026-11-01 dev48 DeepSeek-V4 原配方八卡复验
 
-本地 `b0eafcf` 的隔离dev48从05:13:31至05:19:13按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六个严格请求，正常stop，自有进程为空、端口关闭。586包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-deepseekv4-dev48-validation-20261101.json)保存实际版本、响应与配置哈希，不归到后续dev49，也不是数据集精度或吞吐指标。
+本地 `b0eafcf` 的隔离dev48从05:13:31至05:19:13按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六个严格请求，正常stop，自有进程为空、端口关闭。586包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev48-validation-20261101.json`）保存实际版本、响应与配置哈希，不归到后续dev49，也不是数据集精度或吞吐指标。
 
 ## 58. 2026-11-01 FP8 MoE 建参、HCU分派与加载布局
 
@@ -692,7 +692,7 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 
 完整来源方法迁入owned fp8_moe，四个HCU-only AROUND沿原生Fp8MoEMethod绑定；非HCU保留有效original。Native HookRegistry保留static factory的staticmethod descriptor。既有MegaMoE注册先发布HCU runtime/builder，再注册quantization，避免导入未发布helper。ASM使用来源aiter.ops.shuffle.asm_shuffle_weight_b8 provider，在实际分支调用时加载，未伪造vendor接口。初值SGLANG_USE_AITER_FP8_ASM_MOE=False及gfx95 AND NOT HCU的MXFP4 shuffle条件保留来源语义。
 
-[来源对照](hcu-fp8-moe-source-alignment.json)覆盖Fp8MoEMethod全部4个变化定义，归一native P后AST相等；16个AST未变方法继续复用native，包括真实constructor、create、apply和FP4转换helper。来源的声明、注释和许可保留，说明放本记录；方法抽取阶段误带第二个future import，已在执行测试前修正header，未改来源计算语义。
+[来源对照](hcu-sglang-development.md#历史-json-快照)（`hcu-fp8-moe-source-alignment.json`）覆盖Fp8MoEMethod全部4个变化定义，归一native P后AST相等；16个AST未变方法继续复用native，包括真实constructor、create、apply和FP4转换helper。来源的声明、注释和许可保留，说明放本记录；方法抽取阶段误带第二个future import，已在执行测试前修正header，未改来源计算语义。
 
 10项CPU通过实际Native Fp8Config/Fp8MoEMethod构造、create_weights到static factory，验证FP4在AITer/e8m0 override请求下仍生成FP32 scale；验证HCU quant-info在no_combine assert之前返回、standalone非法格式先拒绝、grouped block转交、ASM顺序1/2且不走generic shuffle、packed FP4 int8保留、dequant早退与non-HCU original。MegaMoE builder及CPU ASM计算采用明确spy/mock，不作数学精度结论。
 
@@ -712,7 +712,7 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 
 ## 59. 2026-11-01 dev49 DeepSeek-V4 原配方八卡复验
 
-提交 `dc59cd0` 的隔离dev49在06:11:43–06:17:19按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。587包文件与提交/wheel/site逐字节相同。[独立摘要](hcu-tp8-deepseekv4-dev49-validation-20261101.json)保存实际版本、配置及响应哈希；不归到dev50，不代表所有MoE profile或数据集精度/性能。
+提交 `dc59cd0` 的隔离dev49在06:11:43–06:17:19按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。587包文件与提交/wheel/site逐字节相同。[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev49-validation-20261101.json`）保存实际版本、配置及响应哈希；不归到dev50，不代表所有MoE profile或数据集精度/性能。
 
 ## 60. 2026-11-01 compressed INT8 strategy 与预量化入口
 
@@ -720,7 +720,7 @@ DeepSeek保留TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768和64线程加�
 
 BF16 checkpoint scale在加载前转FP32；strategy1按已有cache reader读取指定TRITON_JSON_DIR，只有提供的config才预热，LMSLIM_TUNING_JSON显式存在时才导出model.json。未向输入仓库或模型目录写文件。SGLANG_USE_LEGACY_FUSED_RMS_QUANT与SGLANG_USE_FUSED_SILU_MUL_QUANT仍缺省关闭，启用后消费对应input_quant_args/silu_quant_args，RMS优先。Native linear wrapper读取owned scheme参数元信息，避免AROUND旧反射签名吞掉新增参数。
 
-[源码对照](hcu-compressed-int8-source-alignment.json)归一native N后4个变化方法及架构predicate AST相等，create_weights/get_min_capability复用AST未变native方法；沿用已存在的owned cache兼容类，不把其实现称为本阶段逐字Source迁入。Non-HCU保留有效original。Legacy旧签名测试只登记wrapper，保留真实未迁入native INT8类作接口兼容单元测试；生产GPU用例登记完整插件，这与forward测试漏登记alignment的错误情形不同。
+[源码对照](hcu-sglang-development.md#历史-json-快照)（`hcu-compressed-int8-source-alignment.json`）归一native N后4个变化方法及架构predicate AST相等，create_weights/get_min_capability复用AST未变native方法；沿用已存在的owned cache兼容类，不把其实现称为本阶段逐字Source迁入。Non-HCU保留有效original。Legacy旧签名测试只登记wrapper，保留真实未迁入native INT8类作接口兼容单元测试；生产GPU用例登记完整插件，这与forward测试漏登记alignment的错误情形不同。
 
 严格public CPU反例确认共享legacy hipBLASLt helper接收bias却直接返回不含bias的GEMM结果，6/6元素全部丢失。现仅在该返回路径用in-place add加入非None bias并保留输出dtype；精确移除该AST增量后恢复完整来源helper。未替换kernel、未禁用hipBLASLt；gfx928 KME原有bias处理保持其provider接口。
 
@@ -730,13 +730,13 @@ BF16 checkpoint scale在加载前转FP32；strategy1按已有cache reader读取�
 
 ## 61. 2026-11-01 dev50 GLM-5 INT4 原配方八卡复验
 
-提交 `814792e` 的隔离dev50于06:31:46–06:37:17完成原TP8、INT4、EAGLE、FP8 KV、memory0.85、默认Graph和显式AITER custom-AR配方，六项严格请求均正常stop，自有进程为空、端口关闭。588包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-glm5-dev50-validation-20261101.json)记录实际响应、配置和backend日志计数。GLM走独立SlimQuant，本次是共享helper/组合回归，不作为新compressed INT8 scheme的全模型证明，也不归到dev51。
+提交 `814792e` 的隔离dev50于06:31:46–06:37:17完成原TP8、INT4、EAGLE、FP8 KV、memory0.85、默认Graph和显式AITER custom-AR配方，六项严格请求均正常stop，自有进程为空、端口关闭。588包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-glm5-dev50-validation-20261101.json`）记录实际响应、配置和backend日志计数。GLM走独立SlimQuant，本次是共享helper/组合回归，不作为新compressed INT8 scheme的全模型证明，也不归到dev51。
 
 ## 62. 2026-11-01 small-M ASM 与量化 target 父类匹配
 
 从本地 `814792e` 审查相邻pending文件发现：既有quant_ops虽已迁入大部分helper，却缺来源small-M ASM fast path及其致命binary缺失架构保护；Native matching只看当前类名，不能识别不含Linear命名的自定义子类。现迁入完整来源7个helper和匹配函数，保留默认Triton/显式config/bias/layout/shape gates，以及来源异常后Triton fallback。m/n的slide1/9选择、完整K256 tile要求、gfx928禁用与未知arch probe失败均按来源保留，未为了通过改掉kernel选择。
 
-当前官方utils没有is_hcu导出，owned module将该导入绑定到既有detection.is_dcu；未给官方模块伪造符号。Source quant_ops全部函数与module其余AST均核对，除这处真实provider重绑定及dev50精确bias AST增量外相同。[全文件对照](hcu-quant-ops-targets-source-alignment.json)还证明target utility唯一变化函数归一native N后相同，其余完整module AST与native相同，因此这两项代码处置改为implemented；不据此把全部DAS或所有profile改为完成。
+当前官方utils没有is_hcu导出，owned module将该导入绑定到既有detection.is_hcu；未给官方模块伪造符号。Source quant_ops全部函数与module其余AST均核对，除这处真实provider重绑定及dev50精确bias AST增量外相同。[全文件对照](hcu-sglang-development.md#历史-json-快照)（`hcu-quant-ops-targets-source-alignment.json`）还证明target utility唯一变化函数归一native N后相同，其余完整module AST与native相同，因此这两项代码处置改为implemented；不据此把全部DAS或所有profile改为完成。
 
 Target按exact/regex layer path、Python MRO中的leaf/parent、fused全组件匹配的顺序选择，跳过object，支持空字符串显式匹配。公开Hook传播到早期alias，并保留non-HCU有效original；不因自定义layer名称改变而漏配quantization。
 
@@ -748,19 +748,19 @@ Target按exact/regex layer path、Python MRO中的leaf/parent、fused全组件�
 
 ## 63. 2026-11-01 dev51 GLM 原配方八卡复验
 
-本地 `701fce6` 的隔离dev51于06:49:40–06:55:01按原GLM INT4 TP8/EAGLE/FP8 KV/默认Graph/memory0.85和AITER custom-AR配方完成六项严格请求，全部正常stop，已清理自有进程与监听端口。589包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-glm5-dev51-validation-20261101.json)保存实际配置、响应与backend日志计数；不归到dev52，不是数据集精度或性能分数。
+本地 `701fce6` 的隔离dev51于06:49:40–06:55:01按原GLM INT4 TP8/EAGLE/FP8 KV/默认Graph/memory0.85和AITER custom-AR配方完成六项严格请求，全部正常stop，已清理自有进程与监听端口。589包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-glm5-dev51-validation-20261101.json`）保存实际配置、响应与backend日志计数；不归到dev52，不是数据集精度或性能分数。
 
 ## 64. 2026-11-01 JIT 资源的可重复编译闭包审查
 
 前阶段106个pending同字节路径只是线索。本阶段新增只读工具[资源审计](../tools/audit_jit_resources.py)，从固定fork Git tree核对plan OID、owned文件mode/bytes及wheel成员，并验证历史sgl_deps.json的deps-key、库文件存在、历史安装与当前owned内容摘要。清单与路径被当作数据，不执行来源代码或载入.so；输出不修改处置状态。工具6项单元测试覆盖来源HEAD/OID漂移、缓存清单篡改、库缺失、历史/当前内容漂移、wheel遗漏、外部安装路径与来源删除，并核对Git index/状态未改变。
 
-本机历史review为14个recorded compiler dependencies、74个仅同字节owner、4个来源已删除；[覆盖摘要](hcu-jit-resource-coverage.json)保留代表性manifest及哈希。历史编译记录不是本次执行、更不是所有模板数值通过。这14项先转in_progress审查，74项和删除项不自动完成；输出目录由显式变量指定，未改写源仓库或全局Git配置。
+本机历史review为14个recorded compiler dependencies、74个仅同字节owner、4个来源已删除；[覆盖摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-jit-resource-coverage.json`）保留代表性manifest及哈希。历史编译记录不是本次执行、更不是所有模板数值通过。这14项先转in_progress审查，74项和删除项不自动完成；输出目录由显式变量指定，未改写源仓库或全局Git配置。
 
 4项native load_jit/BuildSpec检查从早期import alias进入真实loader，在compute_build_key前截获不可变spec，核对owned cuda_files、include首位、外部绝对路径与native未覆盖路径、重复注册和调用方list不变。Header-only的实际include保存在translation_units().source，而非ninja文本的cuda.cu文件名中；原测试断言位置已修正，未更改loader来迎合测试。
 
-冷缓存实际调用owned candidate_blocks.amax8_varlen暴露block_amax.cuh的HIP编译错误：__launch_bounds__中带<typename, typename>的表达式逗号被宏解析，后续报BlockAmaxKernel不存在并不代表Python模板实参顺序错误。现只给两个常量表达式加括号，线程512、occupancy4及算法不变，[精确反向字节对照](hcu-jit-block-amax-source-alignment.json)证明除这处适配外保持来源。没有换Torch/Triton fallback或修改输入树。
+冷缓存实际调用owned candidate_blocks.amax8_varlen暴露block_amax.cuh的HIP编译错误：__launch_bounds__中带<typename, typename>的表达式逗号被宏解析，后续报BlockAmaxKernel不存在并不代表Python模板实参顺序错误。现只给两个常量表达式加括号，线程512、occupancy4及算法不变，[精确反向字节对照](hcu-sglang-development.md#历史-json-快照)（`hcu-jit-block-amax-source-alignment.json`）证明除这处适配外保持来源。没有换Torch/Triton fallback或修改输入树。
 
-新任务cache目录强制经历实际JIT编译，2项gfx938 GPU检查覆盖FP32/BF16 input/output四组合、空/partial/skip rows、最新块+inf、未写区域保留，以及改变score/length的实际Graph replay，逐值一致。四个新编译清单也被审计；该header被正确标成owner_differs而非伪称同字节。[Source/覆盖记录](hcu-jit-resource-coverage.json)将受控适配、当前实际GPU测试与历史编译分开。对应block-amax实现完成；其余资源的模板、caller与profile仍待审，不能把14份历史记录视为整仓完成。
+新任务cache目录强制经历实际JIT编译，2项gfx938 GPU检查覆盖FP32/BF16 input/output四组合、空/partial/skip rows、最新块+inf、未写区域保留，以及改变score/length的实际Graph replay，逐值一致。四个新编译清单也被审计；该header被正确标成owner_differs而非伪称同字节。[Source/覆盖记录](hcu-sglang-development.md#历史-json-快照)（`hcu-jit-resource-coverage.json`）将受控适配、当前实际GPU测试与历史编译分开。对应block-amax实现完成；其余资源的模板、caller与profile仍待审，不能把14份历史记录视为整仓完成。
 
 工具复跑：将FORK、PLUGIN、WHEEL、CACHE、INSTALL_BASE、REPORT分别设为只读fork、插件目录、待核wheel、JIT cache、历史隔离安装父目录和新输出文件，然后执行：
 
@@ -774,7 +774,7 @@ python3 tools/audit_jit_resources.py --plan "$PLUGIN/plans/sglang-das-execution.
 
 ## 65. 2026-11-01 dev52 DeepSeek 原配方八卡复验
 
-本地 `b2302c3` 的隔离dev52于07:23:57–07:29:23按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。589包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-tp8-deepseekv4-dev52-validation-20261101.json)记录版本、配置及响应哈希；不归到dev53，不是所有kernel/profile或数据集精度证明。
+本地 `b2302c3` 的隔离dev52于07:23:57–07:29:23按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768及64线程加载完成六项严格请求，均正常stop，自有进程为空、端口关闭。589包文件与提交/wheel/site逐字节相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev52-validation-20261101.json`）记录版本、配置及响应哈希；不归到dev53，不是所有kernel/profile或数据集精度证明。
 
 ## 66. 2026-11-01 BF16 short-row radix top-k 的HCU接入
 
@@ -782,7 +782,7 @@ python3 tools/audit_jit_resources.py --plan "$PLUGIN/plans/sglang-das-execution.
 
 现使用既有portable shuffle/broadcast；每lane管理256/deviceWarpThreads个bins；当前Source utils.cuh固定逻辑warp32，CUDA与HIP均为8，不能按硬件wave64推断为4，对应vector load、signed-MSB顺序和suffix pivot按实际宽度分配。HIP pair比较直接使用BF16原始位序，显式处理NaN与signed-zero相等；8个半字比较mask用整型shift打包，CUDA保留原intrinsic。线程512、occupancy3、两阶段radix、top-k quota和page-table接口保持，未强制wave32，也未换用torch topk计算返回值。来源已有说明保留，CUDA特定lane注释按原文保留；HIP差异由本记录说明。
 
-[Source对照](hcu-bf16-topk-source-alignment.json)与[精确patch](patches/hcu-bf16-topk-wave64.patch)列出全部适配，临时副本反向apply后与固定Source逐字节相同。首轮helper类型限定误将全局bf16x2_t写成device成员，已修正后重新冷编译；未伪造vendor API。
+[Source对照](hcu-sglang-development.md#历史-json-快照)（`hcu-bf16-topk-source-alignment.json`）与[精确patch](patches/hcu-bf16-topk-wave64.patch)列出全部适配，临时副本反向apply后与固定Source逐字节相同。首轮helper类型限定误将全局bf16x2_t写成device成员，已修正后重新冷编译；未伪造vendor API。
 
 5项公开入口真实GPU检查通过：256宽下空/partial行与任意返回顺序下的精确page slot集合；来源最大width16384/k2048与positive/negative BF16 bins；重复值与signed-zero quota128、唯一且有效索引；有限subnormal位序；Graph中同时改变score、length和page table。普通/最大值参考使用独立topk/page公式，subnormal参考使用整型BF16 rank，均为exact比较而非放宽浮点容差。
 
@@ -793,12 +793,12 @@ Subnormal首轮64/64差异不能归因为GPU：默认CPU float top-k给出129开
 
 ## 67. 2026-11-01 dev54 MoE hash routing 与空 pre-dispatch 接入
 
-核对固定DAS的kernels/ops/moe/dsv4.py与官方差异：HCU应选择已有owned hash_topk JIT而非通用HIP Triton；空输入的非标准stride需在mega-MoE pre-dispatch之前恢复标准空布局。本阶段保留两个完整Source函数与既有native JIT factory，新增DCU范围AROUND并保留非DCU有效原调用链。入口、pre-import alias、真实GPU/Graph、数值与隔离产物验证待实际执行，当前不作完成声明。
+核对固定DAS的kernels/ops/moe/dsv4.py与官方差异：HCU应选择已有owned hash_topk JIT而非通用HIP Triton；空输入的非标准stride需在mega-MoE pre-dispatch之前恢复标准空布局。本阶段保留两个完整Source函数与既有native JIT factory，新增HCU范围AROUND并保留非HCU有效原调用链。入口、pre-import alias、真实GPU/Graph、数值与隔离产物验证待实际执行，当前不作完成声明。
 
 
 ## 68. 2026-11-01 dev53 DeepSeek 原配方八卡复验
 
-隔离dev53对应提交 `acb7ae6`，按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768与64线程加载完成六项严格请求，均正常stop，自有进程清空、端口关闭。589包文件与提交/wheel/site逐字节相同；[独立摘要](hcu-tp8-deepseekv4-dev53-validation-20261101.json)记录时间、版本、配方与响应哈希。该结论属于dev53，不归用到新增MoE ops Hook的dev54，也不是数据集精度或全DAS迁移完成证明。
+隔离dev53对应提交 `acb7ae6`，按原TP8/DP8/EP8、DSPARK/DeepEP、Graph32/context32768与64线程加载完成六项严格请求，均正常stop，自有进程清空、端口关闭。589包文件与提交/wheel/site逐字节相同；[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev53-validation-20261101.json`）记录时间、版本、配方与响应哈希。该结论属于dev53，不归用到新增MoE ops Hook的dev54，也不是数据集精度或全DAS迁移完成证明。
 
 
 dev54边界复核：owned utils.cuh的device::kWarpThreads固定32，hash接口保持topk_fused<=32；首轮64路测试超出Source契约，拒绝属于预期边界，不能据此扩大接口。dev53的top-k constexpr仍按实际逻辑32选择8bins，真实5项GPU结果有效，但先前“HIP64为4bins”的解释不实，已更正。未改全局warp常量或强制底层执行模式。
@@ -812,7 +812,7 @@ dev54隔离GPU的7项边界检查中6项通过，零token hash触发Source的零
 
 ## 69. 2026-11-01 HCU BF16→FP32 GEMM 的Source与执行核验
 
-继续使用已冻结dev55验证既有owned实现，不把证据补齐伪装成新运行时版本。HCU helper全部4个函数AST与Source相同；gemm dispatcher全部17个函数在仅重定位函数内owned helper import后AST相同。平台检测与模块路径由owned命名空间承接。[对照记录](hcu-bf16-fp32-source-alignment.json)保留两份来源/owner摘要。7项DAS原始dispatch CPU测试迁入本仓执行环境并通过。
+继续使用已冻结dev55验证既有owned实现，不把证据补齐伪装成新运行时版本。HCU helper全部4个函数AST与Source相同；gemm dispatcher全部17个函数在仅重定位函数内owned helper import后AST相同。平台检测与模块路径由owned命名空间承接。[对照记录](hcu-sglang-development.md#历史-json-快照)（`hcu-bf16-fp32-source-alignment.json`）保留两份来源/owner摘要。7项DAS原始dispatch CPU测试迁入本仓执行环境并通过。
 
 Source自动调优profile限定gfx936，当前机器gfx938应保留原策略，不能为让原始GPU测试中的SGL断言通过而伪造profile；另通过显式sgl选择检查gfx938真实内核。待执行普通及split-K、M16/M8边界、最大M64、输出清零、独立CPU double参考、真实公共Hook和Graph重放；不预先声明GPU或性能结果。
 
@@ -822,7 +822,7 @@ dev55八卡于Graph捕获失败：HashTopK收到BF16 router_logits，Source JIT�
 
 Source工作树执行结果：gate的5项CPU与2项真实producer→hash GPU/Graph通过，GEMM的7项原始CPU方法和6项GPU通过（10个直接kernel shape，含普通/split8/split4、M16和M8边界、M64、重复清零及split-K Graph）。GEMM普通/显式路径用CPU double参考，rtol2e-4/atol2e-5；精确整数fixture为0/0。初次auto参考错误地假设FP32累加输出，Source在HCU明确先BF16输出再.float()，现按相同Source输出契约将CPU double结果round到BF16再FP32，exact通过；未改运行时后端或放宽显式kernel阈值。
 
-[dev55失败摘要](hcu-tp8-deepseekv4-dev55-failure-20261101.json)单独保留原配方、提交、590包文件一致性、实际dtype错误与清理，不将失败运行计为通过。新gate的[Source对照](hcu-deepseek-gate-source-alignment.json)明确仅两方法完成，deepseek_v2.py其余差异仍待审计。dev56隔离wheel/完整原配方验证按实际结果补记。
+[dev55失败摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev55-failure-20261101.json`）单独保留原配方、提交、590包文件一致性、实际dtype错误与清理，不将失败运行计为通过。新gate的[Source对照](hcu-sglang-development.md#历史-json-快照)（`hcu-deepseek-gate-source-alignment.json`）明确仅两方法完成，deepseek_v2.py其余差异仍待审计。dev56隔离wheel/完整原配方验证按实际结果补记。
 
 
 隔离dev56实际结果：gate 2项GPU/Graph与5项CPU、GEMM 6项GPU与7项原始CPU均通过；420/420 Hook、3个resolution seam、0 errors与85项仓库unittest通过。591包文件与源码/site逐字节相同，wheel SHA256 `ace94cd214bf842056eb11fb102b9b9e0c47f60a3feffccbcf9f396dc84859a5`。新cache依赖清单中的linear header与固定Source/owner/wheel同字节，真实执行由GPU用例独立证明。当前只证明gate两方法和已核对的GEMM实现，完整dev56原配方与其他DAS差异继续待验。
@@ -830,7 +830,7 @@ Source工作树执行结果：gate的5项CPU与2项真实producer→hash GPU/Gra
 
 ## 70. 2026-11-01 dev56 原配方八卡验证与MoE路由全量接入
 
-隔离dev56/提交34ff4e9于08:33:06–08:38:46按原TP8/DP8/EP8、DSPARK/DeepEP与Graph32/context32768完成六项请求，均正常stop、自有进程清空与端口关闭。591包文件与提交/wheel/site相同，[独立摘要](hcu-tp8-deepseekv4-dev56-validation-20261101.json)固定产物与响应摘要。证明gate producer修复越过dev55原故障，不代表所有DAS功能完成。
+隔离dev56/提交34ff4e9于08:33:06–08:38:46按原TP8/DP8/EP8、DSPARK/DeepEP与Graph32/context32768完成六项请求，均正常stop、自有进程清空与端口关闭。591包文件与提交/wheel/site相同，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev56-validation-20261101.json`）固定产物与响应摘要。证明gate producer修复越过dev55原故障，不代表所有DAS功能完成。
 
 继续迁入完整TopK与HashTopK来源模块及合成EP均衡helper；已确认相同AST的9个共享类型复用native身份，方法super显式绑定原类父级，保留来源许可/注释和条件custom-op注册。替换旧单分支softmax注册入口，HCU范围接入全部7个变化helper、TopK的3个变化方法与HashTopK的2个变化方法。模拟EP均衡按Source默认关闭，仅作合成性能基准，不用于精度结论。Source对照、导入/契约/GPU与隔离/原配方验证待实际执行。
 
@@ -840,7 +840,7 @@ Source工作树执行结果：gate的5项CPU与2项真实producer→hash GPU/Gra
 
 Source路由的6项CPU契约与EP helper的5项独立Python oracle检查通过，原class与owned factory均能构造，9个共享类型身份一致。隔离dev57的7项GPU/Graph suite与1项额外DeepEP共享槽位检查通过：真实LightOP softmax、sqrtsoftplus、V4.1 int64/padding融合及改变logits/有效行数的Graph；TopK/HashTopK合成模式保留weights/shared列；共享槽位只重映射一次，并在最后屏蔽padded routes。595包文件与源码/site相同，wheel SHA256 `8eddc8e9a4ed2d877fc8765f2a0e6ac4f5060e83b3f9ae18ff20592c60f1edd3`。
 
-[完整Source对照与patch](hcu-topk-routing-source-alignment.json)可反向恢复固定Source字节。EPLB负向单元初次未发布server args，按Source契约代表“无实际mapping”；补齐发布状态fixture后，EPLB开启正确拒绝融合，没有修改predicate本体或禁用优化。TopK/HashTopK文件继续in_progress：当前native LPLBSolver.solve只收topk_ids，Source新增load-aware solver接收有效token数，实际solver/collective尚待迁入验证；全局AITER环境仍未完成兼容，不从LightOP结果外推。完整dev57原八卡配方继续待验。
+[完整Source对照与patch](hcu-sglang-development.md#历史-json-快照)（`hcu-topk-routing-source-alignment.json`）可反向恢复固定Source字节。EPLB负向单元初次未发布server args，按Source契约代表“无实际mapping”；补齐发布状态fixture后，EPLB开启正确拒绝融合，没有修改predicate本体或禁用优化。TopK/HashTopK文件继续in_progress：当前native LPLBSolver.solve只收topk_ids，Source新增load-aware solver接收有效token数，实际solver/collective尚待迁入验证；全局AITER环境仍未完成兼容，不从LightOP结果外推。完整dev57原八卡配方继续待验。
 
 
 隔离dev57收尾：431/431 Hook、3个resolution seam、0 errors与85项仓库unittest通过；8项实际GPU/Graph和11项CPU证据按上述范围记录。L0/Skill/guide门禁及实际宽窄屏检索、阅读与菜单检查通过。原配方八卡服务仍需以本次产物另跑，不归用dev56模型结果；全部DAS范围保持未完成。
@@ -862,7 +862,7 @@ Producer→dispatch集成检查发现metadata并非仅Literal变化：Source还�
 
 隔离dev58实际结果：8项真实kernel GPU检查（含256x264完整padded replica表）、2项原生factory→metadata→solver→TopK/Hash pipeline GPU、7项CPU与85项仓库测试通过；完整CLI采用原八卡配方加load-aware/冗余expert参数，正常ServerArgs post-init/resolution与pickle往返均保持算法和值，不跳过解析阶段。只表示配置与单设备数学/调用链成立，未启动load-aware模型服务。
 
-Source load-aware本来就不做每层EP collective，不能把它描述成尚待补all-reduce；仍需以实际8卡dispatch/model变体验证组合。原dev57原配方已于09:02:55–09:08:39六项请求全过、自有进程为空、端口关闭，[独立摘要](hcu-tp8-deepseekv4-dev57-validation-20261101.json)固定595包文件与8af8abf/wheel/site同字节。该结果不归用到当前新EPLB产物。
+Source load-aware本来就不做每层EP collective，不能把它描述成尚待补all-reduce；仍需以实际8卡dispatch/model变体验证组合。原dev57原配方已于09:02:55–09:08:39六项请求全过、自有进程为空、端口关闭，[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-dev57-validation-20261101.json`）固定595包文件与8af8abf/wheel/site同字节。该结果不归用到当前新EPLB产物。
 
 
 隔离dev59收尾：600包文件与源码/site逐字节一致，wheel SHA256 `7676b5ab0ef16aba4edf831119e7e8298ddfb60644fc944543f401f687ed9a00`。当前artifact的2项public GPU pipeline、7项CPU、437/437 Hook、3个resolution seam、0 errors及85项仓库测试通过；完整CLI/resolution/pickle再次通过。与dev58相比，唯一package差异是integration.py继承许可头，函数AST相同，8项kernel GPU测试对应的全部代码字节相同；保留分产物证据，不把历史运行冒称当前重跑。L0/Skill/guide与实际宽窄屏验收通过。后续以原八卡配方加显式load-aware/冗余8专家参数运行功能变体，原参数保留；尚未声明模型精度、跨rank负载或性能。
@@ -873,7 +873,7 @@ Source load-aware本来就不做每层EP collective，不能把它描述成尚�
 原生_compute_logical_to_all_physical_map会对所有A2A算法折叠nearest副本，Source只允许static+nearest折叠；这会使load-aware/LP看不到完整候选。迁入Source全部4个变化/新增helper，复用其余native元数据类与helper；仅在原生尚无ep_static_dispatch_policy字段时通过进程配置读取Source默认nearest与locality_fair，标准CLI参数由插件sidecar管理并在seed解析前传给workers，不写未声明的冻结字段。新增策略仅允许static，保留GPU→node→remote局部性优先与静态source-rank公平，不伪称动态token负载均衡。当前dev59服务保持其冻结产物，新的元数据验证与后续8卡复验待执行。
 
 
-Source CPU 8项通过：load-aware/LP/dynamic全候选、static nearest与旧函数相同、locality_fair优先GPU/node与静态公平、非法topology、CLI/worker进程环境继承、规则与非HCU回退，以及原生metadata builder→真实solver保留复制专家计数。初次对照把原函数存成模块变量，被正式alias propagation一起替换，修正为容器保存原callable后，旧函数确实只保留1候选，新函数保留2。该fixture修正没有改变生产逻辑。原dev59变体09:43:15–09:53:14六项请求通过并清理，[摘要](hcu-tp8-deepseekv4-load-aware-dev59-validation-20261101.json)明确旧候选折叠限制，不能据此关闭均衡功能验证。
+Source CPU 8项通过：load-aware/LP/dynamic全候选、static nearest与旧函数相同、locality_fair优先GPU/node与静态公平、非法topology、CLI/worker进程环境继承、规则与非HCU回退，以及原生metadata builder→真实solver保留复制专家计数。初次对照把原函数存成模块变量，被正式alias propagation一起替换，修正为容器保存原callable后，旧函数确实只保留1候选，新函数保留2。该fixture修正没有改变生产逻辑。原dev59变体09:43:15–09:53:14六项请求通过并清理，[摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-load-aware-dev59-validation-20261101.json`）明确旧候选折叠限制，不能据此关闭均衡功能验证。
 
 
 隔离dev60的2项GPU检查通过原生metadata工厂→真实solver→原生公开dispatch，完整候选使num_replicated为4而非退化；GPU static/locality_fair元数据表也保持全部候选及正确device/dtype。8项CPU通过并验证sidecar值在worker子进程中继承；完整正常CLI/ServerArgs post-init/resolution/pickle对static/locality_fair+冗余8参数通过。601包文件与源码/site一致，wheel SHA256 `43e2eb0f125976ee6b29a008bcf068ba08a9be66cb8680d72c19b4ca7d304c99`。模型尚待重跑，单设备rank-metadata fixture不等于实际跨rank负载或性能结论。
@@ -889,10 +889,10 @@ dev60实际八卡启动日志已在全部8个rank记录43层load-aware solver、
 
 Source统计器验证：5项CPU与2项真实GPU/Graph通过，DeepEP auto normal+low-latency累加真实buffer，伪top-k padded IDs不增加计数；实际CUDAGraph capture跳过collect/host append。真实2-rank Gloo的窗口分别为1/3步和0/2步，归约shape固定[1,2]、dtype int64，输出[40,48]与[2**32,6]精确。该证据是CPU Gloo，不冒称GPU collective或性能；隔离8-rank NCCL/RCCL正在执行。
 
-[dev60八卡摘要](hcu-tp8-deepseekv4-load-aware-dev60-validation-20261101.json)记录10:02:15–10:07:53六项请求正常stop、全部8rank各43层solver与复制专家[8]、601包文件与13497b5/wheel/site相同以及清理。它验证完整候选功能变体的短生成，不是数据集准确率或实际dispatch负载均衡量化结果；新的统计器后续另验。
+[dev60八卡摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-load-aware-dev60-validation-20261101.json`）记录10:02:15–10:07:53六项请求正常stop、全部8rank各43层solver与复制专家[8]、601包文件与13497b5/wheel/site相同以及清理。它验证完整候选功能变体的短生成，不是数据集准确率或实际dispatch负载均衡量化结果；新的统计器后续另验。
 
 
-隔离dev61：602包文件与源码/site逐字节一致，wheel SHA256 `5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0`。5项CPU与2项GPU/Graph重验通过；真实8-rank NCCL/RCCL在各rank本地窗口1..8步时全rank得到[480,216]，七个空窗口与rank7两个大计数窗口全rank得到[2**32,6]，shape[1,2]/int64保持，process group销毁正常。[独立collective摘要](hcu-expert-recording-collective-validation-20261101.json)固定各rank结果哈希与范围；这是合成counter correctness，不是模型dispatch负载或通信吞吐。
+隔离dev61：602包文件与源码/site逐字节一致，wheel SHA256 `5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0`。5项CPU与2项GPU/Graph重验通过；真实8-rank NCCL/RCCL在各rank本地窗口1..8步时全rank得到[480,216]，七个空窗口与rank7两个大计数窗口全rank得到[2**32,6]，shape[1,2]/int64保持，process group销毁正常。[独立collective摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-expert-recording-collective-validation-20261101.json`）固定各rank结果哈希与范围；这是合成counter correctness，不是模型dispatch负载或通信吞吐。
 
 后续模型验证使用单独的任务controller，在本人loopback服务ready后调用公开start/stop/dump recorder端点并保存响应，原始controller不改；模型参数沿dev60完整候选load-aware变体，仅追加stat recorder与明确dump目录。API/实际dump与模型结果未完成前不声明recording服务集成通过。
 
@@ -908,14 +908,14 @@ Source runner_utils/deepep_adapter.py完整4方法新增capture_end保存LL layo
 实际dev61录制服务六项生成与start/stop成功，8rank均记录after all_reduce；rank0在file dump分支因搬移时遗漏time全局限定而NameError，API连接断开，服务判failed并清理。这是本轮实现缺口，保留原失败证据；修正为native N.time并新增原生_StatAccumulator.dump(file)端到端落盘测试，而不是只测_dump_to_file helper。新Graph producer测试目标类名纠正为当前DecodeCudaGraphRunner；不以Hook注册日志替代实际入口断言。
 
 
-[dev61真实服务失败摘要](hcu-recording-dev61-failure-20261101.json)记录602包文件与184ebf1/wheel/site相同、六项严格生成通过、start/stop200及全部8rank after-all_reduce；rank0最终time NameError导致dump失败/连接断开，进程与端口已清理。此结果保持失败，不因生成或归约成功冒称录制集成通过。修正后的Source完整file branch与free-global检查通过；隔离dev62的5项Graph protocol CPU通过。当前603包文件与源码/site一致，wheel SHA256 `ea5404376812f4e2c93a43222067123ad4ce2075116850f0aa00404774cf86d7`，最后门禁与同profile真实服务重验继续待完成。
+[dev61真实服务失败摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-recording-dev61-failure-20261101.json`）记录602包文件与184ebf1/wheel/site相同、六项严格生成通过、start/stop200及全部8rank after-all_reduce；rank0最终time NameError导致dump失败/连接断开，进程与端口已清理。此结果保持失败，不因生成或归约成功冒称录制集成通过。修正后的Source完整file branch与free-global检查通过；隔离dev62的5项Graph protocol CPU通过。当前603包文件与源码/site一致，wheel SHA256 `ea5404376812f4e2c93a43222067123ad4ce2075116850f0aa00404774cf86d7`，最后门禁与同profile真实服务重验继续待完成。
 
 
 隔离dev62最终结果：5项Graph CPU protocol与7项recorder CPU（含public dump(file)、free globals）通过；445/445 Hook、3个resolution seam、0 errors及85项仓库测试通过，603包文件同源码/site。L0/Skill/guide与实际宽窄屏检索/阅读/菜单验收通过。新的layout控制无伪造GPU/RDMA结果，仍须同profile实际八卡Graph与start/stop/dump重跑确认；全DAS、数据集精度、实际dispatch负载/性能范围继续未完成。
 
 ## 75. 2026-11-01 dev62 录制服务结果与固定数学子集方法
 
-dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/dump，三端点均200，自有进程清空、端口关闭。603包文件与56043f0/wheel/site逐字节相同，全部8rank各43层solver计数[8]；[独立摘要](hcu-tp8-deepseekv4-load-aware-recording-dev62-validation-20261101.json)固定版本与dump。rank0文件为int64[43,256]、非负、43层全有计数，总和4548352，SHA256为9aaf3d3b872b1471a2a40ea57dcbf8c6b72a34bcbd12448d037bbd8e35d22cd4。它是dispatch计算工作，可能含expert对齐/padding，不当成唯一语义token或性能改善。旧dev61失败记录保留。
+dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/dump，三端点均200，自有进程清空、端口关闭。603包文件与56043f0/wheel/site逐字节相同，全部8rank各43层solver计数[8]；[独立摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-load-aware-recording-dev62-validation-20261101.json`）固定版本与dump。rank0文件为int64[43,256]、非负、43层全有计数，总和4548352，SHA256为9aaf3d3b872b1471a2a40ea57dcbf8c6b72a34bcbd12448d037bbd8e35d22cd4。它是dispatch计算工作，可能含expert对齐/padding，不当成唯一语义token或性能改善。旧dev61失败记录保留。
 
 新增一次请求、保存逐题原始数据的runner与离线scorer；模型身份/正常stop在数学提取前检查，错误和截断留在分母。冻结官方GSM8K commit与SHA256，按当前SGLang协议使用前5题prefix及后128题评分且互斥，共享库不复制整份数据。目前仅完成方法/协议测试与数据准备，真实128题和同配置DAS基线待执行，不预先声明精度通过。操作与范围见[验证指南](validation.md#固定-gsm8k-子集与原始响应验收)。
 
@@ -923,9 +923,9 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 
 ## 76. 2026-11-01 固定128题测量与匹配对照结果
 
-冻结dev62的load-aware/redundant8/stat功能变体完成128题：127正确、0无效、准确率0.9921875；独立离线复算一致，128份request/response/transport均齐全。[证据摘要](hcu-gsm8k128-feature-dev62-validation-20261101.json)固定603包文件、56043f0/runtime与f773a25/method、数据SHA、ordered raw hashes和清理。唯一oracle不一致sample119原样保留：expected95200、predicted99077，正常stop且有效回答；不重试、改标签或从分母剔除。该子集未建立通用准确率或DAS回归结论。
+冻结dev62的load-aware/redundant8/stat功能变体完成128题：127正确、0无效、准确率0.9921875；独立离线复算一致，128份request/response/transport均齐全。[证据摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-gsm8k128-feature-dev62-validation-20261101.json`）固定603包文件、56043f0/runtime与f773a25/method、数据SHA、ordered raw hashes和清理。唯一oracle不一致sample119原样保留：expected95200、predicted99077，正常stop且有效回答；不重试、改标签或从分母剔除。该子集未建立通用准确率或DAS回归结论。
 
-基础配方匹配对照已完成：DAS 127/128（99.21875%），plugin 126/128（98.4375%），两端均0无效响应；相差1题、0.78125个百分点。126题双方正确，sample12仅DAS正确，sample119双方错误；原始答案、模型回答及一次请求记录保留，不重试或改标签。用户明确“无需完全对齐，128题大致一样即可”，本次结果按此接受，不据此推导未来统一阈值。见[成对证据](hcu-gsm8k128-paired-controls-20261101.json)。
+基础配方匹配对照已完成：DAS 127/128（99.21875%），plugin 126/128（98.4375%），两端均0无效响应；相差1题、0.78125个百分点。126题双方正确，sample12仅DAS正确，sample119双方错误；原始答案、模型回答及一次请求记录保留，不重试或改标签。用户明确“无需完全对齐，128题大致一样即可”，本次结果按此接受，不据此推导未来统一阈值。见[成对证据](hcu-sglang-development.md#历史-json-快照)（`hcu-gsm8k128-paired-controls-20261101.json`）。
 
 二者使用同一基础8卡配方、canonical decode graph flag、优化环境、权重路径、数据、prefix、采样和并发；原始DAS只读且跳过general Hook，两端六项短回答检查通过、128份request/response/transport齐全、进程与端口完成清理。比较范围是声明参数与环境；另存的正常启动配置重建并非服务当时的live server_info，schema差异保留，不宣称全部有效配置相同。功能变体127/128单独报告，不混入基础匹配对照。
 
@@ -939,7 +939,7 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 
 隔离dev63门禁完成：604包文件与源码/site逐字节相同，wheel SHA256 b28a3dd1befcfb80e715defa8bfae0875c0907032164b44c2cb21293e0ba8f4a。6项批大小CPU测试、5项既有DeepEP Graph协议测试、446/446 Hook与3个resolution seam均通过且0 errors；本地与容器95项仓库测试、L0、Skill元信息、guide快照和实际宽窄屏交互通过。当前按原八卡基础配方启动独立服务验证普通模型回归，不重复追求已接受的128题完全对齐；服务结果另记。未验证的实际扩散模型路径保持未验证，全DAS迁移未完成。
 
-[dev63八卡回归摘要](hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json)：11:38:15–11:43:57按原基础配方完成六项严格生成，全部HTTP200、完整最终答案正确、正常stop，自有进程为空且端口关闭；604包文件与84f961e/wheel/site相同。DSPARK/DeepEP/Graph及原优化环境保持。该模型为普通解码，验证新函数在此路径没有阻断实际Graph捕获和服务；不能据此宣称Gemma4Renoise GPU分支、吞吐或全DAS迁移完成。已接受的dev62 GSM8K128对照不归用为dev63重跑结果。
+[dev63八卡回归摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json`）：11:38:15–11:43:57按原基础配方完成六项严格生成，全部HTTP200、完整最终答案正确、正常stop，自有进程为空且端口关闭；604包文件与84f961e/wheel/site相同。DSPARK/DeepEP/Graph及原优化环境保持。该模型为普通解码，验证新函数在此路径没有阻断实际Graph捕获和服务；不能据此宣称Gemma4Renoise GPU分支、吞吐或全DAS迁移完成。已接受的dev62 GSM8K128对照不归用为dev63重跑结果。
 
 ## 78. 2026-11-01 Graph 初始化的 PP 预算、混合层与 H16 缓存释放
 
@@ -947,11 +947,11 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 
 待验：真实调用方/预导入别名、尾部纯MoE、洞/重复层、PP组与native预算状态、capture/finalize/cache释放顺序、非HCU回退。CPU fixture控制流与实际collective/GPU/模型服务分别记录，不把模拟内存查询或runner构造当作模型Graph通过。
 
-Source控制流9项通过，包括完整public prefill/capture入口。真实4-rank Gloo在PP2时rank0/1执行本组sum=3，rank2/3执行末级TP内存MIN并由native setter得到2684354560字节；切换PP1后全rank得到3489660928字节，[证据](hcu-graph-setup-collective-validation-20261101.json)固定原始输出哈希。CUDA显存查询是fixture，归约与process group真实，不冒称GPU collective或实际PP模型。隔离dev64的1项真实GPU测试通过：实际CUDAGraph捕获后调用native platform synchronize/empty_cache，两次变输入replay精确；这是allocator/小型Graph安全性，不是H16 kernel或模型验证。
+Source控制流9项通过，包括完整public prefill/capture入口。真实4-rank Gloo在PP2时rank0/1执行本组sum=3，rank2/3执行末级TP内存MIN并由native setter得到2684354560字节；切换PP1后全rank得到3489660928字节，[证据](hcu-sglang-development.md#历史-json-快照)（`hcu-graph-setup-collective-validation-20261101.json`）固定原始输出哈希。CUDA显存查询是fixture，归约与process group真实，不冒称GPU collective或实际PP模型。隔离dev64的1项真实GPU测试通过：实际CUDAGraph捕获后调用native platform synchronize/empty_cache，两次变输入replay精确；这是allocator/小型Graph安全性，不是H16 kernel或模型验证。
 
-[隔离dev64门禁](hcu-graph-setup-gates-validation-20261101.json)完成：605包文件与源码/site相同，wheel SHA256 b3d040c862457b000406b574096bc2cf52ac6980045343f5c0fb7dfc9091cd58；450/450 Hook、3个resolution seam、0 errors，9项新控制流、6项既有批大小与本地/容器95项仓库测试通过。L0、Skill元信息、guide快照及实际宽窄屏检索/阅读/菜单验收通过。实际八卡原配方服务仍按独立run继续，未将其提前标为通过；PP/hybrid/H16模型及全DAS迁移范围保持未完成。
+[隔离dev64门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-graph-setup-gates-validation-20261101.json`）完成：605包文件与源码/site相同，wheel SHA256 b3d040c862457b000406b574096bc2cf52ac6980045343f5c0fb7dfc9091cd58；450/450 Hook、3个resolution seam、0 errors，9项新控制流、6项既有批大小与本地/容器95项仓库测试通过。L0、Skill元信息、guide快照及实际宽窄屏检索/阅读/菜单验收通过。实际八卡原配方服务仍按独立run继续，未将其提前标为通过；PP/hybrid/H16模型及全DAS迁移范围保持未完成。
 
-[dev64八卡服务摘要](hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json)：11:52:23–11:58:00按原DSPARK/DeepEP/Graph基础配方完成六项严格生成，全部HTTP200、完整答案正确且正常stop，自有进程为空、端口关闭。605包文件与4873fea/wheel/site逐字节相同；实际预算日志24条，owned HCU backend正常加载。该PP1普通模型证明其预算与捕获流程可完成，不外推PP/hybrid/H16模型；也未重复计为128题或性能测量。全DAS迁移保持进行中。
+[dev64八卡服务摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json`）：11:52:23–11:58:00按原DSPARK/DeepEP/Graph基础配方完成六项严格生成，全部HTTP200、完整答案正确且正常stop，自有进程为空、端口关闭。605包文件与4873fea/wheel/site逐字节相同；实际预算日志24条，owned HCU backend正常加载。该PP1普通模型证明其预算与捕获流程可完成，不外推PP/hybrid/H16模型；也未重复计为128题或性能测量。全DAS迁移保持进行中。
 
 ## 79. 2026-11-01 预填充 runner 与 replay 记录契约
 
@@ -961,19 +961,19 @@ Source控制流9项通过，包括完整public prefill/capture入口。真实4-r
 
 配对迁入Source完整调度_local_prefill_cuda_graph_vote，使backend vote与max_seq_len在schedule与forward两端读取一致；MegaMoE仅迁入runtime selector和graph token setter，沿native对称buffer registry更新，未迁入其余standalone backend/kernel。Logits、MegaMoE及DP文件仍标in_progress。13项CPU测试通过，构造夹具首轮漏attn_tp_sequence_sharded修正后完整构造完成；GPU夹具首轮漏prefill_backend_name，补齐后隔离dev65的真实primitive Graph经公开load/execute/body/trim两次变输入通过，encoder metadata、prepared IDs、hidden states与draft top-k均验证。两次夹具失败原始日志保留，不是生产补丁或虚假模型结果。实际八卡显式BCG prefill功能变体继续执行，保留原decode/DSPARK/DeepEP优化，不提前声明服务或模型replay hit通过。
 
-[隔离dev65门禁](hcu-prefill-runner-gates-validation-20261101.json)完成：610包文件与源码/site一致，wheel SHA256 469b7a6fee61cada806a89ac9d7167e79be67aab31f91a19c80d6a5b22c33079；453/453 Hook、3个resolution seam、0 errors。隔离13项prefill CPU、9项既有Graph setup、1项真实GPU公开execute与本地/容器95项仓库测试通过，L0/Skill/guide及实际宽窄屏交互通过。原始8卡基础配方仅新增显式breakable prefill、64/128 token buckets、固定context/sequence上限256的功能变体正在执行；它不是“原配方未变”的基线，也不能将六题服务结果推为128题重跑或DP模型Graph hit。
+[隔离dev65门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-prefill-runner-gates-validation-20261101.json`）完成：610包文件与源码/site一致，wheel SHA256 469b7a6fee61cada806a89ac9d7167e79be67aab31f91a19c80d6a5b22c33079；453/453 Hook、3个resolution seam、0 errors。隔离13项prefill CPU、9项既有Graph setup、1项真实GPU公开execute与本地/容器95项仓库测试通过，L0/Skill/guide及实际宽窄屏交互通过。原始8卡基础配方仅新增显式breakable prefill、64/128 token buckets、固定context/sequence上限256的功能变体正在执行；它不是“原配方未变”的基线，也不能将六题服务结果推为128题重跑或DP模型Graph hit。
 
 ## 80. 2026-11-01 真实 BCG 捕获通过后的 MLP 同步投票缺口
 
-[dev65失败证据](hcu-prefill-dev65-failure-20261101.json)固定b017aeb的610包文件与wheel/site一致：八个rank均完成BCG prefill64/128捕获，但scheduler启动时旧prepare_mlp_sync_batch_raw未传Source vote新必填num_tokens，TypeError导致ready前退出，自有进程和端口已清理。这是迁移调用链缺口，旧13项CPU直调vote未覆盖生产入口；不能以捕获完成或primitive GPU测试称服务成功。
+[dev65失败证据](hcu-sglang-development.md#历史-json-快照)（`hcu-prefill-dev65-failure-20261101.json`）固定b017aeb的610包文件与wheel/site一致：八个rank均完成BCG prefill64/128捕获，但scheduler启动时旧prepare_mlp_sync_batch_raw未传Source vote新必填num_tokens，TypeError导致ready前退出，自有进程和端口已清理。这是迁移调用链缺口，旧13项CPU直调vote未覆盖生产入口；不能以捕获完成或primitive GPU测试称服务成功。
 
 修正迁入完整Source MLP producer、同步记录的12列协议/归约、batch metadata更新与elastic拓扑校验；配套完整CPU-only CP token geometry、mixed-replica归一化和encoder replay计数helper。ScheduleBatch追加声明的global_cp_num_tokens以保留dataclass复制；MLPSyncBatchInfo继承native并迁入全部方法。HCU CP-v2环境字段保留Source默认False，不写冻结seed；缺少可选backend folds属性按Source基类默认False读取。真实公共prepare入口新增修复前反例，Source同步组/CP行宽与消费路径按CPU/真实Gloo/模型分别验收。此阶段不宣称剩余CP模型/worker carrier与整个DP文件完成。
 
-Source的8个完整同步函数/方法与7个完整计数/拓扑helper经native globals、owned import及相同默认属性读取规范化AST一致。新增6项CPU通过，保留旧公共producer缺参反例，新公共producer将3+128=131折叠行传给vote与batch metadata；记录12列、ScheduleBatch复制/pickle通过。[真实四进程Gloo](hcu-prefill-sync-collective-validation-20261101.json)覆盖CPU gather+broadcast、world all-reduce、DP2/CP2混合布局归一化及子组[1,2,3]的global root1。dev66的612包文件与源码/site相同；同一八卡BCG配置正重跑，失败dev65证据不改写，GPU primitive旧dev65结果保持其artifact归属。
+Source的8个完整同步函数/方法与7个完整计数/拓扑helper经native globals、owned import及相同默认属性读取规范化AST一致。新增6项CPU通过，保留旧公共producer缺参反例，新公共producer将3+128=131折叠行传给vote与batch metadata；记录12列、ScheduleBatch复制/pickle通过。[真实四进程Gloo](hcu-sglang-development.md#历史-json-快照)（`hcu-prefill-sync-collective-validation-20261101.json`）覆盖CPU gather+broadcast、world all-reduce、DP2/CP2混合布局归一化及子组[1,2,3]的global root1。dev66的612包文件与源码/site相同；同一八卡BCG配置正重跑，失败dev65证据不改写，GPU primitive旧dev65结果保持其artifact归属。
 
-[隔离dev66门禁](hcu-prefill-sync-gates-validation-20261101.json)：612包文件与源码/site相同，wheel SHA256 0f720444c16cd2ab081c8eee768c29ba950c99dc5d118893fc3d25cbdbc702e2；458/458 Hook、3个resolution seam、0 errors，6项同步CPU、13项prefill CPU及本地/容器95项仓库测试通过。Source Gloo证据字节与本产物相同，旧dev65 primitive GPU结果没有改记为dev66重跑。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过；相同BCG feature服务结果仍待完成。
+[隔离dev66门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-prefill-sync-gates-validation-20261101.json`）：612包文件与源码/site相同，wheel SHA256 0f720444c16cd2ab081c8eee768c29ba950c99dc5d118893fc3d25cbdbc702e2；458/458 Hook、3个resolution seam、0 errors，6项同步CPU、13项prefill CPU及本地/容器95项仓库测试通过。Source Gloo证据字节与本产物相同，旧dev65 primitive GPU结果没有改记为dev66重跑。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过；相同BCG feature服务结果仍待完成。
 
-[dev66同配置八卡BCG服务摘要](hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json)：12:35:06–12:40:58完整通过，全部8rank完成目标prefill breakable64/128捕获，随后decode/verify捕获与六项严格生成通过，HTTP200、完整最终答案和正常stop均满足；自有进程清空、端口关闭。612包文件与c61fb5c/wheel/site相同。与dev65失败相比仅运行时修正及输出标识/端口变化，配方和BCG feature参数一致；没有关闭prefill、DSPARK、DeepEP或原优化来回避问题。该证据证明实际模型capture初始化与服务回归，不证明请求实际命中BCG replay、DP混合请求、CP/elastic模型、128题重跑或性能。旧dev65失败保留，全DAS迁移未完成。
+[dev66同配置八卡BCG服务摘要](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-prefill-bcg-dev66-validation-20261101.json`）：12:35:06–12:40:58完整通过，全部8rank完成目标prefill breakable64/128捕获，随后decode/verify捕获与六项严格生成通过，HTTP200、完整最终答案和正常stop均满足；自有进程清空、端口关闭。612包文件与c61fb5c/wheel/site相同。与dev65失败相比仅运行时修正及输出标识/端口变化，配方和BCG feature参数一致；没有关闭prefill、DSPARK、DeepEP或原优化来回避问题。该证据证明实际模型capture初始化与服务回归，不证明请求实际命中BCG replay、DP混合请求、CP/elastic模型、128题重跑或性能。旧dev65失败保留，全DAS迁移未完成。
 
 ## 81. 2026-11-01 Encoder SWA replay 完整折叠与 worker 生命周期
 
@@ -985,9 +985,9 @@ Source的8个完整同步函数/方法与7个完整计数/拓扑helper经native 
 
 预检发现旧snapshot_control_resolution脚本只创建seed/读resolved_view，未调用resolve_once；已修正历史GSM8K共享分析范围，保留原始种子差异及分数，不把它解释为effective/live配置。新的显式resolve_once对当前0731 Flash配置拒绝encoder replay：requires DeepSeek-V4.1。model-query另找到匹配model_type=deepseek_v41的V4.1-Flash，配置与容器可见性已读验；完整模型feature仍待其合法参数与预算迁移验证。当前八卡BCG回归使用原0731模型且未启用encoder flag，不冒称encoder cache-hit服务验证。
 
-[dev67分范围门禁](hcu-encoder-swa-gates-validation-20261101.json)：614包文件与源码/site一致，wheel SHA256 b741efaa6649b133f4961d6147a47c206735bf8a222da56914044eead37b268e；460/460 Hook、3个resolution seam、0 errors，8项encoder CPU、6项同步CPU、1项真实GPU映射Graph及本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏验收通过。实际resolve_once对V4.1-Flash进一步拒绝当前硬件（CUDA/gfx950限制），与Source保留条件相同；没有绕过硬件/DP约束。当前HCU的完整encoder feature服务仍未验证，普通BCG服务回归另记，不将算法GPU primitive通过外推为该模型能力。
+[dev67分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-encoder-swa-gates-validation-20261101.json`）：614包文件与源码/site一致，wheel SHA256 b741efaa6649b133f4961d6147a47c206735bf8a222da56914044eead37b268e；460/460 Hook、3个resolution seam、0 errors，8项encoder CPU、6项同步CPU、1项真实GPU映射Graph及本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏验收通过。实际resolve_once对V4.1-Flash进一步拒绝当前硬件（CUDA/gfx950限制），与Source保留条件相同；没有绕过硬件/DP约束。当前HCU的完整encoder feature服务仍未验证，普通BCG服务回归另记，不将算法GPU primitive通过外推为该模型能力。
 
-[dev67普通八卡BCG回归](hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json)：13:01:45–13:07:31通过，8rank完成prefill捕获、六项严格生成全部HTTP200/正确完整答案/正常stop，自有进程为空、端口关闭。614包文件与cb69307/wheel/site相同。此run明确encoder flag为False，只验证新worker普通生成路径与既有BCG回归，不称encoder cache-hit或兼容硬件模型验证；V4.1预检限制和下一阶段PrefillAdder预算/feature validator差异保留。旧128题分数与其artifact不归用到dev67。
+[dev67普通八卡BCG回归](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json`）：13:01:45–13:07:31通过，8rank完成prefill捕获、六项严格生成全部HTTP200/正确完整答案/正常stop，自有进程为空、端口关闭。614包文件与cb69307/wheel/site相同。此run明确encoder flag为False，只验证新worker普通生成路径与既有BCG回归，不称encoder cache-hit或兼容硬件模型验证；V4.1预检限制和下一阶段PrefillAdder预算/feature validator差异保留。旧128题分数与其artifact不归用到dev67。
 
 ## 82. 2026-11-01 Prefill replay 预算与 feature 校验
 
@@ -997,9 +997,9 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 
 隔离dev68的8项预算与5项校验CPU测试通过：旧公开adder将150预算扣成-10、提交25行extend的反例保留；新实现只提交16行extend并收128 replay，chunk余6，KV仅32。143预算不提交，144预算提交首个16-token页并耗尽chunk；exact与DLLM compute分别扣原始/ceiled extend加replay。三种native预算新接口、idle deferral、retraction storage完成及legacy/AUX读出通过。实际具名resolution dispatcher确认previous先执行、重复注册不叠加以及128+page拒绝逻辑；未mock掉预算reader。18个完整Source方法/函数及admission记录AST规范化一致，native capability body除Source尾部外一致。
 
-[dev68分范围门禁](hcu-prefill-admission-gates-validation-20261101.json)：619包文件与源码/site一致，wheel SHA256 458c34789eab6969fd1d6b91969dc50dd5218670e6c7d387523438afc548c4c9；466/466 Hook、4个具名resolution seam、0 errors；8项预算、5项校验和本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏通过。实际V4.1 resolve_once在encoder-off下成功，decoder auto=False、per-rank chunk4096、attention DP8/replica DP1；encoder-on仍按Source硬件约束拒绝。另捕获未迁移的V4.1 defaults覆盖显式sparse-prefill问题，不将该预检声称为优化配置交付。普通8GPU BCG回归结果另记；当前改动为CPU调度/接口/配置，未冒称新的GPU kernel数值验收。
+[dev68分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-prefill-admission-gates-validation-20261101.json`）：619包文件与源码/site一致，wheel SHA256 458c34789eab6969fd1d6b91969dc50dd5218670e6c7d387523438afc548c4c9；466/466 Hook、4个具名resolution seam、0 errors；8项预算、5项校验和本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏通过。实际V4.1 resolve_once在encoder-off下成功，decoder auto=False、per-rank chunk4096、attention DP8/replica DP1；encoder-on仍按Source硬件约束拒绝。另捕获未迁移的V4.1 defaults覆盖显式sparse-prefill问题，不将该预检声称为优化配置交付。普通8GPU BCG回归结果另记；当前改动为CPU调度/接口/配置，未冒称新的GPU kernel数值验收。
 
-[dev68普通八卡BCG回归](hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json)：13:46:10–13:52:01通过，全部8rank完成prefill捕获，六项严格生成HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；619包文件与dd88288/wheel/site相同。encoder flag保持False；该结果验证本次Req/adder/memory-budget接口安装后的普通服务，不证明encoder cache-hit、AUX窗口传输、请求级BCG命中或128题重跑。下一阶段继续迁移V4 defaults/CP和窗口plan生产/传输，全部DAS目标未完成。
+[dev68普通八卡BCG回归](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json`）：13:46:10–13:52:01通过，全部8rank完成prefill捕获，六项严格生成HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；619包文件与dd88288/wheel/site相同。encoder flag保持False；该结果验证本次Req/adder/memory-budget接口安装后的普通服务，不证明encoder cache-hit、AUX窗口传输、请求级BCG命中或128题重跑。下一阶段继续迁移V4 defaults/CP和窗口plan生产/传输，全部DAS目标未完成。
 
 ## 83. 2026-11-01 V4 attention 默认值与 HCU CP 策略
 
@@ -1009,11 +1009,11 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 
 实际解析对照：dev68的0731输入sparse env=1、resolve_once后为False；dev69对0731及V4.1输入/输出均为1。因此旧服务配置中“原优化env保留”只代表声明参数，不能证明此开关有效开启；旧原始分数/日志保持原样。新稀疏路径在原始plain8卡配方上重新固定128题，旧DAS对照与dataset不变且不选择性重试。dev69原型无对应runtime提交，使用不可变build snapshot/wheel/site证据；最终dev70集中CP所有权，实际CLI/门禁/服务分别记录。
 
-[固定128题新稀疏路径测量](hcu-gsm8k128-sparse-default-dev69-validation-20261101.json)：冻结dev69原型127/128、0 invalid，384份逐题request/response/transport齐全；独立scorer复算与保存的plain DAS控制组逐题结果相同（127双方正确、1双方错误），没有选择性重试或改标签。比较范围仍为声明参数与env，不声称完整effective配置或权重哈希一致。原型620文件与build snapshot/wheel/site相同，但runtime无对应Git提交，保留其准确归属；最终dev70策略函数AST相同，差异为CP注册收敛，未冒称dev70重跑128题。
+[固定128题新稀疏路径测量](hcu-sglang-development.md#历史-json-快照)（`hcu-gsm8k128-sparse-default-dev69-validation-20261101.json`）：冻结dev69原型127/128、0 invalid，384份逐题request/response/transport齐全；独立scorer复算与保存的plain DAS控制组逐题结果相同（127双方正确、1双方错误），没有选择性重试或改标签。比较范围仍为声明参数与env，不声称完整effective配置或权重哈希一致。原型620文件与build snapshot/wheel/site相同，但runtime无对应Git提交，保留其准确归属；最终dev70策略函数AST相同，差异为CP注册收敛，未冒称dev70重跑128题。
 
-[最终dev70门禁](hcu-v4-defaults-gates-validation-20261101.json)：620包文件与源码/site相同，wheel SHA256 be336433b63eee297ee126cfcf111d758fbb2076f4301d22bf3ad74b6bc16d33；467/467唯一Hook、4个seam、0 errors。9项默认/CP/alias测试（纠正REPLACE函数由框架包装，不能断言公开wrapper identity）、5项既有feature校验和95项仓库测试通过；0731与V4.1真实resolve_once前/后sparse均1。L0/Skill/guide与实际宽窄屏交互通过。CP/SM100/mega实际模型仍未验证，最终dev70八卡普通回归继续，窗口plan生产/传输等全量DAS范围未关闭。
+[最终dev70门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-v4-defaults-gates-validation-20261101.json`）：620包文件与源码/site相同，wheel SHA256 be336433b63eee297ee126cfcf111d758fbb2076f4301d22bf3ad74b6bc16d33；467/467唯一Hook、4个seam、0 errors。9项默认/CP/alias测试（纠正REPLACE函数由框架包装，不能断言公开wrapper identity）、5项既有feature校验和95项仓库测试通过；0731与V4.1真实resolve_once前/后sparse均1。L0/Skill/guide与实际宽窄屏交互通过。CP/SM100/mega实际模型仍未验证，最终dev70八卡普通回归继续，窗口plan生产/传输等全量DAS范围未关闭。
 
-[最终dev70普通八卡服务](hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json)：14:15:35–14:21:18通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空、端口关闭。620包文件与32fb304/wheel/site相同，实际server日志确认保留显式sparse开关；原plain配方的DSPARK/DeepEP/decodeGraph/并行与权重加载保留，未加CP/BCG变体参数。此结果属于最终dev70普通集成，128题127/128仍准确归属于隔离dev69原型；不是CP/SM100/mega模型或吞吐验收。全DAS窗口plan生产/传输及其他pending模块继续未完成。
+[最终dev70普通八卡服务](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json`）：14:15:35–14:21:18通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空、端口关闭。620包文件与32fb304/wheel/site相同，实际server日志确认保留显式sparse开关；原plain配方的DSPARK/DeepEP/decodeGraph/并行与权重加载保留，未加CP/BCG变体参数。此结果属于最终dev70普通集成，128题127/128仍准确归属于隔离dev69原型；不是CP/SM100/mega模型或吞吐验收。全DAS窗口plan生产/传输及其他pending模块继续未完成。
 
 ## 84. 2026-11-01 双窗口计划与树修复后端
 
@@ -1023,9 +1023,9 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 
 8项CPU通过，保留旧API不接受component_type的反例；使用真实TreeCore构造/native组件split/LRU与账本，验证AUX[2,6)拆成2/4/2三个节点、FULL/SWA字节不变、AUX缺失[0,2)/[6,8)、protected/evictable归属以及pending backup split action。两轮夹具分别补齐只读allocator内部字段与cache session开关，未修改生产算法。隔离dev71的1项真实GPU确认clone设备/存储分离及独立SWA数据；实际native Rust CPU经工厂选中、insert/局部attach/补齐/SWA ledger8通过，AUX明确拒绝。Rust采用原始受锁定Cargo/native来源，输入sglang Git工作树检查仍干净。stage/producer/H2D端尚未迁入，因此owned记录暂未替换native schema，也不声明完整窗口缓存模型通过。
 
-[dev71分范围门禁](hcu-window-tree-gates-validation-20261101.json)：623包文件与源码/site一致，wheel SHA256 28b13d4a7d31e45f6b0ac8418cb81fe2f8439e40751ba3f844cc3654e7779344；471/471 Hook、4个seam、0 errors。8项窗口CPU、8项既有预算、本地/容器95项仓库测试通过；1项真实GPU独立数据/clone测试及实际Rust CPU工厂+binding测试通过。5个窗口方法与2个完整Source记录AST规范化一致，Rust加载延迟仅为适配方式变化，不改其SWA算法或AUX guard。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过。普通八卡回归继续，不将无hicache参数的服务用于证明storage/H2D或窗口cache-hit。
+[dev71分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-window-tree-gates-validation-20261101.json`）：623包文件与源码/site一致，wheel SHA256 28b13d4a7d31e45f6b0ac8418cb81fe2f8439e40751ba3f844cc3654e7779344；471/471 Hook、4个seam、0 errors。8项窗口CPU、8项既有预算、本地/容器95项仓库测试通过；1项真实GPU独立数据/clone测试及实际Rust CPU工厂+binding测试通过。5个窗口方法与2个完整Source记录AST规范化一致，Rust加载延迟仅为适配方式变化，不改其SWA算法或AUX guard。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过。普通八卡回归继续，不将无hicache参数的服务用于证明storage/H2D或窗口cache-hit。
 
-[dev71普通八卡回归](hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json)：14:53:32–14:59:14通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；623包文件与2cb0f1b/wheel/site相同，显式sparse保留。该run未加入hicache/buffer/storage参数，只是新树/factory接口安装后的普通集成，不证明window plan生产、H2D发布或缓存命中；这些下一阶段范围仍pending。原型dev69的128题保持其独立产物归属，不挪作dev71测量；全部DAS目标仍未完成。
+[dev71普通八卡回归](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json`）：14:53:32–14:59:14通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；623包文件与2cb0f1b/wheel/site相同，显式sparse保留。该run未加入hicache/buffer/storage参数，只是新树/factory接口安装后的普通集成，不证明window plan生产、H2D发布或缓存命中；这些下一阶段范围仍pending。原型dev69的128题保持其独立产物归属，不挪作dev71测量；全部DAS目标仍未完成。
 
 ## 85. 2026-11-01 多窗口 staged plan 与 H2D 发布
 
@@ -1035,42 +1035,67 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 
 配套新增PoolName.AUXILIARY_SWA完整Source枚举；捕获的legacy成员保持str/hash键相等，通过copyreg转换后pickle回owned成员，未修改内部Enum表。9项CPU通过：prepare生成SWA[(2,4),(6,8)]、AUX[(4,6),(6,8)]，各仅4行H2D，原三份8行bounce到ACK才释放；分配失败context回滚并保留staging，发布错误保留pending状态并fail-stop，covered窗口移除其派生sidecar。实际TreeCore repair/match保留，cache publication/allocator facade显式作为fixture。public init_hicache与base-component factory、tail keys/rows/prefix、双窗口共享arena fence通过。修正夹具固定prefix长度与原生日志/配置字段后无生产算法改动。隔离dev72 GPU fixture controller经真实pinned host→CUDA stream/event复制，逐池字节oracle及ACK释放顺序通过；不冒称native HiCacheController线程、L3或完整模型cache-hit。
 
-[dev72分范围门禁](hcu-window-pipeline-gates-validation-20261101.json)：627包文件与源码/site相同，wheel SHA256 348a661f96d463f063aa3a4eaa41479fbe8da872f487dde9923b24408fcbfe63；476/476 Hook、4个seam、0 errors，9项pipeline CPU、8项树CPU、本地/容器95项仓库测试通过。1项GPU pinned host/stream/event H2D逐池字节与ACK顺序通过，但physical queue/allocator/cache insert facade明确为fixture，不称native controller线程或L3模型。21个完整Source方法/函数及完整PoolName枚举AST规范化一致，legacy字符串键/pickle兼容通过。L0/Skill/guide及实际宽窄屏通过；普通八卡回归继续，其他cache retention/linker/FileIO与全量DAS目标未完成。
+[dev72分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-window-pipeline-gates-validation-20261101.json`）：627包文件与源码/site相同，wheel SHA256 348a661f96d463f063aa3a4eaa41479fbe8da872f487dde9923b24408fcbfe63；476/476 Hook、4个seam、0 errors，9项pipeline CPU、8项树CPU、本地/容器95项仓库测试通过。1项GPU pinned host/stream/event H2D逐池字节与ACK顺序通过，但physical queue/allocator/cache insert facade明确为fixture，不称native controller线程或L3模型。21个完整Source方法/函数及完整PoolName枚举AST规范化一致，legacy字符串键/pickle兼容通过。L0/Skill/guide及实际宽窄屏通过；普通八卡回归继续，其他cache retention/linker/FileIO与全量DAS目标未完成。
 
-[dev72普通八卡集成](hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json)：15:32:59–15:38:41通过，六项严格请求HTTP200/完整答案正确/正常stop，显式sparse保留，自有进程为空、端口关闭；627包文件与8e01b89/wheel/site相同。该run未加hicache/buffer/storage参数，只验证新枚举和pipeline接口安装后的普通集成，不是L3/cache-hit模型验证；GPU H2D使用明确的fixture controller范围，二者不合并成native controller/storage通过。后续retention、readonly匹配、cache/linker/FileIO等Source差异及完整缓存模型继续pending，全量DAS未完成。
+[dev72普通八卡集成](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json`）：15:32:59–15:38:41通过，六项严格请求HTTP200/完整答案正确/正常stop，显式sparse保留，自有进程为空、端口关闭；627包文件与8e01b89/wheel/site相同。该run未加hicache/buffer/storage参数，只验证新枚举和pipeline接口安装后的普通集成，不是L3/cache-hit模型验证；GPU H2D使用明确的fixture controller范围，二者不合并成native controller/storage通过。后续retention、readonly匹配、cache/linker/FileIO等Source差异及完整缓存模型继续pending，全量DAS未完成。
 
 ## 86. 2026-11-01 FileIO 的 TP 状态与共享 MLA 文件归属
 
 复现旧版两个反例：未限容量时不同 TP rank 的同一 Mamba key 读回首个 rank 的数据；开启容量限制后 MLA 非零 rank 拒绝自己的状态写入。按固定 Source 迁入完整 LRUFileEvictor 类及 HiCacheFile 的 constructor、suffix、metadata warmup 三个完整方法，Mamba 用 TP suffix，MLA KV 继续共享；每个 rank 管自己的 TP 文件，rank 0 额外管理共享文件。公共 lazy factory 解析 owned HiCacheFile 子类，15个未变化 native 方法逐一 AST 比对后继承，读写/临时文件原子替换/commit/abort/batch-v2 保留原生数据路径。
 
-[Source 对齐记录](hcu-file-backend-source-alignment.json) 检查完整类和三个方法，不靠局部语句匹配。`tests/runtime/file_backend_cpu.py` 从原生 StorageBackendFactory 构造，真实临时文件和 CPU tensor 读写，覆盖两个反例、其他 rank 文件不被淘汰、metadata 回调/重启扫描、rank 0 双 suffix 启动淘汰、PP/CP、pending 写入保护、失败回滚，以及公共 batch-v2 状态读写与 prefix 命中。batch 的 host pool 为数据夹具，backend 和磁盘 IO 均为真实实现；不将该项解释为控制器线程或完整模型 L3 命中。
+[Source 对齐记录](hcu-sglang-development.md#历史-json-快照)（`hcu-file-backend-source-alignment.json`） 检查完整类和三个方法，不靠局部语句匹配。`tests/runtime/file_backend_cpu.py` 从原生 StorageBackendFactory 构造，真实临时文件和 CPU tensor 读写，覆盖两个反例、其他 rank 文件不被淘汰、metadata 回调/重启扫描、rank 0 双 suffix 启动淘汰、PP/CP、pending 写入保护、失败回滚，以及公共 batch-v2 状态读写与 prefix 命中。batch 的 host pool 为数据夹具，backend 和磁盘 IO 均为真实实现；不将该项解释为控制器线程或完整模型 L3 命中。
 
 精度接受条件按用户补充：128题整体与基线大致一致即可，允许少量差异；无效输出/运行错误仍需修复。原型dev69的127/128和DAS127/128保留原有产物归属，不挪作dev73的测量；本轮 FileIO 不改变模型数学路径，也不重复跑无存储参数的普通服务来证明缓存行为。其余 retention/readonly-match/controller/linker 和全量 DAS 目标继续执行。
 
-[dev73分范围门禁](hcu-file-backend-gates-validation-20261101.json)：wheel SHA256 `33dddedb42fb0751d1e66e4c4890ef09b4a61f3a810bebe85ff6d1260ac47970`，629包文件与本轮源码及隔离site逐字节一致。10项FileIO测试、478/478 Hook、4个seam、0 errors，本地/容器95项仓库测试通过；旧实现两个反例均按预期失败，固定来源SHA/clean和文件哈希复核通过。台账将完整FileIO变化按逐文件实现记录，保留未验证的native controller线程、分布式rank进程协调和完整模型L3命中范围；不能从该记录推断全量DAS迁移完成。
+[dev73分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-file-backend-gates-validation-20261101.json`）：wheel SHA256 `33dddedb42fb0751d1e66e4c4890ef09b4a61f3a810bebe85ff6d1260ac47970`，629包文件与本轮源码及隔离site逐字节一致。10项FileIO测试、478/478 Hook、4个seam、0 errors，本地/容器95项仓库测试通过；旧实现两个反例均按预期失败，固定来源SHA/clean和文件哈希复核通过。台账将完整FileIO变化按逐文件实现记录，保留未验证的native controller线程、分布式rank进程协调和完整模型L3命中范围；不能从该记录推断全量DAS迁移完成。
 
 ## 87. 2026-11-01 Python KV 事件的 LoRA namespace
 
 继续梳理 retention 参数时发现 CacheInitParams 新默认表依赖 KvEventLoraNames，先闭合其 Python 生产/消费。完整迁入 Source events 模块的 LoRANameTable、KvEventLoraNames、KVCacheEventRecorder 三个类；默认事件对已登记的最终 namespace 附加 hash seed，store/remove/parent 链使用同一命名，queue 合并要求 lora_name 相等。保留 publisher 生命周期内的名称，允许 GPU removal 和请求释放后发布 host store；Dynamo 格式仍走原有 adapter ID fallback 与 namespace seed。
 
-[Source 对齐](hcu-kv-events-source-alignment.json) 检查完整模块前缀字节、三类及两份完整 scheduler 方法，六个导入 hash helper 与 fixed native AST 相同。原生 public generate/embedding handler 和 elastic namespace 方法保留 original；ContextVar 在外层保存可选 IPC lora_name，namespace seam 在 original 完成后调用完整 Source 登记 helper，finally 恢复上下文。旧 IPC 无名称字段时用 Source 已登记 adapter ID 回退；不改写消息 dataclass。这里仅完成 scheduler 的 KV 名称片段，其余变化继续 in_progress。
+[Source 对齐](hcu-sglang-development.md#历史-json-快照)（`hcu-kv-events-source-alignment.json`） 检查完整模块前缀字节、三类及两份完整 scheduler 方法，六个导入 hash helper 与 fixed native AST 相同。原生 public generate/embedding handler 和 elastic namespace 方法保留 original；ContextVar 在外层保存可选 IPC lora_name，namespace seam 在 original 完成后调用完整 Source 登记 helper，finally 恢复上下文。旧 IPC 无名称字段时用 Source 已登记 adapter ID 回退；不改写消息 dataclass。这里仅完成 scheduler 的 KV 名称片段，其余变化继续 in_progress。
 
 测试保留两个 native 反例：默认不同 namespace 的 LoRA ID 冲突、不同名称事件被合并。直接构造和 take 真实 Python recorder，保留普通/Dynamo 兼容，store/remove/parent、请求消失后 host store、disabled 和 context 异常/嵌套。public handler 使用原生 ExitStack 入口与真实注册 namespace seam，昂贵内部 admission 和 elastic namespace 场景显式用数据夹具；不是完整 LoRA 模型部署。原生 UnifiedTreeCore constructor/insert/leaf eviction 的实际事件出口单独验证。修正夹具的 keyword-only 参数、session 配置及 FULL 应走 leaf eviction 的调用后，未改生产算法来迎合断言。Rust tagged binding、发布 socket/router、CacheInitParams/retention 与其余全量 DAS 目标保持待做。
 
-[dev74分范围门禁](hcu-kv-events-gates-validation-20261101.json)：12项CPU测试、484/484 Hook、4个seam、0 errors、本地/容器95项仓库测试通过。隔离wheel SHA256 `317d4ba6d6982be22b7b75da952bef5b7ab74c2307e2821585e9a1d4c965de6f`，631包文件与本轮源码及site相同；原生Python树实际insert/leaf eviction产生的store/remove hashes一致。初轮夹具错误日志保留，最终门禁引用修正后的attempt2。后续普通八卡只用于原生scheduler请求路径集成，不替代LoRA事件、Rust或L3模型验证。128题接受“大致一致”的标准保持，本轮不将旧产物分数挪给新wheel。
+[dev74分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-kv-events-gates-validation-20261101.json`）：12项CPU测试、484/484 Hook、4个seam、0 errors、本地/容器95项仓库测试通过。隔离wheel SHA256 `317d4ba6d6982be22b7b75da952bef5b7ab74c2307e2821585e9a1d4c965de6f`，631包文件与本轮源码及site相同；原生Python树实际insert/leaf eviction产生的store/remove hashes一致。初轮夹具错误日志保留，最终门禁引用修正后的attempt2。后续普通八卡只用于原生scheduler请求路径集成，不替代LoRA事件、Rust或L3模型验证。128题接受“大致一致”的标准保持，本轮不将旧产物分数挪给新wheel。
 
-[dev74普通八卡回归](hcu-tp8-deepseekv4-sparse-default-dev74-validation-20261101.json)：16:09:20–16:14:58通过，六项严格请求全部HTTP200/完整答案正确/正常stop，显式sparse保留，自有进程为空、端口关闭；631包文件与14abc7e/wheel/site相同。本轮运行实际经过原生scheduler新增包装后的请求入口，未启用LoRA/KV事件/hicache/storage参数；不将普通生成称为事件路由、Rust binding或完整L3/cache-hit验证。全量DAS、retention及其依赖继续pending，128题历史结果保持各自产物归属。
+[dev74普通八卡回归](hcu-sglang-development.md#历史-json-快照)（`hcu-tp8-deepseekv4-sparse-default-dev74-validation-20261101.json`）：16:09:20–16:14:58通过，六项严格请求全部HTTP200/完整答案正确/正常stop，显式sparse保留，自有进程为空、端口关闭；631包文件与14abc7e/wheel/site相同。本轮运行实际经过原生scheduler新增包装后的请求入口，未启用LoRA/KV事件/hicache/storage参数；不将普通生成称为事件路由、Rust binding或完整L3/cache-hit验证。全量DAS、retention及其依赖继续pending，128题历史结果保持各自产物归属。
 
 ## 88. 2026-11-01 Owned Rust binding 与宽 token hash
 
 延续 Python KV 事件迁移，完整打包固定 Source 的 Rust crate（22文件，含 Cargo.lock 和测试），按完整 Source converter/recorder 消费新增带 extra_key 的 block_removed tuple。沿原生 public Rust loader 指定 owned workspace 和独立 production/inspection 模块名，保留 mode/features/cache 及显式 custom provider；实际选中原生工厂后校验 binding 身份并接入 Source 事件 recorder，旧 binding 不能与新 ABI 混用。Native capability/custom fallback 保留，只有源码/工具链可用性才允许由插件 workspace 满足；部署不依赖输入 DAS 路径或修改官方树。
 
-Source Rust 同时扩大非负 token 到 int64 域，因此成对迁入完整 Source C++ hash 和 Python 输入转换；普通 u32 页面编码保持原样，宽页面使用0xff tag及little-endian u64，前缀hash与bigram按同一规则连接。C++扩展独立命名，native get_native_hash caller/alias 经正式 Hook 接入。Torch兼容header与rpath使用插件资产，额外编译flags保留，加载可选Rust时才构建；Cargo继续使用--locked。详见 [Source 对齐](hcu-rust-events-source-alignment.json)。
+Source Rust 同时扩大非负 token 到 int64 域，因此成对迁入完整 Source C++ hash 和 Python 输入转换；普通 u32 页面编码保持原样，宽页面使用0xff tag及little-endian u64，前缀hash与bigram按同一规则连接。C++扩展独立命名，native get_native_hash caller/alias 经正式 Hook 接入。Torch兼容header与rpath使用插件资产，额外编译flags保留，加载可选Rust时才构建；Cargo继续使用--locked。详见 [Source 对齐](hcu-sglang-development.md#历史-json-快照)（`hcu-rust-events-source-alignment.json`）。
 
 dev75为冻结原型：659包文件，真实Rust store/remove与Python recorder及宽hash对照已执行，但未完成owned workspace的backend预检；原型测试还需消费eviction返回的CPU索引。dev76补齐预检后独立冻结，旧原型不挪为最终wheel证明。初轮函数对象identity断言不适用于native REPLACE包装，已改为实际caller alias及数值/事件行为；传输AppleDouble元数据单独清除，未用其解析错误改生产逻辑。CPU夹具会断言并消费返回的FULL索引，原有Python树测试也补齐同一ownership要求。
 
 本轮验证范围是Rust CPU binding、事件/hash与源码/包装契约；没有运行新的八卡模型、Rust GPU/L3/LoRA路由/retention测试，不沿用旧模型分数充当本轮产物测量。用户要求本轮任务收尾后停止目标运行；完成当前验证和本地提交后暂停，完整DAS目标的未完成项保留。
 
-[dev76分范围门禁](hcu-rust-events-gates-validation-20261101.json)：659包文件与源码/wheel/site相同，wheel SHA256 `234671c432573204f83d94558dd348f5dd0dc48f51b173fbf1d64a9c6d82cfe7`。487/487 Hook、4个seam、0 errors；10项provider、12项KV事件、本地/容器95项仓库测试通过。真实Rust auto及never缓存复用均通过6组default/Dynamo/namespace事件、12组Rust/C++/hashlib hash、4次负数拒绝及8行SWA恢复；两次binding SHA相同，缺失官方manifest时仍选中owned Rust，返回FULL索引已断言并消费，无ignored destructor错误。完整crate执行`cargo test --locked --release --lib`为930 passed/0 failed/1 ignored；ignored为Source原有不可构造的colliding-page panic用例，未新增skip。固定输入SHA/clean和全部Source资产哈希通过。没有新增八卡服务或数据集测量；本轮收尾后按用户要求暂停目标，剩余DAS工作不标记完成。
+[dev76分范围门禁](hcu-sglang-development.md#历史-json-快照)（`hcu-rust-events-gates-validation-20261101.json`）：659包文件与源码/wheel/site相同，wheel SHA256 `234671c432573204f83d94558dd348f5dd0dc48f51b173fbf1d64a9c6d82cfe7`。487/487 Hook、4个seam、0 errors；10项provider、12项KV事件、本地/容器95项仓库测试通过。真实Rust auto及never缓存复用均通过6组default/Dynamo/namespace事件、12组Rust/C++/hashlib hash、4次负数拒绝及8行SWA恢复；两次binding SHA相同，缺失官方manifest时仍选中owned Rust，返回FULL索引已断言并消费，无ignored destructor错误。完整crate执行`cargo test --locked --release --lib`为930 passed/0 failed/1 ignored；ignored为Source原有不可构造的colliding-page panic用例，未新增skip。固定输入SHA/clean和全部Source资产哈希通过。没有新增八卡服务或数据集测量；本轮收尾后按用户要求暂停目标，剩余DAS工作不标记完成。
 
 提交前的diff检查去除owned events.py末尾多余空行，最终另行冻结dev77：wheel SHA256 `b989298e06102ef3410d1f8836a5ad42cc64bebb4c4239e15ddcba5d0b2aee39`，659文件与源码/site一致。与已测dev76逐文件比较仅该EOF换行不同，其他658包文件完全相同，pyproject仅变版本；dev76门禁保留原归属。dev77另行通过487 Hook及真实never模式全部事件/hash/负数/SWA合同，binding SHA与dev76相同；没有将空行修正描述成算法变更，也没有覆盖原冻结产物。最终本地提交完成后暂停目标。
+
+
+## 仓库命名与文档清理（2026-11-01）
+
+按 plugin-v3-1101 需求统一需提交文本中的 HCU 命名及大小写，重命名迁移 Skill，移除已由 HCU MLA 模块替代的旧兼容文件。Git 忽略的来源树、环境、构建产物和原始日志不参与替换。
+
+删除 docs 下 95 份不被工具直接消费的 JSON 历史报告和清单，文档索引转到历史快照说明；plans 中的历史证据采用 `git:<提交>:<路径>` 定位。当前工具输入与目标合同继续保存在 plans、templates 与 tests/contracts。重建两份网页；计划签名随纯命名替换刷新，仍保留原采集基线与历史验证语义，本次没有重新采集来源或重做 GPU 验证。
+
+### 历史 JSON 快照
+
+删除的 JSON 可从清理前提交读取，不依赖远端是否已推送。例如在仓库根目录执行：
+
+```bash
+git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
+```
+
+其他历史报告以引用处给出的文件名替换命令中的文件名。清理前工作区备份和本次检查日志位于 ignored `artifacts/plugin-v3-1101-cleanup/`。本次验证结果在提交前记录；历史模型、GPU 和性能结果不视为本次复验。
+
+### 本次检查结果
+
+在指定容器、Python 3.10.12 下执行：L0 通过（474 个 Python、8 个 Skill）；95 项 unittest 通过；229 处 Markdown 锚点核对通过；网页导览、迁移计划快照和执行台账一致性检查通过；需提交文件的旧硬件命名残留为零，docs 下 JSON 为零，Git diff 空白检查通过。
+
+容器默认 site-packages 中的 SGLang 缺少 `ReplicatedParallelGroup`，不满足本仓固定接口；显式使用固定官方 `baa9befa38` 的 python 目录后，10 项 current_linear CPU 回归通过，真实入口加载注册并应用 487/487 个 Hook、4 个具名 resolution seam，加载错误为零。未安装、更新或修改官方源码与容器依赖。
+
+本轮为命名及文档清理，没有执行模型、GPU 数值或性能复验。界面控制权限未开启，网页实际浏览器截图、交互和窄屏视觉验收未执行；生成快照与 Markdown 路径/锚点检查不能替代该视觉验收。

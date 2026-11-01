@@ -35,12 +35,12 @@ class Dsv4OpsContractTests(unittest.TestCase):
         factory.assert_called_once_with(32,False)
         self.assertIs(seen[0][0],x)
 
-    def test_non_dcu_around_retains_effective_prior_wrapper(self):
+    def test_non_hcu_around_retains_effective_prior_wrapper(self):
         token=object()
         for hook in [O.around_hash_topk,O.around_mega_moe_pre_dispatch]:
             seen=[]
             def original(*a,**kw):seen.append((a,kw));return token
-            with patch.object(O,'is_dcu',return_value=False):
+            with patch.object(O,'is_hcu',return_value=False):
                 self.assertIs(hook(original,token,value=13),token)
             self.assertEqual(seen,[((token,),{'value':13})])
 

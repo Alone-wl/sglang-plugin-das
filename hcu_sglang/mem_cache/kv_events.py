@@ -321,8 +321,8 @@ class KVCacheEventRecorder:
 
 
 def register_hooks():
-    from hcu_sglang.utils.detection import is_dcu
-    if not is_dcu():
+    from hcu_sglang.utils.detection import is_hcu
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.mem_cache.events.LoRANameTable", LoRANameTable, HookType.REPLACE)

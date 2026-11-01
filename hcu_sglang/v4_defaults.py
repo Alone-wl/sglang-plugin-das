@@ -1,8 +1,8 @@
 from __future__ import annotations
 from sglang.srt.arg_groups import deepseek_v4_hook as N
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
-_is_hcu = is_dcu()
+_is_hcu = is_hcu()
 
 
 def _default_dsv4_attention_backend(server_args: ServerArgs) -> str:
@@ -228,13 +228,13 @@ def validate_deepseek_v4_cp(server_args: ServerArgs) -> None:
 
 
 def around_defaults(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return apply_deepseek_v4_defaults(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.arg_groups.deepseek_v4_hook.apply_deepseek_v4_defaults", around_defaults, HookType.AROUND)

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Optional
 from sglang.srt.model_executor.model_runner_components import cuda_graph_setup as N
 from sglang.srt.utils import get_bool_env_var
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def has_hybrid_graph_handlers(
@@ -81,7 +81,7 @@ def index_attention_layers_by_global_id(
 def release_hcu_flashmla_decode_h16_capture_cache(model_runner) -> bool:
     """Release unused allocator fragments after an H16 graph capture."""
 
-    if not is_dcu() or not get_bool_env_var("SGLANG_HCU_FLASHMLA_DECODE_H16"):
+    if not is_hcu() or not get_bool_env_var("SGLANG_HCU_FLASHMLA_DECODE_H16"):
         return False
 
     attn_backend = getattr(model_runner, "attn_backend", None)
@@ -466,31 +466,31 @@ def capture_prefill_graph(
 
 
 def around_index_attention_layers_by_global_id(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return index_attention_layers_by_global_id(*args, **kwargs)
 
 
 def around_refresh_deep_gemm_layout_memory_budget(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return refresh_deep_gemm_layout_memory_budget(*args, **kwargs)
 
 
 def around_capture_cuda_graphs(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return capture_cuda_graphs(*args, **kwargs)
 
 
 def around_capture_prefill_graph(original, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     return capture_prefill_graph(*args, **kwargs)
 
 
 def register_hooks():
-    if not is_dcu():
+    if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     HookRegistry.register("sglang.srt.model_executor.model_runner_components.cuda_graph_setup.index_attention_layers_by_global_id", around_index_attention_layers_by_global_id, HookType.AROUND)
