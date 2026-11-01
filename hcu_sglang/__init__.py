@@ -108,6 +108,8 @@ def register() -> None:
     mega_moe.register_hooks()
     from hcu_sglang.layers.moe import dsv4_ops
     dsv4_ops.register_hooks()
+    from hcu_sglang.layers.moe import deepseek_gate
+    deepseek_gate.register_hooks()
     quantization.register_hooks()
     norm_activation.register_hooks()
     linear_fusion.register_hooks()

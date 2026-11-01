@@ -1,0 +1,34 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/srt/models/deepseek_v2.py",
+  "source_sha256": "49faea1d79ee7ded0b5fc44ec24a3145bc50b56400ec57210498e14f311db9e5",
+  "owner": "hcu_sglang/layers/moe/deepseek_gate.py",
+  "owner_sha256": "d10615483741ad73bbc20e558bdfaa26fdcfb3221fe70c91b91a60d3109b5b47",
+  "source_methods_ast_equal_after_explicit_adapters": [
+    "__init__",
+    "forward"
+  ],
+  "adapters": [
+    "Native unchanged globals explicitly qualified through N; source platform is_hcu resolves to owned is_dcu.",
+    "Moved zero-argument super binds explicitly to super(N.MoEGate,self), retaining original nn.Module base. Native class identity and consumers remain.",
+    "CP-v2 predicate reuses the existing owned HCU predicate; dsa_use_prefill_cp uses unchanged native helper and mla_use_prefill_cp uses the owned legacy Source helper.",
+    "Missing Source SGLANG_MOE_ROUTER_USE_CONFIG_DTYPE EnvBool(False) installed only when absent."
+  ],
+  "failure_reproduced": "Isolated dev55 original TP8 recipe fails during Graph capture at BF16 router_logits -> FP32-only hash JIT. Old gate selects F.linear on non-CUDA; Source gate selects the HCU BF16/FP32 producer.",
+  "validation": "5 Source-worktree CPU tests pass: native class construction/configured GLM weight dtype, input-to-weight dtype conversion, HCU auto priority before broad AITER branch, HCU FP32 producer, legacy CP dtype and non-HCU effective original.2 real native-gate-to-public-hash JIT GPU tests pass: auto and explicit sgl, plus changed-input/token-id Graph replay. No compute provider mocked in GPU tests; deterministic runtime context is a minimal fixture.",
+  "limits": "Only gate __init__/forward reviewed here; deepseek_v2.py whole-file review remains in_progress. Full dev56 model replay pending. No consumer cast and no Graph disabled.",
+  "isolated_validation": {
+    "version": "0.3.2.dev56",
+    "wheel_sha256": "ace94cd214bf842056eb11fb102b9b9e0c47f60a3feffccbcf9f396dc84859a5",
+    "matching_package_files": 591,
+    "gate_gpu_tests": 2,
+    "linear_gpu_tests": 6,
+    "gate_cpu_tests": 5,
+    "linear_source_cpu_tests": 7,
+    "hooks_applied": 420,
+    "hook_errors": 0,
+    "named_resolution_seams": 3,
+    "repository_tests": 85,
+    "limits": "Full dev56 original TP8 recipe pending. GPU: gfx938 only; no throughput or dataset accuracy claim."
+  }
+}

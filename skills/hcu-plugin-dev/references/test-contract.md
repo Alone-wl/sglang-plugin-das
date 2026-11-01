@@ -154,3 +154,5 @@ JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.
 移植radix/warp kernel时逐项核对histogram bin归属与实际warp width，不只修复缺失intrinsic使其能编译。BF16 ordered compare要明确signed-zero/NaN/subnormal语义；使用整型位序验证极小值，先排除CPU参考flush模式，不能看到GPU/reference不等就直接判定GPU有错。保持原计算kernel、launch尺寸和quota算法，边界覆盖来源声明的max width/k及Graph页表更新，CUDA未实测需单独记录。
 
 逻辑warp/硬件wave边界：先读实际JIT include中的kWarpThreads与shuffle width，再确定top-k容量和histogram bins；不能从gfx硬件wave宽度推断接口上限。零token须走真实公共JIT入口，验证host检查后不发射零grid；hash与共享header的mask分别覆盖，Graph中的设备token count应在重放时重新读取。
+
+路由producer与consumer成对验证：新接入的JIT若要求FP32，先按原配方检查gate真实输出dtype和Source gate分发，不在consumer随意cast。gate→hash公共入口的GPU/Graph测试应保留真实GEMM/路由数学，再用完整服务捕获模型级缺口。FP32容器不等于FP32累加精度：按Source是否先输出BF16再转换建立独立参考；显式FP32 kernel与该兼容路径的数值契约分别记录。

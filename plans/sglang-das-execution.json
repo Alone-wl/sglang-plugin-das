@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2946,
-    "implemented": 13,
-    "in_progress": 25,
+    "pending": 2941,
+    "implemented": 17,
+    "in_progress": 26,
     "upstream": 26
   },
   "files": [
@@ -3913,7 +3913,17 @@
       "relation": "fork_only",
       "fork_oid": "a7c59f185c976b6e35abbfdfb998ccd4681d9fc6",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Full Source header retained byte-for-byte; actual HCU normal and split-K MMAC branches execute through owned JIT overlay.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/linear_bf16_fp32.cuh"
+      ],
+      "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+      "tests": [
+        "tests/runtime/linear_bf16_fp32_cpu.py",
+        "tests/runtime/linear_bf16_fp32_gpu.py"
+      ],
+      "validation_scope": "7 Source CPU dispatch cases and6 Source-worktree real gfx938 GPU cases pass, including10 direct shapes/normal/split8/split4, public explicit-sgl Hook, repeated zero-init, Graph and invalid layouts. Current gfx938 auto policy stays unchanged; full-model dev56 results pending. No performance or other-architecture claim. Isolated dev56 confirms7 dispatch CPU and6 GEMM GPU tests,591 byte-identical package files,420 hooks/3 seams/no errors and85 repository tests."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/main_norm_rope.cuh",
@@ -5031,7 +5041,17 @@
       "relation": "fork_only",
       "fork_oid": "8abf918408377b75765ccba5f5738ac6668b3bb3",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "All4 source functions and all non-import module statements match AST; owned platform/helper imports retain supported shapes, alignment, split-K zero-init and JIT public caller.",
+      "implementation": [
+        "hcu_sglang/models/deepseek/current_v4/hcu_backend/hcu_linear_bf16_fp32.py"
+      ],
+      "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+      "tests": [
+        "tests/runtime/linear_bf16_fp32_cpu.py",
+        "tests/runtime/linear_bf16_fp32_gpu.py"
+      ],
+      "validation_scope": "7 Source CPU dispatch cases and6 Source-worktree real gfx938 GPU cases pass, including10 direct shapes/normal/split8/split4, public explicit-sgl Hook, repeated zero-init, Graph and invalid layouts. Current gfx938 auto policy stays unchanged; full-model dev56 results pending. No performance or other-architecture claim. Isolated dev56 confirms7 dispatch CPU and6 GEMM GPU tests,591 byte-identical package files,420 hooks/3 seams/no errors and85 repository tests."
     },
     {
       "path": "python/sglang/kernels/ops/attention/dsv4/index_buf_accessor.py",
@@ -6030,7 +6050,18 @@
       "relation": "changed",
       "fork_oid": "0991d35c016005c46e7117dae4939b8f07aeebeb",
       "official_oid": "50f40afa59abe28bf0b7cad090d428b0b1a752d8",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "All17 source functions and all non-import module statements match after relocation of owned helper imports. Preserve source provider ordering, gfx936-only auto profile, explicit HCU sgl and HCU BF16-output-then-FP32 cublas semantics.",
+      "implementation": [
+        "hcu_sglang/models/deepseek/current_v4/hcu_backend/bf16_fp32.py",
+        "hcu_sglang/models/deepseek/current_v4/hcu_backend/integration.py"
+      ],
+      "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+      "tests": [
+        "tests/runtime/linear_bf16_fp32_cpu.py",
+        "tests/runtime/linear_bf16_fp32_gpu.py"
+      ],
+      "validation_scope": "7 Source CPU dispatch cases and6 Source-worktree real gfx938 GPU cases pass, including10 direct shapes/normal/split8/split4, public explicit-sgl Hook, repeated zero-init, Graph and invalid layouts. Current gfx938 auto policy stays unchanged; full-model dev56 results pending. No performance or other-architecture claim. Isolated dev56 confirms7 dispatch CPU and6 GEMM GPU tests,591 byte-identical package files,420 hooks/3 seams/no errors and85 repository tests."
     },
     {
       "path": "python/sglang/kernels/ops/gemm/cutedsl_bf16_gemm.py",
@@ -14756,7 +14787,19 @@
       "relation": "changed",
       "fork_oid": "bcc62124662bfddff96ad26b6c2c036d225a2aaf",
       "official_oid": "4255da8467b22ccccdfdde01a9ef7806553af045",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Add full Source MoEGate constructor and forward pair to fix the real TP8 producer BF16 to hash FP32 mismatch. Explicit native globals, owned CP predicates, Source configuration dtype field and correct moved-super binding preserve method semantics. This pair does not close the whole model file.",
+      "implementation": [
+        "hcu_sglang/layers/moe/deepseek_gate.py",
+        "hcu_sglang/environ.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-deepseek-gate-source-alignment.json",
+      "tests": [
+        "tests/runtime/deepseek_gate_cpu.py",
+        "tests/runtime/deepseek_gate_gpu.py"
+      ],
+      "validation_scope": "5 CPU and2 actual native-gate-to-public-hash GPU/Graph tests pass in both Source worktree and isolated dev56.420 hooks/3 seams/no errors,591 matching package files and85 repository tests. Original TP8 replay and remaining model-file deltas pending."
     },
     {
       "path": "python/sglang/srt/models/deepseek_v4.py",
@@ -24491,7 +24534,16 @@
       "relation": "fork_only",
       "fork_oid": "81fcdf249e714f143885906d4c818fbbb4ac3323",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Port all7 original Source CPU test methods to owned imports and standard unittest; retain method ASTs after one importlib module path-string relocation. External Source CI registration is replaced by this repository explicit runtime-test command.",
+      "implementation": [
+        "tests/runtime/linear_bf16_fp32_cpu.py"
+      ],
+      "source_alignment": "docs/hcu-bf16-fp32-source-alignment.json",
+      "tests": [
+        "tests/runtime/linear_bf16_fp32_cpu.py"
+      ],
+      "validation_scope": "All7 original dispatch CPU methods pass on isolated dev56; method ASTs retain Source after owned import path relocation and standard unittest integration."
     },
     {
       "path": "test/registered/unit/test_model_overrides.py",
