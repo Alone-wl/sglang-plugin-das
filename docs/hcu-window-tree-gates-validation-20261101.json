@@ -1,0 +1,49 @@
+{
+  "status": "passed_scoped_gates",
+  "plugin_version": "0.3.2.dev71",
+  "wheel_sha256": "28b13d4a7d31e45f6b0ac8418cb81fe2f8439e40751ba3f844cc3654e7779344",
+  "matching_source_wheel_installed_package_files": 623,
+  "hook_registered": 471,
+  "hook_applied": 471,
+  "resolution_seams": [
+    "handle_a2a_moe",
+    "handle_attention_backend_compatibility",
+    "handle_model_capability_adjustments",
+    "handle_model_specific_adjustments"
+  ],
+  "errors": [],
+  "tests": [
+    {
+      "test": "window_tree_cpu",
+      "count": 8,
+      "log_sha256": "dfb269f40c251a1963e4b49e2ce3f7f8efee914fb60c63b5de6a4690dd41718e"
+    },
+    {
+      "test": "prefill_admission_cpu",
+      "count": 8,
+      "log_sha256": "25c10e8cb6b0e176ee32d3eee0d469a34079974feba4f154bac791998e1fc48e"
+    },
+    {
+      "test": "repository",
+      "count": 95,
+      "log_sha256": "1400e3044a8599ebb54d4011bbc091a1081c514abe69c8e8f4e39e8e9a7e8468"
+    },
+    {
+      "test": "window_tree_gpu",
+      "count": 1,
+      "log_sha256": "fda4bb3a667c8f600bd1eb68f1ded6434900a202c0638a8cfc8f1f31e777d29f"
+    }
+  ],
+  "actual_native_rust_result": {
+    "status": "passed",
+    "backend": "rust",
+    "adapter_type": "sglang.srt.mem_cache.rust_tree_core.adapter.RustUnifiedTreeCore",
+    "method_owner": "hcu_sglang.mem_cache.window_rust",
+    "restored_swa_tokens": 8,
+    "aux_guard": "NotImplementedError",
+    "scope": "Actual native Rust CPU binding via selected factory; no GPU Rust/AUX/storage/model claim."
+  },
+  "actual_native_rust_result_sha256": "c0c51fdd1bd9d10b3dc6e05766be41bbee2b4d72e508d6b74e76bbf3e14e57f2",
+  "official_input_git_clean_after_native_check": true,
+  "scope": "Real Python constructor/native component splits/LRU/ledgers; real GPU tensor clone and component isolation; actual Rust CPU factory+binding repair with Source AUX rejection. Owned plan records consumed by actual Req reader. Pipeline staged producer/H2D/persistence/retention/full-match and complete cache-hit model remain pending; ordinary8GPU service separate."
+}

@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2909,
+    "pending": 2906,
     "implemented": 30,
-    "in_progress": 45,
+    "in_progress": 48,
     "upstream": 26
   },
   "files": [
@@ -14365,7 +14365,21 @@
       "relation": "changed",
       "fork_oid": "2f44ea44866de607f94bfc216b84350821256eb8",
       "official_oid": "6fb481ccd5983bf573609ff66ba15408a09427c8",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only Source single-SWA window methods applied lazily to selected native factory instances, with AUX NotImplemented guard; other Rust event/retention/match changes pending.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_tree_cpu.py",
+        "tests/runtime/window_tree_gpu.py",
+        "tests/runtime/window_tree_rust.py"
+      ],
+      "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
+      "evidence": [
+        "docs/hcu-window-tree-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/storage/aibrix_kvcache/aibrix_kvcache_storage.py",
@@ -14445,7 +14459,21 @@
       "relation": "changed",
       "fork_oid": "e319332faa11ee43c54f0dc8f3077a8526bb1ac6",
       "official_oid": "a265c266ffc6f19a330872c0ec2b765f12e6e32a",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Full owned WindowLoadBackPlan and StagedPrefetchPlan records added, without replacing old native plan ABI before pipeline producer/H2D consumers migrate.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_plan.py"
+      ],
+      "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_tree_cpu.py",
+        "tests/runtime/window_tree_gpu.py",
+        "tests/runtime/window_tree_rust.py"
+      ],
+      "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
+      "evidence": [
+        "docs/hcu-window-tree-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/swa_memory_pool.py",
@@ -14525,7 +14553,21 @@
       "relation": "changed",
       "fork_oid": "6c57d0c815aa4a301b381e16173bd35d7ff6edcf",
       "official_oid": "c917ecf7917d73cf536a179249ae5acce920d915",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full Source per-component tombstone/attach/segment methods migrated; readonly/full matching and backup policy changes remain pending. Real native tree ctor/components/splits/LRU/ledger retained.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_tree.py"
+      ],
+      "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_tree_cpu.py",
+        "tests/runtime/window_tree_gpu.py",
+        "tests/runtime/window_tree_rust.py"
+      ],
+      "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
+      "evidence": [
+        "docs/hcu-window-tree-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/unified_cache/unified_tree_core_interface.py",

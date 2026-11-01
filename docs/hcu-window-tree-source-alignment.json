@@ -1,0 +1,36 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "sources": [
+    {
+      "path": "python/sglang/srt/mem_cache/unified_cache/unified_tree_core.py",
+      "blob": "6c57d0c815aa4a301b381e16173bd35d7ff6edcf",
+      "sha256": "be8cfed2ced2dff9b6795230a91a262355ca140211a55b75af4f1be75dd50fe1"
+    },
+    {
+      "path": "python/sglang/srt/mem_cache/rust_tree_core/adapter.py",
+      "blob": "2f44ea44866de607f94bfc216b84350821256eb8",
+      "sha256": "d7be7ddf23cf0524d36dcfa0fbcc4d49c8946205c056504d4f9c48576adca1dc"
+    },
+    {
+      "path": "python/sglang/srt/mem_cache/storage_prefetch.py",
+      "blob": "e319332faa11ee43c54f0dc8f3077a8526bb1ac6",
+      "sha256": "89d225665ef1eed45d529e7be4ed536cb28da65b93ed7ab2b26c7dc502f69403"
+    }
+  ],
+  "full_window_methods_aligned": [
+    "UnifiedTreeCore.swa_tombstone_ranges",
+    "UnifiedTreeCore.attach_swa_window",
+    "UnifiedTreeCore._attach_swa_segment",
+    "RustUnifiedTreeCore.swa_tombstone_ranges",
+    "RustUnifiedTreeCore.attach_swa_window"
+  ],
+  "full_owned_records_aligned": [
+    "WindowLoadBackPlan",
+    "StagedPrefetchPlan"
+  ],
+  "normalizations": [
+    "Unchanged native globals qualified through N; method docstring indentation normalized.",
+    "Rust adapter import deferred until selected native factory constructed its instance."
+  ],
+  "scope": "Window repair backend and owned plan records only. Readonly/full match, retention/component and buffer-pipeline producer/H2D transitions remain pending."
+}

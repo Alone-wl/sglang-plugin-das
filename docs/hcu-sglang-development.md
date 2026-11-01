@@ -1014,3 +1014,13 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 [最终dev70门禁](hcu-v4-defaults-gates-validation-20261101.json)：620包文件与源码/site相同，wheel SHA256 be336433b63eee297ee126cfcf111d758fbb2076f4301d22bf3ad74b6bc16d33；467/467唯一Hook、4个seam、0 errors。9项默认/CP/alias测试（纠正REPLACE函数由框架包装，不能断言公开wrapper identity）、5项既有feature校验和95项仓库测试通过；0731与V4.1真实resolve_once前/后sparse均1。L0/Skill/guide与实际宽窄屏交互通过。CP/SM100/mega实际模型仍未验证，最终dev70八卡普通回归继续，窗口plan生产/传输等全量DAS范围未关闭。
 
 [最终dev70普通八卡服务](hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json)：14:15:35–14:21:18通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空、端口关闭。620包文件与32fb304/wheel/site相同，实际server日志确认保留显式sparse开关；原plain配方的DSPARK/DeepEP/decodeGraph/并行与权重加载保留，未加CP/BCG变体参数。此结果属于最终dev70普通集成，128题127/128仍准确归属于隔离dev69原型；不是CP/SM100/mega模型或吞吐验收。全DAS窗口plan生产/传输及其他pending模块继续未完成。
+
+## 84. 2026-11-01 双窗口计划与树修复后端
+
+作为窗口pipeline迁移前置，迁入完整WindowLoadBackPlan/StagedPrefetchPlan owned记录，暂不替换固定native staged plan的swa_tokens构造ABI；已有Req AUX reader可消费owned windows。迁入Python TreeCore全部3个窗口查询/attach/segment变化方法，按component_type分别识别SWA/AUX tombstone、拆分真实树节点、设置独立数据与LRU/ledger。Rust两项窗口方法按Source仅允许SWA，AUX明确拒绝；沿现有get_tree_core_factory扩展点保留原factory，在实际选择并创建native Rust实例后绑定新方法，不在插件加载时强制编译可选Rust。自定义工厂/子类保留其原行为，非HCU effective original保留。
+
+此阶段不改变pipeline producer与H2D发布，避免新plan先替换旧构造字段而破坏现有caller。测试保留真实TreeCore构造、native组件分片、节点arena与LRU，不mock _split_node或ledger setter；storage/H2D/完整窗口cache模型范围继续pending。
+
+8项CPU通过，保留旧API不接受component_type的反例；使用真实TreeCore构造/native组件split/LRU与账本，验证AUX[2,6)拆成2/4/2三个节点、FULL/SWA字节不变、AUX缺失[0,2)/[6,8)、protected/evictable归属以及pending backup split action。两轮夹具分别补齐只读allocator内部字段与cache session开关，未修改生产算法。隔离dev71的1项真实GPU确认clone设备/存储分离及独立SWA数据；实际native Rust CPU经工厂选中、insert/局部attach/补齐/SWA ledger8通过，AUX明确拒绝。Rust采用原始受锁定Cargo/native来源，输入sglang Git工作树检查仍干净。stage/producer/H2D端尚未迁入，因此owned记录暂未替换native schema，也不声明完整窗口缓存模型通过。
+
+[dev71分范围门禁](hcu-window-tree-gates-validation-20261101.json)：623包文件与源码/site一致，wheel SHA256 28b13d4a7d31e45f6b0ac8418cb81fe2f8439e40751ba3f844cc3654e7779344；471/471 Hook、4个seam、0 errors。8项窗口CPU、8项既有预算、本地/容器95项仓库测试通过；1项真实GPU独立数据/clone测试及实际Rust CPU工厂+binding测试通过。5个窗口方法与2个完整Source记录AST规范化一致，Rust加载延迟仅为适配方式变化，不改其SWA算法或AUX guard。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过。普通八卡回归继续，不将无hicache参数的服务用于证明storage/H2D或窗口cache-hit。
