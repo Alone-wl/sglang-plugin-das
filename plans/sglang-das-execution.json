@@ -14378,8 +14378,10 @@
       ],
       "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
       "evidence": [
-        "docs/hcu-window-tree-gates-validation-20261101.json"
-      ]
+        "docs/hcu-window-tree-gates-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json"
+      ],
+      "ordinary_model_scope": "Frozen2cb0f1b/dev71/623 files:6 strict ordinary8GPU requests and owned cleanup passed, explicit sparse preserved. No hicache/buffer/storage/cache-hit or dataset rerun claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/storage/aibrix_kvcache/aibrix_kvcache_storage.py",
@@ -14566,8 +14568,10 @@
       ],
       "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
       "evidence": [
-        "docs/hcu-window-tree-gates-validation-20261101.json"
-      ]
+        "docs/hcu-window-tree-gates-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json"
+      ],
+      "ordinary_model_scope": "Frozen2cb0f1b/dev71/623 files:6 strict ordinary8GPU requests and owned cleanup passed, explicit sparse preserved. No hicache/buffer/storage/cache-hit or dataset rerun claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/unified_cache/unified_tree_core_interface.py",
