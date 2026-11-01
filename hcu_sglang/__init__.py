@@ -135,6 +135,9 @@ def register() -> None:
     window_pool_name.register_hooks()
     window_pipeline.register_hooks()
     window_cache_init.register_hooks()
+    from hcu_sglang.mem_cache import file_evictor, file_backend
+    file_evictor.register_hooks()
+    file_backend.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

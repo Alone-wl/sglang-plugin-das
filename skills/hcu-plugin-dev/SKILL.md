@@ -61,3 +61,5 @@ Attention 类图、CP 空查询或 native/JIT 迁移按 [测试契约](reference
 分阶段 DAS 迁移时关联 [逐路径执行台账](../../docs/migration.md#全量差异执行台账)，新增 Hook 同步 [当前目标合同](../../docs/hcu-sglang-targets.json)。保留迁入 manifest 的历史语义；消费者反例、Hook 加载、CPU 张量测试与 GPU/Graph/服务分别验收。
 
 归一化、residual 原地更新或 FP8 输出迁移时，按[归一化契约](references/test-contract.md#归一化的-residual-与量化返回契约)检查实际生产/消费与别名，分开记录 CPU 数据流、vendor 数学和完整服务结果。
+
+FileIO key/LRU 接口迁移按 [分片状态与淘汰归属](references/test-contract.md#fileio-分片状态与淘汰归属) 成对验证生产、读回、metadata 和容量所有权；共享 MLA 数据可读与本 rank 可淘汰范围分别断言。

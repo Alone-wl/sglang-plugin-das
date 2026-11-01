@@ -1,0 +1,34 @@
+{
+  "status": "passed_scoped_gates",
+  "plugin_version": "0.3.2.dev73",
+  "wheel_sha256": "33dddedb42fb0751d1e66e4c4890ef09b4a61f3a810bebe85ff6d1260ac47970",
+  "matching_source_wheel_installed_package_files": 629,
+  "hook_registered": 478,
+  "hook_applied": 478,
+  "resolution_seams": [
+    "handle_a2a_moe",
+    "handle_attention_backend_compatibility",
+    "handle_model_capability_adjustments",
+    "handle_model_specific_adjustments"
+  ],
+  "errors": [],
+  "tests": [
+    {
+      "test": "file_backend_cpu-wheel73.log",
+      "count": 10,
+      "log_sha256": "c7c1e553d3a1f7bbbcd9f952646caf3b68639d6da7f1b56cb50a738f01b8a518"
+    },
+    {
+      "test": "repository73.log",
+      "count": 95,
+      "log_sha256": "4074e6c60506d622520bfe57069977822b370269e8b4868557e4838759a7cc5d"
+    }
+  ],
+  "native_counterexamples": {
+    "failed_as_expected": 2,
+    "log_sha256": "71af8735e08f6535ace8bba8ade658954fd8767cdb5b252ea5deddd7910a979c"
+  },
+  "source_inputs_clean_and_pinned": true,
+  "source_alignment": "hcu-file-backend-source-alignment.json",
+  "scope": "Native lazy factory,15 unchanged native storage methods, real CPU tensor byte IO and temporary filesystem, multi-rank naming and isolated LRU ownership, metadata startup/eviction callback, pending/abort/atomic write failure, public batch-v2 write/read/existence. Batch host pools are data fixtures. No native controller threads, distributed rank process coordination or complete model L3/cache-hit validation claimed. No new GSM8K measurement."
+}

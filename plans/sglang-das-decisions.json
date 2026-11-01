@@ -1480,16 +1480,35 @@
     "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
   },
   "python/sglang/srt/mem_cache/hicache_storage.py": {
-    "status": "in_progress",
-    "rationale": "Full Source PoolName enum migrated with AUX and string/hash/pickle compatibility for captured legacy members; FileIO sharding/other storage changes pending.",
+    "status": "implemented",
+    "rationale": "All reviewed Source changes now implemented: complete PoolName enum plus paired HiCacheFile constructor, TP-specific Mamba key suffix and metadata startup scan. Native lazy backend factory resolves owned subclass;15 unchanged native methods are AST-equal to Source and inherited. This is per-file implementation status, not all storage/model validation.",
     "implementation": [
-      "hcu_sglang/mem_cache/window_pool_name.py"
+      "hcu_sglang/mem_cache/window_pool_name.py",
+      "hcu_sglang/mem_cache/file_backend.py",
+      "hcu_sglang/mem_cache/file_evictor.py"
     ],
-    "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+    "source_alignment": [
+      "docs/hcu-window-pipeline-source-alignment.json",
+      "docs/hcu-file-backend-source-alignment.json"
+    ],
     "tests": [
       "tests/runtime/window_pipeline_cpu.py",
-      "tests/runtime/window_pipeline_gpu.py"
+      "tests/runtime/window_pipeline_gpu.py",
+      "tests/runtime/file_backend_cpu.py"
     ],
-    "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
+    "validation_scope": "Real CPU filesystem via public factory/get/set/batch-v2: distinct TP state, shared MLA read, owned multi-suffix startup/LRU/metadata, admission/pending/rollback. Host pools in batch test are data fixtures; no native controller threads or model L3-hit claim."
+  },
+  "python/sglang/srt/mem_cache/storage/file/lru_file_evictor.py": {
+    "status": "implemented",
+    "rationale": "Full Source LRU class with owned_suffixes admission/touch/startup scan is paired with all native constructor callers (HiCacheFile); each TP rank owns its state, rank0 additionally owns shared MLA files. Native factory remains lazy.",
+    "implementation": [
+      "hcu_sglang/mem_cache/file_evictor.py",
+      "hcu_sglang/mem_cache/file_backend.py"
+    ],
+    "source_alignment": "docs/hcu-file-backend-source-alignment.json",
+    "tests": [
+      "tests/runtime/file_backend_cpu.py"
+    ],
+    "validation_scope": "Real temporary files and byte readback, cross-rank eviction isolation, rank0 startup eviction across both owned suffixes, pending/abort/atomic-write failure. No full controller/storage/model validation claim."
   }
 }

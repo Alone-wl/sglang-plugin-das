@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2900,
-    "implemented": 32,
-    "in_progress": 52,
+    "pending": 2899,
+    "implemented": 34,
+    "in_progress": 51,
     "upstream": 26
   },
   "files": [
@@ -14133,17 +14133,23 @@
       "relation": "changed",
       "fork_oid": "f93600cfe1bd7f268a0731e6421323dd2076529e",
       "official_oid": "a226069588b30814d453c2087f91eeb38ec8e60c",
-      "status": "in_progress",
-      "rationale": "Full Source PoolName enum migrated with AUX and string/hash/pickle compatibility for captured legacy members; FileIO sharding/other storage changes pending.",
+      "status": "implemented",
+      "rationale": "All reviewed Source changes now implemented: complete PoolName enum plus paired HiCacheFile constructor, TP-specific Mamba key suffix and metadata startup scan. Native lazy backend factory resolves owned subclass;15 unchanged native methods are AST-equal to Source and inherited. This is per-file implementation status, not all storage/model validation.",
       "implementation": [
-        "hcu_sglang/mem_cache/window_pool_name.py"
+        "hcu_sglang/mem_cache/window_pool_name.py",
+        "hcu_sglang/mem_cache/file_backend.py",
+        "hcu_sglang/mem_cache/file_evictor.py"
       ],
-      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "source_alignment": [
+        "docs/hcu-window-pipeline-source-alignment.json",
+        "docs/hcu-file-backend-source-alignment.json"
+      ],
       "tests": [
         "tests/runtime/window_pipeline_cpu.py",
-        "tests/runtime/window_pipeline_gpu.py"
+        "tests/runtime/window_pipeline_gpu.py",
+        "tests/runtime/file_backend_cpu.py"
       ],
-      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
+      "validation_scope": "Real CPU filesystem via public factory/get/set/batch-v2: distinct TP state, shared MLA read, owned multi-suffix startup/LRU/metadata, admission/pending/rollback. Host pools in batch test are data fixtures; no native controller threads or model L3-hit claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/hybrid_cache/hybrid_cache_controller.py",
@@ -14443,7 +14449,17 @@
       "relation": "changed",
       "fork_oid": "60847bfea0380f52219256adc70e3641e191c5c5",
       "official_oid": "6b7997ec16e205edbb020ebd8138a2774bdecae6",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Full Source LRU class with owned_suffixes admission/touch/startup scan is paired with all native constructor callers (HiCacheFile); each TP rank owns its state, rank0 additionally owns shared MLA files. Native factory remains lazy.",
+      "implementation": [
+        "hcu_sglang/mem_cache/file_evictor.py",
+        "hcu_sglang/mem_cache/file_backend.py"
+      ],
+      "source_alignment": "docs/hcu-file-backend-source-alignment.json",
+      "tests": [
+        "tests/runtime/file_backend_cpu.py"
+      ],
+      "validation_scope": "Real temporary files and byte readback, cross-rank eviction isolation, rank0 startup eviction across both owned suffixes, pending/abort/atomic-write failure. No full controller/storage/model validation claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/storage/hf3fs/storage_hf3fs.py",

@@ -188,3 +188,7 @@ Prefill compute预算与KV预算分开验收：replay行计入compute并先从�
 窗口repair接口按component独立检查tombstone与索引、真实树split、其他组件字节、LRU与protected/evictable账本；替换caller前先接通这些后端。可选native后端沿现有factory延迟适配，保留自定义factory与子类，不因注册接口提前触发扩展编译。Rust单窗口限制与Python多窗口能力分别验证；owned plan可复制/序列化不等于staged producer/H2D已完成。
 
 窗口plan生产与消费成套迁移：按组件裁剪缺失host范围、完整bounce归属到ACK、resident repair与tail insert分开验证；失败分配context回滚，排队后发布失败不能释放pending目标。使用真实树作为prefix/match读出，不能在夹具硬编码长度掩盖所有权错配。新增str Enum需检查旧成员str/hash及pickle兼容。GPU H2D fixture必须明确控制器/allocator/pub facade替代范围，使用pinned payload与stream完成event验证物理字节，不能自称native controller或L3模型验证。
+
+## FileIO 分片状态与淘汰归属
+
+MLA KV 可跨 TP rank 共用文件，Mamba 等 TP 状态仍须按 rank 分片。变更文件 suffix 或淘汰接口时，成对检查 backend constructor、lazy factory、metadata warmup、读命中 touch、reserve/commit/abort 及启动扫描；不能只改写入文件名。用独立临时目录和真实字节读写保留旧实现反例，覆盖非零 rank 的有界写入、共享文件可读但不计入其 LRU、跨 rank 淘汰隔离，以及 pending 写入/失败回滚。公共 batch IO 使用真实 backend；若 host pool 为数据夹具须明确其边界，不把该测试记作控制器线程或完整模型 L3 命中验证。
