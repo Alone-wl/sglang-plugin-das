@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2941,
-    "implemented": 17,
-    "in_progress": 26,
+    "pending": 2938,
+    "implemented": 18,
+    "in_progress": 28,
     "upstream": 26
   },
   "files": [
@@ -12393,7 +12393,18 @@
       "relation": "fork_only",
       "fork_oid": "876d9f871866483214bccddc5ec95a8fa73686de",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own source synthetic EP balancing helper byte-for-byte. Preserve destination rotation, rank fanout, unique local experts, layer rotation, validation and benchmark-only scope. Register the missing Source EnvBool(False) without overriding existing fields.",
+      "implementation": [
+        "hcu_sglang/layers/moe/ep_balance.py",
+        "hcu_sglang/environ.py"
+      ],
+      "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+      "tests": [
+        "tests/runtime/ep_balance_cpu.py",
+        "tests/runtime/routing_gpu.py"
+      ],
+      "validation_scope": "5 independent Python-oracle CPU tests and actual GPU TopK/HashTopK synthetic-mode tests validate routed IDs and preservation of router weights/shared columns. Synthetic IDs are performance-benchmark inputs, not accuracy evidence."
     },
     {
       "path": "python/sglang/srt/layers/moe/ep_moe/layer.py",
@@ -12473,7 +12484,22 @@
       "relation": "changed",
       "fork_oid": "b6c2901077c1066572fef1d6bf01713a6ff0dde9",
       "official_oid": "d32c600ff200cfb880b64bf5ce9505775e24a8b4",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Own the full Source HashTopK module with native class identity preserved at hook targets and compatible direct owned factories. Retain synthetic EP mode validation, shared columns and weights, padding, LP versus load-aware argument dispatch and source remap rules. Source-only EP import uses owned helper and moved super binds to the original parent. Actual load-aware solver/collective and global AITER integration remain open.",
+      "implementation": [
+        "hcu_sglang/layers/moe/hash_topk_source.py",
+        "hcu_sglang/layers/moe/routing.py",
+        "hcu_sglang/layers/moe/ep_balance.py",
+        "hcu_sglang/__init__.py",
+        "hcu_sglang/environ.py"
+      ],
+      "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+      "tests": [
+        "tests/runtime/routing_cpu.py",
+        "tests/runtime/routing_gpu.py",
+        "tests/runtime/ep_balance_cpu.py"
+      ],
+      "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending."
     },
     {
       "path": "python/sglang/srt/layers/moe/hcu_dspark_aiter_moe_fallback.py",
@@ -12754,7 +12780,22 @@
       "relation": "changed",
       "fork_oid": "41e4d08a3a1288fee1b3bae9c50e87e40f38ef6a",
       "official_oid": "6d8db4e2c3f3f916144ccaaa0c4bed8151a77800",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Own the full source routing module and use native identities for unchanged shared types. Wire all changed native functions/methods through HCU-scoped hooks, preserve original non-HCU callables and optimized provider eligibility. Correct only the stale Source remapping-predicate call; retain Source behavior and exact reversible adaptation patch. Actual load-aware solver/collective and global AITER integration remain open.",
+      "implementation": [
+        "hcu_sglang/layers/moe/topk_source.py",
+        "hcu_sglang/layers/moe/routing.py",
+        "hcu_sglang/layers/moe/ep_balance.py",
+        "hcu_sglang/__init__.py",
+        "hcu_sglang/environ.py"
+      ],
+      "source_alignment": "docs/hcu-topk-routing-source-alignment.json",
+      "tests": [
+        "tests/runtime/routing_cpu.py",
+        "tests/runtime/routing_gpu.py",
+        "tests/runtime/ep_balance_cpu.py"
+      ],
+      "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending."
     },
     {
       "path": "python/sglang/srt/layers/moe/utils.py",

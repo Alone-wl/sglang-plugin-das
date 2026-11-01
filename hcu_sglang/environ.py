@@ -9,6 +9,7 @@ from hcu_sglang.utils.detection import is_dcu
 
 
 _ENV_SPECS: dict[str, tuple[type, Any]] = {
+    'SGLANG_SIMULATED_EXPERT_BALANCE': (EnvBool, False),
     'SGLANG_MOE_ROUTER_USE_CONFIG_DTYPE': (EnvBool, False),
 
     'SGLANG_OPT_USE_FUSED_CLAMP_ACT_MUL': (EnvBool, True),
