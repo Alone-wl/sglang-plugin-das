@@ -938,3 +938,5 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 新增真实原生配置解析与预导入decode/runner公共别名测试：Gemma4Renoise单独上下文路径、默认1请求、pool上限、alignment/width/TBO、普通decode与非separate dLLM不变、非HCU保留已有wrapper。模型配置读取用fixture隔离权重下载，实际算法和DllmConfig保留；这是CPU控制流验证，不能宣称Gemma模型GPU Graph或生成精度通过。隔离dev63产物与正式Hook/仓库门禁按实际结果补记。
 
 隔离dev63门禁完成：604包文件与源码/site逐字节相同，wheel SHA256 b28a3dd1befcfb80e715defa8bfae0875c0907032164b44c2cb21293e0ba8f4a。6项批大小CPU测试、5项既有DeepEP Graph协议测试、446/446 Hook与3个resolution seam均通过且0 errors；本地与容器95项仓库测试、L0、Skill元信息、guide快照和实际宽窄屏交互通过。当前按原八卡基础配方启动独立服务验证普通模型回归，不重复追求已接受的128题完全对齐；服务结果另记。未验证的实际扩散模型路径保持未验证，全DAS迁移未完成。
+
+[dev63八卡回归摘要](hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json)：11:38:15–11:43:57按原基础配方完成六项严格生成，全部HTTP200、完整最终答案正确、正常stop，自有进程为空且端口关闭；604包文件与84f961e/wheel/site相同。DSPARK/DeepEP/Graph及原优化环境保持。该模型为普通解码，验证新函数在此路径没有阻断实际Graph捕获和服务；不能据此宣称Gemma4Renoise GPU分支、吞吐或全DAS迁移完成。已接受的dev62 GSM8K128对照不归用为dev63重跑结果。

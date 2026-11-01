@@ -1065,6 +1065,7 @@
     "tests": [
       "tests/runtime/graph_batch_cpu.py"
     ],
-    "validation_scope": "6 CPU control-flow tests passed using real native DllmConfig and algorithms with fixture model metadata; pre-imported decode/runner alias identity checked. Source AST equal after qualifying native helper globals. No real diffusion model GPU or accuracy claim."
+    "validation_scope": "6 CPU control-flow tests passed using real native DllmConfig and algorithms with fixture model metadata; pre-imported decode/runner alias identity checked. Source AST equal after qualifying native helper globals. No real diffusion model GPU or accuracy claim. Isolated dev63:604 identical package files,446 hooks/3 seams,95 repository tests; real8GPU ordinary DeepSeek base recipe passes6 strict requests and cleanup. This service does not exercise separate-context diffusion GPU capture.",
+    "ordinary_model_service_evidence": "docs/hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json"
   }
 }
