@@ -126,6 +126,8 @@ def register() -> None:
     from hcu_sglang import replay_validation, model_replay_budget
     replay_validation.register_hooks()
     model_replay_budget.register_hooks()
+    from hcu_sglang import v4_defaults
+    v4_defaults.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

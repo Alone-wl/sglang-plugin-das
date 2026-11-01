@@ -1000,3 +1000,15 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 [dev68分范围门禁](hcu-prefill-admission-gates-validation-20261101.json)：619包文件与源码/site一致，wheel SHA256 458c34789eab6969fd1d6b91969dc50dd5218670e6c7d387523438afc548c4c9；466/466 Hook、4个具名resolution seam、0 errors；8项预算、5项校验和本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏通过。实际V4.1 resolve_once在encoder-off下成功，decoder auto=False、per-rank chunk4096、attention DP8/replica DP1；encoder-on仍按Source硬件约束拒绝。另捕获未迁移的V4.1 defaults覆盖显式sparse-prefill问题，不将该预检声称为优化配置交付。普通8GPU BCG回归结果另记；当前改动为CPU调度/接口/配置，未冒称新的GPU kernel数值验收。
 
 [dev68普通八卡BCG回归](hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json)：13:46:10–13:52:01通过，全部8rank完成prefill捕获，六项严格生成HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；619包文件与dd88288/wheel/site相同。encoder flag保持False；该结果验证本次Req/adder/memory-budget接口安装后的普通服务，不证明encoder cache-hit、AUX窗口传输、请求级BCG命中或128题重跑。下一阶段继续迁移V4 defaults/CP和窗口plan生产/传输，全部DAS目标未完成。
+
+## 83. 2026-11-01 V4 attention 默认值与 HCU CP 策略
+
+迁入默认attention后端选择与apply_deepseek_v4_defaults完整Source实现，统一既有Source CP校验所有权；与已有features/budget校验合并覆盖本文件全部变化。显式开启的HCU sparse prefill保留，未显式开启仍按Source HIP默认关闭；auto后端与max-running经声明发布，mega/TRT约束不放宽。CP使用Source HCU规则与统一拓扑声明，保留非HCU/zigzag/TP范围及A2A约束。原有model-specific兼容层保留其余tilelang/FP8开关职责，未以改种子或关闭优化代替迁移。GPU内核未改，Source策略CPU、实际resolve_once环境值与普通八卡回归按本轮证据分开记录。
+
+收敛注册审查：CP校验此前已由current_v4/hcu_backend/arg_groups迁入并注册REPLACE。本轮dev69原型新增AROUND与其同语义叠加，正式报告467个唯一目标揭示合同列表有重复；不将重复计为新能力。最终dev70保留原REPLACE入口，legacy模块只重导出统一v4_defaults函数，去除快照globals副本与新增AROUND，并去重合同。Source策略算法不变，新增别名/单一注册断言；dev69隔离数学run仍使用其冻结原型，结果与最终dev70产物分开记录。
+
+实际解析对照：dev68的0731输入sparse env=1、resolve_once后为False；dev69对0731及V4.1输入/输出均为1。因此旧服务配置中“原优化env保留”只代表声明参数，不能证明此开关有效开启；旧原始分数/日志保持原样。新稀疏路径在原始plain8卡配方上重新固定128题，旧DAS对照与dataset不变且不选择性重试。dev69原型无对应runtime提交，使用不可变build snapshot/wheel/site证据；最终dev70集中CP所有权，实际CLI/门禁/服务分别记录。
+
+[固定128题新稀疏路径测量](hcu-gsm8k128-sparse-default-dev69-validation-20261101.json)：冻结dev69原型127/128、0 invalid，384份逐题request/response/transport齐全；独立scorer复算与保存的plain DAS控制组逐题结果相同（127双方正确、1双方错误），没有选择性重试或改标签。比较范围仍为声明参数与env，不声称完整effective配置或权重哈希一致。原型620文件与build snapshot/wheel/site相同，但runtime无对应Git提交，保留其准确归属；最终dev70策略函数AST相同，差异为CP注册收敛，未冒称dev70重跑128题。
+
+[最终dev70门禁](hcu-v4-defaults-gates-validation-20261101.json)：620包文件与源码/site相同，wheel SHA256 be336433b63eee297ee126cfcf111d758fbb2076f4301d22bf3ad74b6bc16d33；467/467唯一Hook、4个seam、0 errors。9项默认/CP/alias测试（纠正REPLACE函数由框架包装，不能断言公开wrapper identity）、5项既有feature校验和95项仓库测试通过；0731与V4.1真实resolve_once前/后sparse均1。L0/Skill/guide与实际宽窄屏交互通过。CP/SM100/mega实际模型仍未验证，最终dev70八卡普通回归继续，窗口plan生产/传输等全量DAS范围未关闭。

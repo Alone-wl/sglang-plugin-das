@@ -1311,16 +1311,23 @@
     "ordinary_model_scope": "Frozen dd88288/dev68/619 files:8GPU BCG initialization and6 strict requests with cleanup passed, encoder flagFalse. Not encoder cache-hit/AUX transfer/BCG request-hit or dataset score."
   },
   "python/sglang/srt/arg_groups/deepseek_v4_hook.py": {
-    "status": "in_progress",
-    "rationale": "Full Source V4.1 features validator and replay min-budget helper migrated; other attention defaults/CP validation changes pending. CUDA/gfx950/HIP restrictions retained.",
+    "status": "implemented",
+    "rationale": "All5 changed/new Source functions owned across v4_defaults/replay_validation. Preserve explicit HCU sparse prefill, Source backend defaults and guards, CP declarations and feature/replay budget policy. Existing CP registration re-exports canonical owner; native legacy compatibility exports retained.",
     "implementation": [
-      "hcu_sglang/replay_validation.py"
+      "hcu_sglang/replay_validation.py",
+      "hcu_sglang/v4_defaults.py",
+      "hcu_sglang/models/deepseek/current_v4/hcu_backend/arg_groups.py"
     ],
-    "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+    "source_alignment": "docs/hcu-v4-defaults-source-alignment.json",
     "tests": [
-      "tests/runtime/replay_validation_cpu.py"
+      "tests/runtime/replay_validation_cpu.py",
+      "tests/runtime/v4_defaults_cpu.py"
     ],
-    "validation_scope": "5 CPU contracts preserve budget/page boundary, source feature guards/default declaration and real named seam dispatch. Actual resolve_once/model checks remain separate."
+    "validation_scope": "Final70:9 CPU policy/CP/alias contracts,467 hooks/4 seams,620 matching package files and95 repository tests. Actual0731/V4.1 resolve_once preserves sparse env1; old68 actual probe cleared it. Frozen69 prototype127/128 matches saved DAS per-case outcomes with0 invalid; attributed to prototype build, not final70 measurement. CP/SM100/mega actual models remain unverified.",
+    "evidence": [
+      "docs/hcu-v4-defaults-gates-validation-20261101.json",
+      "docs/hcu-gsm8k128-sparse-default-dev69-validation-20261101.json"
+    ]
   },
   "python/sglang/srt/arg_groups/model_hook.py": {
     "status": "in_progress",

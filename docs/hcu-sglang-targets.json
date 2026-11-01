@@ -96,6 +96,7 @@
     "sglang.multimodal_gen.runtime.platforms.rocm.RocmPlatform.get_attn_backend_cls_str",
     "sglang.multimodal_gen.runtime.platforms.rocm_platform_plugin",
     "sglang.multimodal_gen.runtime.server_args.server_args.ServerArgs._adjust_attention_backend",
+    "sglang.srt.arg_groups.deepseek_v4_hook.apply_deepseek_v4_defaults",
     "sglang.srt.arg_groups.deepseek_v4_hook.validate_deepseek_v41_features",
     "sglang.srt.arg_groups.deepseek_v4_hook.validate_deepseek_v4_cp",
     "sglang.srt.arg_groups.parallel_hook.handle_eplb_and_dispatch",
