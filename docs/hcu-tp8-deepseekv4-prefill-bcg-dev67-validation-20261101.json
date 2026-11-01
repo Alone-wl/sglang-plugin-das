@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "run_id": "deepseekv4-fp8-tp8-prefill-bcg-dev67-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/deepseek-v4.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "das_reference_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "plugin_source_commit": "cb69307aacefdc400cb1706144680eacd8542b11",
+  "plugin_version": "0.3.2.dev67",
+  "wheel_sha256": "b741efaa6649b133f4961d6147a47c206735bf8a222da56914044eead37b268e",
+  "wheel_source_and_installed_package_files_identical": 614,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "dp": 8,
+  "ep": 8,
+  "mem_fraction_static": 0.9,
+  "profile": "Feature variant: original DSPARK/DeepEP/decodeGraph32/context32768 base settings and optimized environment retained; explicitly add breakable prefill buckets64/128 with fixed context and max-sequence limit256. Not an unchanged base recipe.",
+  "owned_HCU_backend_log_lines": 16,
+  "deepep_config_sha256": "268521dacd03feeddea23e1e58f9b6bfb52b5befce0dffec0be705e7d9d2b18a",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "bea4282d0a27b0863a2636b6d407c869ded088681a84d6d881ce1877dbf748b6"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "420a3080d77b862100eb9dffe82efaf1f25771fe7136b836a0ca53f947ab54ed"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "2f48a49e5cc843903223c7e63bf20cc56e1e34b4bf91e16421b34e5eef74c381"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "1aa918febd23be6fef0d3a8df1af87a75085948b92d626f9285a496c11f3653c"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "371fefac6f629cac2f53dbaf8849f60996054a36d3b00d7a91a0ba7577d1aaaa"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "4d9324822e51477be2ddfff3597e420aed4d3e21188cdea3d607264495c36685"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T13:01:45+0800",
+  "finished_at": "2026-11-01T13:07:31+0800",
+  "limits": "Ordinary DeepSeek model regression and six deterministic short responses only. Ordinary8GPU BCG capture and six strict requests through the new worker method, with encoder replay flag OFF. Not encoder cache-hit model validation, request-level BCG replay hit, DP mixed/multimodal correctness, repeated GSM8K128, throughput or all-DAS completion.",
+  "native_deepgemm_budget_log_lines": 24,
+  "target_prefill_capture_ranks": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "encoder_feature_enabled": false,
+  "encoder_model_replay_verified": false,
+  "prefill_backend": "breakable",
+  "prefill_capture_token_buckets": [
+    64,
+    128
+  ],
+  "prefill_context_and_sequence_limit": 256
+}

@@ -1254,8 +1254,10 @@
     ],
     "validation_scope": "Targeted CPU/GPU row/history/worker contracts, not full file or Engram model acceptance.",
     "evidence": [
-      "docs/hcu-encoder-swa-gates-validation-20261101.json"
-    ]
+      "docs/hcu-encoder-swa-gates-validation-20261101.json",
+      "docs/hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json"
+    ],
+    "ordinary_model_service_scope": "Frozen cb69307/dev67/614 files passes ordinary8GPU BCG initialization plus6 strict requests and cleanup with encoder flagFalse. Not encoder cache-hit feature validation; currentV4.1 preflight retains CUDA/gfx950 rejection."
   },
   "python/sglang/srt/layers/engram.py": {
     "status": "in_progress",
