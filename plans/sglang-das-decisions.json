@@ -76,19 +76,18 @@
     "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
   },
   "python/sglang/srt/arg_groups/fields/exec_.py": {
-    "status": "in_progress",
-    "implementation": [
-      "hcu_sglang/distributed_backend.py",
-      "hcu_sglang/config.py",
-      "hcu_sglang/server_args_hooks.py",
-      "hcu_sglang/distributed.py"
-    ],
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
     "tests": [
-      "tests/runtime/distributed_backend.py"
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
     ],
-    "validation_scope": "13 CPU CLI/record/spawn/bootstrap/public-constructor regressions and394/394 isolated wheel Hooks passed. Original GLM TP8 service is running; Fabric hardware, all CP/topology paths and remaining file deltas remain unvalidated.",
-    "rationale": "Implement the custom-allreduce CLI semantics with explicit process-owned state because pinned official frozen records lack this field; do not fabricate typed namespace fields. Other ExecComm/input additions remain unreviewed.",
-    "source_alignment": "docs/hcu-custom-allreduce-source-alignment.json"
+    "status": "in_progress",
+    "rationale": "Expose Source load_aware value through existing CLI action choices and canonical native parse/resolution/pickle, without modifying frozen Struct fields. Whole Source field/schema/Literal metadata migration is not claimed.",
+    "implementation": [
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
   },
   "python/sglang/srt/arg_groups/serving_hook.py": {
     "status": "in_progress",
@@ -867,7 +866,8 @@
       "tests/runtime/routing_gpu.py",
       "tests/runtime/ep_balance_cpu.py"
     ],
-    "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending."
+    "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending.",
+    "load_aware_progress": "Actual owned solver/factory/extended metadata and native consumer GPU pipeline now pass. Full load-aware8-GPU service, global AITER and remaining whole-file distributed lanes stay unverified."
   },
   "python/sglang/srt/layers/moe/hash_topk.py": {
     "status": "in_progress",
@@ -885,7 +885,8 @@
       "tests/runtime/routing_gpu.py",
       "tests/runtime/ep_balance_cpu.py"
     ],
-    "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending."
+    "validation_scope": "Source/full import431 hooks; 6 routing CPU and5 independent-oracle EP helper tests pass. Isolated dev57:7 GPU/Graph suite cases plus1 DeepEP shared-slot remap/padding case pass using real LightOP kernels.595 package files match source/site. Single-device fixtures do not prove EP collectives, LP load-aware or full-model accuracy. Isolated431 hooks/3 seams/zero errors and85 repository tests passed. Full dev57 original TP8 recipe pending.",
+    "load_aware_progress": "Actual owned solver/factory/extended metadata and native consumer GPU pipeline now pass. Full load-aware8-GPU service, global AITER and remaining whole-file distributed lanes stay unverified."
   },
   "python/sglang/srt/layers/moe/ep_balance.py": {
     "status": "implemented",
@@ -900,5 +901,100 @@
       "tests/runtime/routing_gpu.py"
     ],
     "validation_scope": "5 independent Python-oracle CPU tests and actual GPU TopK/HashTopK synthetic-mode tests validate routed IDs and preservation of router weights/shared columns. Synthetic IDs are performance-benchmark inputs, not accuracy evidence."
+  },
+  "python/sglang/srt/eplb/load_aware_dispatch.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "implemented",
+    "rationale": "Own full Source Triton count/water-fill/sample and CPU reference. Controlled bounds/contiguous adapters fix observed sentinel writes and shared-column reads; keep Source16-step greedy solve, deterministic rank/layer seed and local per-source design.",
+    "implementation": [
+      "hcu_sglang/eplb/load_aware_dispatch.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/eplb/lplb_solver.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "in_progress",
+    "rationale": "Own full Source LP/load-aware module and shared resource-registry access. Actual load-aware classes and static-LP probability shortcut validated; Hopper/cuBLASDx dynamic LP execution remains unverified.",
+    "implementation": [
+      "hcu_sglang/eplb/lplb_solver.py",
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/eplb/expert_location_dispatch.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "in_progress",
+    "rationale": "Own full Source dispatch functions and extended dataclass. Reuse native base identity via compatible owned subclass; native init_new produces layer/rank seed metadata. Legacy manual info defaults missing seed fields to0. Static/dynamic/LP code is retained; broad non-load-aware GPU and distributed configurations remain to review.",
+    "implementation": [
+      "hcu_sglang/eplb/expert_location_dispatch.py",
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/model_executor/model_runner_components/moe_ep_setup.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "in_progress",
+    "rationale": "Port the only changed Source function init_lplb_solvers. Fix mismatched static-LP kwargs for load-aware constructor, preserve LP path and model gate. Remaining Source import/global review and actual feature service replay pending.",
+    "implementation": [
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/eplb/eplb_manager.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "in_progress",
+    "rationale": "Wire the Source change that rebuilds replica solvers after either LP or load-aware expert-location recovery. CPU public callback proves rebuild control; actual distributed weight-recovery/rebalance not yet exercised.",
+    "implementation": [
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/arg_groups/parallel_hook.py": {
+    "source_alignment": "docs/hcu-load-aware-source-alignment.json",
+    "tests": [
+      "tests/runtime/load_aware_cpu.py",
+      "tests/runtime/load_aware_gpu.py",
+      "tests/runtime/load_aware_pipeline_gpu.py"
+    ],
+    "status": "in_progress",
+    "rationale": "Preserve current effective native validation and append Source load-aware transport, ROCm and redundant-expert constraints. This is not the remaining static-locality/CP/other whole-file Source delta.",
+    "implementation": [
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+  },
+  "python/sglang/srt/model_executor/model_runner.py": {
+    "status": "in_progress",
+    "rationale": "Whole model-runner Source review remains open.",
+    "implementation": [
+      "hcu_sglang/eplb/integration.py"
+    ],
+    "tests": [],
+    "load_aware_delta": "Source maybe_init_lplb_solvers accepts both lp/load_aware and still skips draft workers; public-method CPU control test passes. Other model-runner deltas remain pending."
   }
 }

@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev57` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev59` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -844,3 +844,25 @@ Source路由的6项CPU契约与EP helper的5项独立Python oracle检查通过�
 
 
 隔离dev57收尾：431/431 Hook、3个resolution seam、0 errors与85项仓库unittest通过；8项实际GPU/Graph和11项CPU证据按上述范围记录。L0/Skill/guide门禁及实际宽窄屏检索、阅读与菜单检查通过。原配方八卡服务仍需以本次产物另跑，不归用dev56模型结果；全部DAS范围保持未完成。
+
+
+## 71. 2026-11-01 load-aware replica solver 接入
+
+迁入Source Triton count/water-fill/sample、完整solver模块与dispatch函数，复用未改变字段的native dispatch-info类身份；接通初始化工厂、ModelRunner初始化门控和重平衡后的solver重建。CLI只扩展现有action的choices，验证沿原解析链追加Source load-aware的A2A/ROCm/冗余expert约束，不改冻结seed字段或Struct定义。Source工厂错误地将静态LP专用kwargs传给load-aware构造器；现按算法传参，并拒绝以静态LP概率配置load-aware。Source核验、CLI/worker往返、边界、实际GPU与Graph均待验证，不预先声明功能完成。
+
+
+Source GPU边界6项初测3项失败：drop/shared ID会越过counts切片并修改测试私有前后哨兵；非连续routed列在count与sample中被按dense展平读取。现count对logical ID加0..num_logical范围mask，dispatch对无效ID返回-1并屏蔽table读取，两处公共入口先连续化真实routed布局；保留water-fill算法、采样、有效行数设备指针和无collective设计。原失败日志与哨兵fixture保留，正确性/Graph重验待实际完成。CPU静态LP的原始全宽slice是共享存储view，测试改为核对内部缓存身份及原tensor相同data_ptr，没有改LP运行时。
+
+
+Producer→dispatch集成检查发现metadata并非仅Literal变化：Source还新增layer_id/source_rank采样种子字段，native dataclass不能接收该kwargs。现用完整Source dataclass继承native，保留isinstance兼容并通过原init_new classmethod产生完整owned实例；legacy手工info缺少种子字段时采用Source默认0。Native类型对象保留，返回类型有意是兼容子类，不再声称两者身份相同；新增factory→solver→TopK/Hash consumer检查待执行。
+
+
+抽取ModelRunner方法的集成模块补齐继承自Source model_runner.py的原版权/Apache声明；dev58已冻结，不覆盖其wheel，以dev59保存该许可声明并重验当前产物。该项不添加说明性runtime注释或改变函数计算逻辑。
+
+
+隔离dev58实际结果：8项真实kernel GPU检查（含256x264完整padded replica表）、2项原生factory→metadata→solver→TopK/Hash pipeline GPU、7项CPU与85项仓库测试通过；完整CLI采用原八卡配方加load-aware/冗余expert参数，正常ServerArgs post-init/resolution与pickle往返均保持算法和值，不跳过解析阶段。只表示配置与单设备数学/调用链成立，未启动load-aware模型服务。
+
+Source load-aware本来就不做每层EP collective，不能把它描述成尚待补all-reduce；仍需以实际8卡dispatch/model变体验证组合。原dev57原配方已于09:02:55–09:08:39六项请求全过、自有进程为空、端口关闭，[独立摘要](hcu-tp8-deepseekv4-dev57-validation-20261101.json)固定595包文件与8af8abf/wheel/site同字节。该结果不归用到当前新EPLB产物。
+
+
+隔离dev59收尾：600包文件与源码/site逐字节一致，wheel SHA256 `7676b5ab0ef16aba4edf831119e7e8298ddfb60644fc944543f401f687ed9a00`。当前artifact的2项public GPU pipeline、7项CPU、437/437 Hook、3个resolution seam、0 errors及85项仓库测试通过；完整CLI/resolution/pickle再次通过。与dev58相比，唯一package差异是integration.py继承许可头，函数AST相同，8项kernel GPU测试对应的全部代码字节相同；保留分产物证据，不把历史运行冒称当前重跑。L0/Skill/guide与实际宽窄屏验收通过。后续以原八卡配方加显式load-aware/冗余8专家参数运行功能变体，原参数保留；尚未声明模型精度、跨rank负载或性能。

@@ -97,6 +97,8 @@ def register() -> None:
     layernorm_gated.register()
     from hcu_sglang.layers.moe import routing
     routing.register_hooks()
+    from hcu_sglang.eplb import integration as load_aware_integration
+    load_aware_integration.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu
