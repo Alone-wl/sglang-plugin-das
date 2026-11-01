@@ -1,0 +1,17 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "source_path": "python/sglang/srt/model_executor/runner/base_cuda_graph_runner.py",
+  "source_blob": "078ca6d7ed727aa31d270061eac2c6a170b37141",
+  "source_sha256": "e0deafbfe804b82c69e28636831c5aacc7a37d33e56860e19663e737708901df",
+  "implementation": "hcu_sglang/graph_batch.py",
+  "function": "get_batch_sizes_to_capture",
+  "full_function_ast_equal_after_native_global_qualification": true,
+  "native_qualified_globals": [
+    "get_exec",
+    "get_flags",
+    "ceil_align",
+    "get_cuda_graph_batch_size_alignment"
+  ],
+  "scope": "Function source alignment only; not GPU or model equivalence."
+}

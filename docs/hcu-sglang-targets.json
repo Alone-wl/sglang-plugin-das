@@ -353,6 +353,7 @@
     "sglang.srt.model_executor.pool_configurator.DSV4PoolConfigurator",
     "sglang.srt.model_executor.pool_configurator.DefaultPoolConfigurator._compute_dsa_indexer_cell_size",
     "sglang.srt.model_executor.pool_configurator.HybridSWAPoolConfigurator.__init__",
+    "sglang.srt.model_executor.runner.base_cuda_graph_runner.get_batch_sizes_to_capture",
     "sglang.srt.model_executor.runner.decode_cuda_graph_runner.DecodeCudaGraphRunner.capture_one_shape",
     "sglang.srt.model_executor.runner_utils.deepep_adapter.DeepEPCudaGraphRunnerAdapter",
     "sglang.srt.models.bailing_moe.BailingMoEAttention.forward",

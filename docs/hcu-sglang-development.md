@@ -930,3 +930,11 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 二者使用同一基础8卡配方、canonical decode graph flag、优化环境、权重路径、数据、prefix、采样和并发；原始DAS只读且跳过general Hook，两端六项短回答检查通过、128份request/response/transport齐全、进程与端口完成清理。比较范围是声明参数与环境；另存的正常启动配置重建并非服务当时的live server_info，schema差异保留，不宣称全部有效配置相同。功能变体127/128单独报告，不混入基础匹配对照。
 
 新增compare工具独立复算并拒绝配置不匹配，4项比较契约覆盖相同总分但不同错题、功能标志与优化环境差异及允许的输出路径差异。精度子集按用户标准接受；全DAS迁移和性能验证继续按各自范围推进。
+
+## 77. 2026-11-01 dLLM 独立上下文编码的 Graph 批大小限制
+
+固定DAS的base_cuda_graph_runner仅在get_batch_sizes_to_capture新增DllmConfig请求上限；现迁入完整Source函数至graph_batch，沿聚合register注册HCU AROUND，非HCU返回当前有效original。配置由原生DllmConfig.from_server_args解析，只有requires_separate_context_encoding时取pool size与配置max_running_requests的较小值；保留原先ceil alignment、captured_req_width、TBO和compile列表逻辑，不能改成简单截断既有结果。来源许可、函数注释及docstring保留，不新增说明性runtime注释。
+
+新增真实原生配置解析与预导入decode/runner公共别名测试：Gemma4Renoise单独上下文路径、默认1请求、pool上限、alignment/width/TBO、普通decode与非separate dLLM不变、非HCU保留已有wrapper。模型配置读取用fixture隔离权重下载，实际算法和DllmConfig保留；这是CPU控制流验证，不能宣称Gemma模型GPU Graph或生成精度通过。隔离dev63产物与正式Hook/仓库门禁按实际结果补记。
+
+隔离dev63门禁完成：604包文件与源码/site逐字节相同，wheel SHA256 b28a3dd1befcfb80e715defa8bfae0875c0907032164b44c2cb21293e0ba8f4a。6项批大小CPU测试、5项既有DeepEP Graph协议测试、446/446 Hook与3个resolution seam均通过且0 errors；本地与容器95项仓库测试、L0、Skill元信息、guide快照和实际宽窄屏交互通过。当前按原八卡基础配方启动独立服务验证普通模型回归，不重复追求已接受的128题完全对齐；服务结果另记。未验证的实际扩散模型路径保持未验证，全DAS迁移未完成。

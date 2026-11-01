@@ -1053,5 +1053,18 @@
     ],
     "tests": [],
     "deep_ep_layout_delta": "Full Source capture_one_shape121-line method is AST-identical after qualifying unchanged native globals. Real backend capture is followed by capture_end inside the existing context. Other runner deltas remain unreviewed."
+  },
+  "python/sglang/srt/model_executor/runner/base_cuda_graph_runner.py": {
+    "status": "implemented",
+    "rationale": "Full Source get_batch_sizes_to_capture migrated with real native DllmConfig limit for separate context encoding. Preserve full alignment, TBO and compile-list logic; native unchanged classes and helpers reused, HCU-only AROUND preserves effective fallback. Entire source diff reviewed: added config import and three request-limit lines.",
+    "implementation": [
+      "hcu_sglang/graph_batch.py",
+      "hcu_sglang/__init__.py"
+    ],
+    "source_alignment": "docs/hcu-graph-batch-source-alignment.json",
+    "tests": [
+      "tests/runtime/graph_batch_cpu.py"
+    ],
+    "validation_scope": "6 CPU control-flow tests passed using real native DllmConfig and algorithms with fixture model metadata; pre-imported decode/runner alias identity checked. Source AST equal after qualifying native helper globals. No real diffusion model GPU or accuracy claim."
   }
 }

@@ -22,8 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2927,
-    "implemented": 22,
+    "pending": 2926,
+    "implemented": 23,
     "in_progress": 35,
     "upstream": 26
   },
@@ -14549,7 +14549,17 @@
       "relation": "changed",
       "fork_oid": "078ca6d7ed727aa31d270061eac2c6a170b37141",
       "official_oid": "ac5143ce88d8ecf749bb3d97fbdf404a6ee4e4a4",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Full Source get_batch_sizes_to_capture migrated with real native DllmConfig limit for separate context encoding. Preserve full alignment, TBO and compile-list logic; native unchanged classes and helpers reused, HCU-only AROUND preserves effective fallback. Entire source diff reviewed: added config import and three request-limit lines.",
+      "implementation": [
+        "hcu_sglang/graph_batch.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-graph-batch-source-alignment.json",
+      "tests": [
+        "tests/runtime/graph_batch_cpu.py"
+      ],
+      "validation_scope": "6 CPU control-flow tests passed using real native DllmConfig and algorithms with fixture model metadata; pre-imported decode/runner alias identity checked. Source AST equal after qualifying native helper globals. No real diffusion model GPU or accuracy claim."
     },
     {
       "path": "python/sglang/srt/model_executor/runner/decode_cuda_graph_runner.py",
