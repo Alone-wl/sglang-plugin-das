@@ -952,3 +952,13 @@ Source控制流9项通过，包括完整public prefill/capture入口。真实4-r
 [隔离dev64门禁](hcu-graph-setup-gates-validation-20261101.json)完成：605包文件与源码/site相同，wheel SHA256 b3d040c862457b000406b574096bc2cf52ac6980045343f5c0fb7dfc9091cd58；450/450 Hook、3个resolution seam、0 errors，9项新控制流、6项既有批大小与本地/容器95项仓库测试通过。L0、Skill元信息、guide快照及实际宽窄屏检索/阅读/菜单验收通过。实际八卡原配方服务仍按独立run继续，未将其提前标为通过；PP/hybrid/H16模型及全DAS迁移范围保持未完成。
 
 [dev64八卡服务摘要](hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json)：11:52:23–11:58:00按原DSPARK/DeepEP/Graph基础配方完成六项严格生成，全部HTTP200、完整答案正确且正常stop，自有进程为空、端口关闭。605包文件与4873fea/wheel/site逐字节相同；实际预算日志24条，owned HCU backend正常加载。该PP1普通模型证明其预算与捕获流程可完成，不外推PP/hybrid/H16模型；也未重复计为128题或性能测量。全DAS迁移保持进行中。
+
+## 79. 2026-11-01 预填充 runner 与 replay 记录契约
+
+迁入固定Source预填充runner全部12个变化/新增方法，owned类继承native以保留类型关系；完整Source构造器显式从native父类的base初始化，不重复调用旧prefill构造器。runner-owned ContextVar scope完整迁入，capture与replay上下文成对接入；原生LogitsProcessorOutput的dataclass子类追加Source三项draft字段，保留官方已有字段与复制生命周期。ForwardBatch沿已有owned schema使用encoder replay元数据。旧官方AttentionBackend缺少的可选prefill_cuda_graph_default_max_seq_len通过getattr(...,None)读取，对应Source基类声明默认值，不写冻结配置或动态补全seed。
+
+变化包括后端默认max_seq_len与本地/DP共用准入、DSA的BCG前缀例外、预热AITER先于backend构造、capture前model prepare、load_batch保留encoder replay字段、V4.1 replay input IDs、MegaMoE valid-token刷新、trim保留draft top-k，以及Full replay等待KV层加载。保留来源注释/许可/docstring。构造、元数据、公开execute、scope生命周期与实际GPU/模型验证按本次证据补记，不以类替换日志代替行为验证。
+
+配对迁入Source完整调度_local_prefill_cuda_graph_vote，使backend vote与max_seq_len在schedule与forward两端读取一致；MegaMoE仅迁入runtime selector和graph token setter，沿native对称buffer registry更新，未迁入其余standalone backend/kernel。Logits、MegaMoE及DP文件仍标in_progress。13项CPU测试通过，构造夹具首轮漏attn_tp_sequence_sharded修正后完整构造完成；GPU夹具首轮漏prefill_backend_name，补齐后隔离dev65的真实primitive Graph经公开load/execute/body/trim两次变输入通过，encoder metadata、prepared IDs、hidden states与draft top-k均验证。两次夹具失败原始日志保留，不是生产补丁或虚假模型结果。实际八卡显式BCG prefill功能变体继续执行，保留原decode/DSPARK/DeepEP优化，不提前声明服务或模型replay hit通过。
+
+[隔离dev65门禁](hcu-prefill-runner-gates-validation-20261101.json)完成：610包文件与源码/site一致，wheel SHA256 469b7a6fee61cada806a89ac9d7167e79be67aab31f91a19c80d6a5b22c33079；453/453 Hook、3个resolution seam、0 errors。隔离13项prefill CPU、9项既有Graph setup、1项真实GPU公开execute与本地/容器95项仓库测试通过，L0/Skill/guide及实际宽窄屏交互通过。原始8卡基础配方仅新增显式breakable prefill、64/128 token buckets、固定context/sequence上限256的功能变体正在执行；它不是“原配方未变”的基线，也不能将六题服务结果推为128题重跑或DP模型Graph hit。

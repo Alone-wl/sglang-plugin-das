@@ -1087,5 +1087,77 @@
       "docs/hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json"
     ],
     "validation_scope": "9 CPU contracts pass incl public prefill/capture callers, aliases, native budget setter/state, PP group and lifecycle order; real4-rank Gloo native MIN plus separate earlier-stage collective passes, synthetic memory inquiries only. Isolated dev64 real GPU primitive Graph replays changed inputs after native platform cache release. Actual PP/hybrid/H16 models remain unverified; isolated605-file artifact,450 hooks/3 seams and95 repository tests pass. Frozen4873fea ordinary PP1 model8GPU original recipe passes6 strict requests with24 native budget log lines and owned cleanup. This is not PP/hybrid/H16 model evidence."
+  },
+  "python/sglang/srt/model_executor/runner/prefill_cuda_graph_runner.py": {
+    "status": "implemented",
+    "rationale": "Own all12 changed/new Source methods as native subclass with correct base initialization; pair full constructor, scope, context bounds, replay metadata/prepared IDs, output schema, capture prepare and KV wait. Reuse unchanged native methods/types.",
+    "implementation": [
+      "hcu_sglang/prefill_graph_runner.py",
+      "hcu_sglang/prefill_graph_vote.py",
+      "hcu_sglang/prefill_output.py",
+      "hcu_sglang/mega_moe_graph.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_graph_cpu.py",
+      "tests/runtime/prefill_graph_gpu.py"
+    ],
+    "validation_scope": "13 CPU tests pass incl complete constructor with expensive base/buffer/backend fixtures, public load/execute, shared DP/local policy, nested scope and failures, output dataclass and replay identity. Isolated dev65 GPU executes real primitive Graph through public load/body/trim twice with changed prepared IDs and encoder metadata. Complete model prefill capture/replay and final artifact gates recorded separately, not inferred.",
+    "evidence": [
+      "docs/hcu-prefill-runner-gates-validation-20261101.json"
+    ]
+  },
+  "python/sglang/srt/model_executor/runner_utils/prefill_graph.py": {
+    "status": "implemented",
+    "rationale": "Full Source module copied byte-for-byte into owned policy module; runner capture/replay callers use this one ContextVar owner. Future consumers must import the same owner.",
+    "implementation": [
+      "hcu_sglang/prefill_graph_policy.py",
+      "hcu_sglang/prefill_graph_runner.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_graph_cpu.py",
+      "tests/runtime/prefill_graph_gpu.py"
+    ],
+    "validation_scope": "Scope nesting/exception restoration, compile probe and actual runner context tested; public primitive GPU replay observes raw token count. Does not prove all pending DAS consumers migrated.",
+    "evidence": [
+      "docs/hcu-prefill-runner-gates-validation-20261101.json"
+    ]
+  },
+  "python/sglang/srt/layers/logits_processor.py": {
+    "status": "in_progress",
+    "rationale": "Only full native-compatible dataclass schema extended with three Source draft fields; producer optimizations and remaining file differences pending.",
+    "implementation": [
+      "hcu_sglang/prefill_output.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_graph_cpu.py"
+    ],
+    "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
+  },
+  "python/sglang/srt/layers/moe/mega_moe.py": {
+    "status": "in_progress",
+    "rationale": "Only complete Source runtime selector and graph valid-token setter migrated against canonical native buffer registry; standalone buffers/kernels and other MegaMoE changes pending.",
+    "implementation": [
+      "hcu_sglang/mega_moe_graph.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_graph_cpu.py"
+    ],
+    "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
+  },
+  "python/sglang/srt/managers/scheduler_components/dp_attn.py": {
+    "status": "in_progress",
+    "rationale": "Only full Source local prefill Graph vote migrated, pairing backend vote and max-sequence bound with real runner; remaining collectives, elastic membership and encoder-fold sync differences pending.",
+    "implementation": [
+      "hcu_sglang/prefill_graph_vote.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_graph_cpu.py"
+    ],
+    "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
   }
 }

@@ -1,0 +1,59 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "sources": [
+    {
+      "path": "python/sglang/srt/model_executor/runner/prefill_cuda_graph_runner.py",
+      "blob": "28c61bf21be4e42c9b0897411bf532fe94fe6c35",
+      "sha256": "0c3d9282fd246d220d50abf675e0cf7e8e5fa1acc392611ffdab6a37918b00be"
+    },
+    {
+      "path": "python/sglang/srt/model_executor/runner_utils/prefill_graph.py",
+      "blob": "34616e51d77873a906434b5977b367df1e3b99b6",
+      "sha256": "bd606d314c7d82b320566e4e2ffef0f57b419860ebdb824e51f26cec6fc1f366"
+    },
+    {
+      "path": "python/sglang/srt/managers/scheduler_components/dp_attn.py",
+      "blob": "0b8bee760e1d9340376dbc07c6b10dfea12d8b8c",
+      "sha256": "ee1119cd583104f7f24b639b6338f30652ba3ef85f8e3e9506beb068fbac6c27"
+    },
+    {
+      "path": "python/sglang/srt/layers/moe/mega_moe.py",
+      "blob": "88d1c8b6e3299ffa73ae4e68a985ff442ea77503",
+      "sha256": "7790e907b697a915f4a89f5ba0c052f87dca8d281c15d865935efc25219b69b0"
+    },
+    {
+      "path": "python/sglang/srt/layers/logits_processor.py",
+      "blob": "a9f47e329c47beb4630a42f3b1d0daaf20cb3661",
+      "sha256": "bf18c45aff6b4d747e320ffac379e86d0008dc80c3f0e418442bec0fdb71e7b9"
+    }
+  ],
+  "owned_runner": "hcu_sglang/prefill_graph_runner.py",
+  "full_source_methods_ast_equal_after_normalization": [
+    "_attn_backend_is_dsa",
+    "__init__",
+    "_prefill_forward_context",
+    "run_dummy_multimodal_deepstack_forward",
+    "can_replay_locally",
+    "can_run_graph",
+    "capture_one_shape",
+    "load_batch",
+    "_execute_body_capture",
+    "_trim_logits_output",
+    "_wait_for_layer_loads",
+    "execute"
+  ],
+  "normalizations": [
+    "Native unchanged globals qualified via N.",
+    "super(_NATIVE[0],self) calls original BaseCudaGraphRunner initialization, preserving native subtype without duplicate prefill initialization.",
+    "Missing optional backend sequence-limit field reads None, matching Source base-class default.",
+    "New MegaMoE graph helper import resolves to owned helper using canonical native buffer registry."
+  ],
+  "scope": "Source alignment, not constructor/kernel/model validation.",
+  "additional_aligned_functions": [
+    "dp_attn._local_prefill_cuda_graph_vote",
+    "mega_moe.get_hcu_mega_moe_runtime",
+    "mega_moe._is_standalone_megamoe_runtime",
+    "mega_moe.set_mega_moe_cuda_graph_num_tokens"
+  ],
+  "policy_module_source_byte_identical": true
+}

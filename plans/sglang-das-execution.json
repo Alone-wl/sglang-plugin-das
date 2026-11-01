@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2925,
-    "implemented": 24,
-    "in_progress": 35,
+    "pending": 2920,
+    "implemented": 26,
+    "in_progress": 38,
     "upstream": 26
   },
   "files": [
@@ -12461,7 +12461,16 @@
       "relation": "changed",
       "fork_oid": "a9f47e329c47beb4630a42f3b1d0daaf20cb3661",
       "official_oid": "f35efc4575d18b86a4db10b7f01e115d408898be",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full native-compatible dataclass schema extended with three Source draft fields; producer optimizations and remaining file differences pending.",
+      "implementation": [
+        "hcu_sglang/prefill_output.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_graph_cpu.py"
+      ],
+      "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
     },
     {
       "path": "python/sglang/srt/layers/moe/__init__.py",
@@ -12608,7 +12617,16 @@
       "relation": "changed",
       "fork_oid": "88d1c8b6e3299ffa73ae4e68a985ff442ea77503",
       "official_oid": "20d03d8cc7f79f51db9f0bfbfe97098e3a2b9847",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only complete Source runtime selector and graph valid-token setter migrated against canonical native buffer registry; standalone buffers/kernels and other MegaMoE changes pending.",
+      "implementation": [
+        "hcu_sglang/mega_moe_graph.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_graph_cpu.py"
+      ],
+      "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
     },
     {
       "path": "python/sglang/srt/layers/moe/mega_moe_flydsl.py",
@@ -13606,7 +13624,16 @@
       "relation": "changed",
       "fork_oid": "0b8bee760e1d9340376dbc07c6b10dfea12d8b8c",
       "official_oid": "7101103d5f2660b27389fd4f8c0a1f373a7e1ea4",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full Source local prefill Graph vote migrated, pairing backend vote and max-sequence bound with real runner; remaining collectives, elastic membership and encoder-fold sync differences pending.",
+      "implementation": [
+        "hcu_sglang/prefill_graph_vote.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_graph_cpu.py"
+      ],
+      "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
     },
     {
       "path": "python/sglang/srt/managers/scheduler_components/dynamic_chunk_sizer.py",
@@ -14615,7 +14642,23 @@
       "relation": "changed",
       "fork_oid": "28c61bf21be4e42c9b0897411bf532fe94fe6c35",
       "official_oid": "b4c1fccd915637297c957907e766fdb08ae855d0",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own all12 changed/new Source methods as native subclass with correct base initialization; pair full constructor, scope, context bounds, replay metadata/prepared IDs, output schema, capture prepare and KV wait. Reuse unchanged native methods/types.",
+      "implementation": [
+        "hcu_sglang/prefill_graph_runner.py",
+        "hcu_sglang/prefill_graph_vote.py",
+        "hcu_sglang/prefill_output.py",
+        "hcu_sglang/mega_moe_graph.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_graph_cpu.py",
+        "tests/runtime/prefill_graph_gpu.py"
+      ],
+      "validation_scope": "13 CPU tests pass incl complete constructor with expensive base/buffer/backend fixtures, public load/execute, shared DP/local policy, nested scope and failures, output dataclass and replay identity. Isolated dev65 GPU executes real primitive Graph through public load/body/trim twice with changed prepared IDs and encoder metadata. Complete model prefill capture/replay and final artifact gates recorded separately, not inferred.",
+      "evidence": [
+        "docs/hcu-prefill-runner-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/model_executor/runner/row_bucket_graph_runner.py",
@@ -14706,7 +14749,21 @@
       "relation": "fork_only",
       "fork_oid": "34616e51d77873a906434b5977b367df1e3b99b6",
       "official_oid": null,
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Full Source module copied byte-for-byte into owned policy module; runner capture/replay callers use this one ContextVar owner. Future consumers must import the same owner.",
+      "implementation": [
+        "hcu_sglang/prefill_graph_policy.py",
+        "hcu_sglang/prefill_graph_runner.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_graph_cpu.py",
+        "tests/runtime/prefill_graph_gpu.py"
+      ],
+      "validation_scope": "Scope nesting/exception restoration, compile probe and actual runner context tested; public primitive GPU replay observes raw token count. Does not prove all pending DAS consumers migrated.",
+      "evidence": [
+        "docs/hcu-prefill-runner-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/model_loader/checkpoint_quantization.py",

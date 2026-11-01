@@ -109,6 +109,11 @@ def register() -> None:
     graph_batch.register_hooks()
     from hcu_sglang import graph_setup
     graph_setup.register_hooks()
+    from hcu_sglang import prefill_output, prefill_graph_runner
+    prefill_output.register_hooks()
+    prefill_graph_runner.register_hooks()
+    from hcu_sglang import prefill_graph_vote
+    prefill_graph_vote.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu
