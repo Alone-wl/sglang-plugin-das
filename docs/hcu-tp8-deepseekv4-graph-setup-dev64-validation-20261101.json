@@ -1,0 +1,79 @@
+{
+  "status": "passed",
+  "run_id": "deepseekv4-fp8-tp8-graph-setup-dev64-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/deepseek-v4.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "das_reference_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "plugin_source_commit": "4873feaa57dc5a5683ca472838202102903aa983",
+  "plugin_version": "0.3.2.dev64",
+  "wheel_sha256": "b3d040c862457b000406b574096bc2cf52ac6980045343f5c0fb7dfc9091cd58",
+  "wheel_source_and_installed_package_files_identical": 605,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "dp": 8,
+  "ep": 8,
+  "mem_fraction_static": 0.9,
+  "profile": "Original cookbook DSPARK/DeepEP auto base recipe, graph max32, context32768, max-running32,64-thread weight loading and optimized environment retained; canonical decode graph flag. No load-aware/redundant/stat flags.",
+  "owned_HCU_backend_log_lines": 16,
+  "deepep_config_sha256": "268521dacd03feeddea23e1e58f9b6bfb52b5befce0dffec0be705e7d9d2b18a",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "5f64ea0814c7c1b5955215e78642b41a46705c417b73d8ca57343310dea3db28"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "d5ee74bfbe33e8b66dcf610fbd67cc2d22c984e87e9b6fbced4f8385af2b657b"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "9b3a2ef447ab463cf0b414d36050ac11173c08239e64dab611cb306f07c62fe5"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "1f75a3b4df0ca6504eeca33685802fc95e4c7062035df5efc57e4628ade5c6d8"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "44d02e4aab601b75ec2aeb2857b1ab173c323e9dbc2ffbfd0cf49c3c9138347b"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "5843578d0d302af096e6aec5336a0dc46398d195eacff0e85b68629c855e06fc"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T11:52:23+0800",
+  "finished_at": "2026-11-01T11:58:00+0800",
+  "limits": "Ordinary DeepSeek model regression and six deterministic short responses only. PP1 ordinary model only; does not prove actual PP/hybrid/H16 model branches, repeat GSM8K128, establish throughput, or close all-DAS migration.",
+  "native_deepgemm_budget_log_lines": 24
+}

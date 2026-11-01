@@ -1082,8 +1082,10 @@
       "tests/runtime/graph_setup_gpu.py"
     ],
     "evidence": [
-      "docs/hcu-graph-setup-collective-validation-20261101.json"
+      "docs/hcu-graph-setup-collective-validation-20261101.json",
+      "docs/hcu-graph-setup-gates-validation-20261101.json",
+      "docs/hcu-tp8-deepseekv4-graph-setup-dev64-validation-20261101.json"
     ],
-    "validation_scope": "9 CPU contracts pass incl public prefill/capture callers, aliases, native budget setter/state, PP group and lifecycle order; real4-rank Gloo native MIN plus separate earlier-stage collective passes, synthetic memory inquiries only. Isolated dev64 real GPU primitive Graph replays changed inputs after native platform cache release. Actual PP/hybrid/H16 models remain unverified; ordinary8GPU service and final artifact gates are separate."
+    "validation_scope": "9 CPU contracts pass incl public prefill/capture callers, aliases, native budget setter/state, PP group and lifecycle order; real4-rank Gloo native MIN plus separate earlier-stage collective passes, synthetic memory inquiries only. Isolated dev64 real GPU primitive Graph replays changed inputs after native platform cache release. Actual PP/hybrid/H16 models remain unverified; isolated605-file artifact,450 hooks/3 seams and95 repository tests pass. Frozen4873fea ordinary PP1 model8GPU original recipe passes6 strict requests with24 native budget log lines and owned cleanup. This is not PP/hybrid/H16 model evidence."
   }
 }
