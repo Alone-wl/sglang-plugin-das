@@ -1,0 +1,314 @@
+{
+  "status": "passed",
+  "backend": "gloo",
+  "world_size": 4,
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "owned_runtime_hashes": {
+    "hcu_sglang/prefill_graph_sync.py": "ffec01b30df71568d273bcbc6dc0ac7a408383698d36de716128a41968129b25",
+    "hcu_sglang/cp_token_counts.py": "b2ad0fe0185b806c49276403e1a62ac1783cc7c6dce9842eaead8eeadd5216e7"
+  },
+  "results": [
+    {
+      "result": {
+        "status": "passed",
+        "rank": 0,
+        "world_size": 4,
+        "backend": "gloo",
+        "cases": [
+          {
+            "case": "dp4_cpu_gather_broadcast",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp2_cp2_mixed",
+            "global_tokens": [
+              8,
+              5
+            ],
+            "cp_tokens": [
+              0,
+              0
+            ],
+            "shape": [
+              2,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp4_world_reduce",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          }
+        ]
+      },
+      "sha256": "e9a05002eab6b14ee255ef6448d77bdedb9b2ce1463d4c2a58d43c71340c063a"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 1,
+        "world_size": 4,
+        "backend": "gloo",
+        "cases": [
+          {
+            "case": "dp4_cpu_gather_broadcast",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp2_cp2_mixed",
+            "global_tokens": [
+              8,
+              5
+            ],
+            "cp_tokens": [
+              0,
+              0
+            ],
+            "shape": [
+              2,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp4_world_reduce",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "nonzero_global_root_subgroup",
+            "rows": [
+              1,
+              11,
+              2,
+              12,
+              3,
+              13
+            ]
+          }
+        ]
+      },
+      "sha256": "2410e1dc79023eb06d358a65fbc94ebdb1c4e072cd2ad24818d93e70ec10b5ec"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 2,
+        "world_size": 4,
+        "backend": "gloo",
+        "cases": [
+          {
+            "case": "dp4_cpu_gather_broadcast",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp2_cp2_mixed",
+            "global_tokens": [
+              8,
+              5
+            ],
+            "cp_tokens": [
+              0,
+              0
+            ],
+            "shape": [
+              2,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp4_world_reduce",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "nonzero_global_root_subgroup",
+            "rows": [
+              1,
+              11,
+              2,
+              12,
+              3,
+              13
+            ]
+          }
+        ]
+      },
+      "sha256": "350361c0a47ecb07691462d6edde2e975005fca4e187809d167eeb2718b35895"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 3,
+        "world_size": 4,
+        "backend": "gloo",
+        "cases": [
+          {
+            "case": "dp4_cpu_gather_broadcast",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp2_cp2_mixed",
+            "global_tokens": [
+              8,
+              5
+            ],
+            "cp_tokens": [
+              0,
+              0
+            ],
+            "shape": [
+              2,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "dp4_world_reduce",
+            "global_tokens": [
+              0,
+              8,
+              5,
+              17
+            ],
+            "cp_tokens": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "shape": [
+              4,
+              12
+            ],
+            "prefill_vote": false
+          },
+          {
+            "case": "nonzero_global_root_subgroup",
+            "rows": [
+              1,
+              11,
+              2,
+              12,
+              3,
+              13
+            ]
+          }
+        ]
+      },
+      "sha256": "e5252e068ab79aace293cc028c480987448845f724abf74cd9b199285767fc7d"
+    }
+  ],
+  "scope": "Real four-process CPU collectives through owned MLPSyncBatchInfo:12-column wire format, gather+broadcast, world all-reduce fallback, mixed DP/CP layout normalization and subgroup global root1. No GPU or full CP/elastic model claim."
+}

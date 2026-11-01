@@ -1150,14 +1150,87 @@
   },
   "python/sglang/srt/managers/scheduler_components/dp_attn.py": {
     "status": "in_progress",
-    "rationale": "Only full Source local prefill Graph vote migrated, pairing backend vote and max-sequence bound with real runner; remaining collectives, elastic membership and encoder-fold sync differences pending.",
+    "rationale": "Full Source local Graph vote and producer paired after actualdev65 missing-num_tokens failure; own full MLPSyncBatchInfo methods/CP fields, metadata update, exchange helper and elastic topology check. Remaining SchedulerDPAttnAdapter interface and other full CP/worker consumer migration remain pending.",
     "implementation": [
-      "hcu_sglang/prefill_graph_vote.py"
+      "hcu_sglang/prefill_graph_vote.py",
+      "hcu_sglang/prefill_graph_sync.py",
+      "hcu_sglang/cp_token_counts.py"
     ],
-    "source_alignment": "docs/hcu-prefill-runner-source-alignment.json",
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
     "tests": [
-      "tests/runtime/prefill_graph_cpu.py"
+      "tests/runtime/prefill_graph_cpu.py",
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
     ],
-    "validation_scope": "Targeted13 CPU contracts include affected schema/buffer/caller; partial file scope remains explicit."
+    "validation_scope": "6 CPU tests include old public producer TypeError and fixed real producer,131 folded rows handed to vote and metadata,12-column protocol and dataclass copy/pickle. Real4-rank Gloo pack/reduction/mixed layout and nonzero global-root subgroup pass. New model run pending, not inferred from helper tests.",
+    "evidence": [
+      "docs/hcu-prefill-dev65-failure-20261101.json",
+      "docs/hcu-prefill-sync-collective-validation-20261101.json"
+    ]
+  },
+  "python/sglang/srt/managers/schedule_batch.py": {
+    "status": "in_progress",
+    "rationale": "Only native-compatible declared global_cp_num_tokens field added for copy/pickle; other Source ScheduleBatch differences and model-worker handoff pending.",
+    "implementation": [
+      "hcu_sglang/prefill_graph_sync.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
+    ],
+    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+  },
+  "python/sglang/srt/layers/cp/utils.py": {
+    "status": "in_progress",
+    "rationale": "Only full enable_cp_v2, CP physical-token count and mixed-replica normalization helpers used by owned MLP sync; other CP runtime changes pending.",
+    "implementation": [
+      "hcu_sglang/cp_token_counts.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
+    ],
+    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+  },
+  "python/sglang/srt/layers/cp/zigzag.py": {
+    "status": "in_progress",
+    "rationale": "Only full CPU physical-token geometry helper migrated, not remaining strategy/metadata changes.",
+    "implementation": [
+      "hcu_sglang/cp_token_counts.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
+    ],
+    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+  },
+  "python/sglang/srt/model_executor/encoder_swa_replay.py": {
+    "status": "in_progress",
+    "rationale": "Only replay_len and folded_replay_rows accounting helpers migrated for producer; full fold/execution/worker caller still pending.",
+    "implementation": [
+      "hcu_sglang/cp_token_counts.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
+    ],
+    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
+  },
+  "python/sglang/srt/elastic_ep/topology.py": {
+    "status": "in_progress",
+    "rationale": "Only fixed attention replica-width helper migrated for owned sync topology check; other joining topology helpers pending.",
+    "implementation": [
+      "hcu_sglang/cp_token_counts.py"
+    ],
+    "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
+    "tests": [
+      "tests/runtime/prefill_sync_cpu.py",
+      "tests/runtime/prefill_sync_gloo.py"
+    ],
+    "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
   }
 }
