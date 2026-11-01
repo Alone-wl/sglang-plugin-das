@@ -196,3 +196,9 @@ MLA KV 可跨 TP rank 共用文件，Mamba 等 TP 状态仍须按 rank 分片。
 ## KV 事件 namespace 的生产与消费
 
 LoRA 名称登记须发生在请求的最终 extra_key 确定之后，并与树使用同一张表。覆盖旧 IPC 仅有 adapter ID 的回退、LoRA 与 base 的 hash 隔离、store/remove/parent 链一致、GPU removal 后延迟 host store，以及名称不同的事件不能合并。测试须保留原生公共请求 handler 与树事件出口；昂贵 admission/allocator 若为夹具，单独声明。跨 AROUND 层传递临时 request 上下文时，验证嵌套、异常 finally 恢复及非 HCU 的有效 original。Python recorder 通过不代表 Rust tagged event、发布 socket 或 router 消费已验证。
+
+## Rust provider、事件 ABI 与宽 token hash
+
+新增 owned crate 时成对检查 backend 预检和实际 loader，不让源码已随插件交付的后端因官方 manifest 缺失而错误回退。保留有效 original 的能力/自定义限制、显式 workspace、cache/build mode 和 features；用独立模块名区分旧 binding。验证来自 wheel 的 Cargo.lock/header/源码完整性和真实编译加载，不能用模拟 tuple 代替 Rust 生产事件。store/remove 必须携带同一 namespace，测试后消费 eviction 返回的索引并核对数量，不能忽略 destructor 的 ownership 报错。
+
+改变 token 的编码范围时，Rust 与 C++/Python 输入转换须一起更新。覆盖 u32 边界、int64 最大值、负数拒绝、普通/bigram、逐页混合宽窄编码及 prior 链，用独立 hashlib oracle 与两种真实编译后端对照。普通 token 的历史哈希需保持一致；CPU binding 通过不外推为 GPU、L3 或完整模型验证。

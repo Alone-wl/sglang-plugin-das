@@ -70,6 +70,8 @@ def around_get_factory(original, name):
         if type(core) is adapter.RustUnifiedTreeCore:
             core.swa_tombstone_ranges = MethodType(swa_tombstone_ranges, core)
             core.attach_swa_window = MethodType(attach_swa_window, core)
+            from hcu_sglang.mem_cache.rust_tree_core.provider import attach_event_recorder
+            attach_event_recorder(core, params)
         return core
 
     return create

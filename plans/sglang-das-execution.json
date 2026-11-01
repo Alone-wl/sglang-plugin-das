@@ -22,8 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2897,
-    "implemented": 35,
+    "pending": 2888,
+    "implemented": 44,
     "in_progress": 52,
     "upstream": 26
   },
@@ -14071,7 +14071,19 @@
       "relation": "changed",
       "fork_oid": "15fc57a94352b7b74cfc2147c60076a82b01abca",
       "official_oid": "d415bdf781bc5733909c452bcc2e8d9e635afe91",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "python/sglang/srt/mem_cache/cpp_utils/native_hash.py",
@@ -14079,7 +14091,19 @@
       "relation": "changed",
       "fork_oid": "a9cac7b3b28ccd8aa7f6dc4ac566f8224fb57e8f",
       "official_oid": "f23c1f708c43857dd78ab4abcb73b0f057c9f651",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "python/sglang/srt/mem_cache/deepseek_v4_memory_pool.py",
@@ -14430,22 +14454,29 @@
       "fork_oid": "2f44ea44866de607f94bfc216b84350821256eb8",
       "official_oid": "6fb481ccd5983bf573609ff66ba15408a09427c8",
       "status": "in_progress",
-      "rationale": "Only Source single-SWA window methods applied lazily to selected native factory instances, with AUX NotImplemented guard; other Rust event/retention/match changes pending.",
+      "rationale": "Full Source raw event converter and Rust event recorder now run on owned compiled binding through native selected factory; existing SWA window methods remain paired. Retention, request replay/other Python adapter changes remain pending.",
       "implementation": [
-        "hcu_sglang/mem_cache/window_rust.py"
+        "hcu_sglang/mem_cache/window_rust.py",
+        "hcu_sglang/mem_cache/rust_tree_core/events.py",
+        "hcu_sglang/mem_cache/rust_tree_core/provider.py"
       ],
-      "source_alignment": "docs/hcu-window-tree-source-alignment.json",
+      "source_alignment": [
+        "docs/hcu-window-tree-source-alignment.json",
+        "docs/hcu-rust-events-source-alignment.json"
+      ],
       "tests": [
         "tests/runtime/window_tree_cpu.py",
         "tests/runtime/window_tree_gpu.py",
-        "tests/runtime/window_tree_rust.py"
+        "tests/runtime/window_tree_rust.py",
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
       ],
-      "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
+      "validation_scope": "Actual CPU native factory, owned compiled Source binding, event store/remove tuple and Python parity, existing SWA restoration. Full adapter or GPU model claim not made.",
       "evidence": [
         "docs/hcu-window-tree-gates-validation-20261101.json",
-        "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json"
-      ],
-      "ordinary_model_scope": "Frozen2cb0f1b/dev71/623 files:6 strict ordinary8GPU requests and owned cleanup passed, explicit sparse preserved. No hicache/buffer/storage/cache-hit or dataset rerun claim."
+        "docs/hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json",
+        "docs/hcu-rust-events-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/storage/aibrix_kvcache/aibrix_kvcache_storage.py",
@@ -17728,7 +17759,19 @@
       "relation": "changed",
       "fork_oid": "142a2d2474216690cf6dec9c96c58ba853fc92f9",
       "official_oid": "9c04131e837f2143db04f5c151adf81cdcccdf8c",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/node.rs",
@@ -17736,7 +17779,19 @@
       "relation": "changed",
       "fork_oid": "4c0b56330720577de4a5bceb31c93d5636cf2ae1",
       "official_oid": "60ddc6a9f47d7843a3da7e66dcb283e6fb20d0b2",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/python_bindings.rs",
@@ -17744,7 +17799,19 @@
       "relation": "changed",
       "fork_oid": "879dc7ee6c4a7f1e24652951d92db877c2bab4aa",
       "official_oid": "168c98120c99daffc4fd4deaa731d421a65bcb12",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/tests/components/swa.rs",
@@ -17752,7 +17819,19 @@
       "relation": "changed",
       "fork_oid": "eac6384bc8cc7b0d11f1b92e59b0fac9e3b319ac",
       "official_oid": "ef7c8fabb02813ec898417df954c86c1aa814389",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/tests/node.rs",
@@ -17760,7 +17839,19 @@
       "relation": "changed",
       "fork_oid": "c5ec7de3b64d6bf24f84a4762e4364336e6c17ba",
       "official_oid": "23cb4a7812eb13b2634ec6c96911bac080f678da",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/tests/unified_tree_core.rs",
@@ -17768,7 +17859,19 @@
       "relation": "changed",
       "fork_oid": "600809dd37f8c1a486ed7fa027718b21fa871842",
       "official_oid": "1027a43025af4c80216e1500086c3782009e19cb",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-radix-tree/src/unified_tree_core.rs",
@@ -17776,7 +17879,19 @@
       "relation": "changed",
       "fork_oid": "e6d0777962166eb30df16cd13fa0fa8f9e34113e",
       "official_oid": "3c9df474d4dbe5687c8095855ceaee999585cb29",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Complete pinned Source Rust crate and paired Source C++/Python hash are packaged, with all crate files byte-equal and Cargo.lock retained. Native selected factory/public loader and owned namespace pair new raw event ABI with full Source Python decoder. Wide non-negative int64 encoding is paired across Rust and C++, preserving legacy u32 hashes. This is per-file implementation, not full Python adapter/model validation.",
+      "implementation": [
+        "hcu_sglang/mem_cache/rust_tree_core",
+        "hcu_sglang/mem_cache/cpp_utils",
+        "hcu_sglang/mem_cache/window_rust.py"
+      ],
+      "source_alignment": "docs/hcu-rust-events-source-alignment.json",
+      "tests": [
+        "tests/runtime/rust_provider_cpu.py",
+        "tests/runtime/rust_events_native.py"
+      ],
+      "validation_scope": "Owned source data and actual CPU Rust binding/Source C++/hashlib oracle; raw tuple ABI and event parity with Source Python recorder. Cargo suite separately recorded. Rust GPU/L3/model/retention and remaining Python adapter changes pending."
     },
     {
       "path": "rust/sglang-renderer/Cargo.toml",

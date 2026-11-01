@@ -236,6 +236,9 @@ class KvEventsCpuTests(unittest.TestCase):
         self.assertIsInstance(removed[0], BlockRemoved)
         self.assertEqual(removed[0].block_hashes, stored[0].block_hashes)
         self.assertEqual(result.tracker[CT.FULL], 4)
+        self.assertTrue(torch.equal(torch.cat(result.device_frees.pop(CT.FULL)), torch.arange(4)))
+        self.assertEqual(dict(result.device_frees), {})
+        self.assertEqual(dict(result.host_frees), {})
 
     def test_non_hcu_admission_preserves_effective_original(self):
         calls = []

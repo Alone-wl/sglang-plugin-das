@@ -65,3 +65,5 @@ Attention 类图、CP 空查询或 native/JIT 迁移按 [测试契约](reference
 FileIO key/LRU 接口迁移按 [分片状态与淘汰归属](references/test-contract.md#fileio-分片状态与淘汰归属) 成对验证生产、读回、metadata 和容量所有权；共享 MLA 数据可读与本 rank 可淘汰范围分别断言。
 
 KV 事件/LoRA 名称迁移按 [namespace 的生产与消费](references/test-contract.md#kv-事件-namespace-的生产与消费) 验证最终 namespace、延迟写回和事件合并；Python、Rust binding 与发布端分别提供证据。
+
+Rust crate 或 token hash 迁移按 [provider、事件 ABI 与宽 token hash](references/test-contract.md#rust-provider事件-abi-与宽-token-hash) 配对预检/loader、编译资产与真实 tuple 生产消费，并验证跨语言编码和 eviction ownership。
