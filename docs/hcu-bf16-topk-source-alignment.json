@@ -8,7 +8,7 @@
   "patch_sha256": "369cb7ed655ebc97b7d2a405934628c3f2bd8c2160101a713329b0c7db541e75",
   "adaptations": [
     "Use existing width-aware portable warp shuffle/broadcast helpers.",
-    "Cover256 histogram bins with256/deviceWarpThreads bins per lane: CUDA32 keeps8, HIP64 uses4; preserve sign ordering and suffix pivot algorithm.",
+    "Cover256 histogram bins with256/deviceWarpThreads bins per lane. Source utils.cuh currently fixes logical warp32 on both CUDA and HIP, so tested specialization uses8 bins; physical gfx938 wave64 does not imply logical64 or4 bins.",
     "HIP ordered BF16 pair comparisons operate on raw BF16 sign/exponent/mantissa ordering, with explicit NaN rejection and signed-zero equality; CUDA uses original comparison intrinsics.",
     "HIP packs the8 comparison flags by integer shifts instead of unavailable signed dp4a; CUDA original dot-product pack remains."
   ],
@@ -17,7 +17,7 @@
     "No torch/topk alternate path selected, no forced wave32, no changes to input repositories."
   ],
   "source_gpu_validation": "5 real public-entry GPU tests pass: cold compile, empty/partial rows, max width16384/k2048 positive/negative BF16 bins, ties and signed-zero quota128, exact finite subnormal order via integer bit-rank reference, and score/length/page-table-changing Graph replay.",
-  "limits": "gfx938 HIP wave64 tested. CUDA32 path preserves original intrinsics and specializes bin count8 but has not been run on NVIDIA. NaN contract remains unsupported.",
+  "limits": "gfx938 HIP tested with Source logical warp32. CUDA32 retains original intrinsics and8 bins but has not run on NVIDIA. NaN contract remains unsupported.",
   "exact_patch_reversal_restores_source_bytes": true,
   "reference_correction": "Original CPU float top-k reference under default flush-denormal returned indices129..; integer BF16 rank and CPU flush-disabled float reference both select63.. for this fixture. Initial attribution of all64 mismatches to GPU was unsupported; final integer reference is flush-independent. Raw logs retained.",
   "isolated_wheel_validation": {

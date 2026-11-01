@@ -22,8 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2948,
-    "implemented": 11,
+    "pending": 2946,
+    "implemented": 13,
     "in_progress": 25,
     "upstream": 26
   },
@@ -3895,7 +3895,17 @@
       "relation": "changed",
       "fork_oid": "023fff1ed141ccf775e00feca892cf3bc07becb5",
       "official_oid": "6557802e122ae76db365ecd84ad801fe5d593b9b",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own full Source hash-routing and mask kernels. Add only two validated-host zero-token returns to avoid invalid zero-grid HIP launches; preserve nonempty math, source logical warp32 bounds, PDL, mask stride and token-count contracts. Exact reverse patch restores pinned Source bytes.",
+      "implementation": [
+        "hcu_sglang/jit_overlay/csrc/deepseek_v4/hash_topk.cuh",
+        "hcu_sglang/jit_overlay_loader.py"
+      ],
+      "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+      "tests": [
+        "tests/runtime/dsv4_hash_topk_gpu.py"
+      ],
+      "validation_scope": "7 isolated dev55 real gfx938 GPU/Graph tests pass; two actual cold-compile manifests match current owned header and wheel bytes. This is not whole-model or NVIDIA validation."
     },
     {
       "path": "python/sglang/kernels/jit/csrc/deepseek_v4/linear_bf16_fp32.cuh",
@@ -6365,7 +6375,18 @@
       "relation": "changed",
       "fork_oid": "0c1e81f3f70aca68792b25faa9e301208520522d",
       "official_oid": "a9cf7a34f76b9c10307b71ef3a952f02cfbbf991",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own the two changed full Source functions: HCU hash routing selects the source JIT and zero-token noncanonical pre-dispatch strides are normalized. Reuse unchanged native factories and public APIs; non-DCU delegates to the current effective original.",
+      "implementation": [
+        "hcu_sglang/layers/moe/dsv4_ops.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+      "tests": [
+        "tests/runtime/dsv4_ops_cpu.py",
+        "tests/runtime/dsv4_hash_topk_gpu.py"
+      ],
+      "validation_scope": "4 CPU contracts passed and pre-imported mega_moe alias rewrites under full registration; dev55 isolated7 real GPU/Graph tests,418 hooks/3 seams/0 errors,590 matching package files. Full dev55 model service pending."
     },
     {
       "path": "python/sglang/kernels/ops/moe/ep_moe_kernels.py",

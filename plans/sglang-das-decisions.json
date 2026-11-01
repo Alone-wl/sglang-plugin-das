@@ -756,5 +756,32 @@
       "tests/runtime/jit_bf16_topk_gpu.py"
     ],
     "validation_scope": "5 actual public-entry gfx938 GPU tests pass: cold compilation, empty/partial rows, max16384 width/k2048 signed values, ties/signed zero quota, finite subnormals via integer-rank reference, Graph score/length/page updates. Default CPU float reference flush behavior was diagnosed independently; no tolerance relaxation. Isolated dev53 wheel:589 package files byte-identical,5 GPU tests,416 hooks/3 seams/no errors and85 repository tests pass. Full dev53 model service not run; NVIDIA CUDA32 not run, NaNs unsupported as source."
+  },
+  "python/sglang/kernels/ops/moe/dsv4.py": {
+    "status": "implemented",
+    "rationale": "Own the two changed full Source functions: HCU hash routing selects the source JIT and zero-token noncanonical pre-dispatch strides are normalized. Reuse unchanged native factories and public APIs; non-DCU delegates to the current effective original.",
+    "implementation": [
+      "hcu_sglang/layers/moe/dsv4_ops.py",
+      "hcu_sglang/__init__.py"
+    ],
+    "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+    "tests": [
+      "tests/runtime/dsv4_ops_cpu.py",
+      "tests/runtime/dsv4_hash_topk_gpu.py"
+    ],
+    "validation_scope": "4 CPU contracts passed and pre-imported mega_moe alias rewrites under full registration; dev55 isolated7 real GPU/Graph tests,418 hooks/3 seams/0 errors,590 matching package files. Full dev55 model service pending."
+  },
+  "python/sglang/kernels/jit/csrc/deepseek_v4/hash_topk.cuh": {
+    "status": "implemented",
+    "rationale": "Own full Source hash-routing and mask kernels. Add only two validated-host zero-token returns to avoid invalid zero-grid HIP launches; preserve nonempty math, source logical warp32 bounds, PDL, mask stride and token-count contracts. Exact reverse patch restores pinned Source bytes.",
+    "implementation": [
+      "hcu_sglang/jit_overlay/csrc/deepseek_v4/hash_topk.cuh",
+      "hcu_sglang/jit_overlay_loader.py"
+    ],
+    "source_alignment": "docs/hcu-dsv4-moe-ops-source-alignment.json",
+    "tests": [
+      "tests/runtime/dsv4_hash_topk_gpu.py"
+    ],
+    "validation_scope": "7 isolated dev55 real gfx938 GPU/Graph tests pass; two actual cold-compile manifests match current owned header and wheel bytes. This is not whole-model or NVIDIA validation."
   }
 }
