@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2906,
-    "implemented": 30,
-    "in_progress": 48,
+    "pending": 2900,
+    "implemented": 32,
+    "in_progress": 52,
     "upstream": 26
   },
   "files": [
@@ -13579,7 +13579,17 @@
       "relation": "changed",
       "fork_oid": "49a7d2d64d762e382e91928acb324a604195b573",
       "official_oid": "4af640c00be1c3826a7202e49c77589b51fa44b3",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full extend_storage_prefix Source helper used by new backup caller, preserving existing controller callback; other controller changes pending.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_component.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
     },
     {
       "path": "python/sglang/srt/managers/data_parallel_controller.py",
@@ -13921,7 +13931,23 @@
       "relation": "changed",
       "fork_oid": "2a33d7d2b74e4bdcaccdbc8b1cba31e786deee09",
       "official_oid": "7119c8e8290cfc88b9d600661c8d353f2bee9e04",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Full16 changed/new Source pipeline methods, stack fence and tail-only flag owned. Plan producer and load-back/insert/ACK readers switched together to windows, with Source clipping/ownership and generic release. Native unchanged queue/allocation/ACK methods retained; old transient-size helper remains compatibility surface.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_pipeline.py",
+        "hcu_sglang/mem_cache/window_component.py",
+        "hcu_sglang/mem_cache/window_cache_init.py",
+        "hcu_sglang/mem_cache/window_pool_name.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "9 CPU contracts through public prepare/load/ACK and full cache init/factory, real tree repair/match, explicit allocation/publication facade; allocation failure, fail-stop ownership, sidecar skip, shared reserve and legacy enum pickle. GPU fixture controller uses real pinned H2D stream/event and byte oracle. Not full native controller/L3/cache-hit model acceptance.",
+      "evidence": [
+        "docs/hcu-window-pipeline-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/cache_init_params.py",
@@ -14105,7 +14131,17 @@
       "relation": "changed",
       "fork_oid": "f93600cfe1bd7f268a0731e6421323dd2076529e",
       "official_oid": "a226069588b30814d453c2087f91eeb38ec8e60c",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Full Source PoolName enum migrated with AUX and string/hash/pickle compatibility for captured legacy members; FileIO sharding/other storage changes pending.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_pool_name.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/hybrid_cache/hybrid_cache_controller.py",
@@ -14461,20 +14497,23 @@
       "relation": "changed",
       "fork_oid": "e319332faa11ee43c54f0dc8f3077a8526bb1ac6",
       "official_oid": "a265c266ffc6f19a330872c0ec2b765f12e6e32a",
-      "status": "in_progress",
-      "rationale": "Full owned WindowLoadBackPlan and StagedPrefetchPlan records added, without replacing old native plan ABI before pipeline producer/H2D consumers migrate.",
+      "status": "implemented",
+      "rationale": "All Source changes are two owned window-plan records; complete owned pipeline now produces and consumes these records. Unchanged retry logic and legacy native schema remain for compatibility, without altering old callers ABI.",
       "implementation": [
-        "hcu_sglang/mem_cache/window_plan.py"
+        "hcu_sglang/mem_cache/window_plan.py",
+        "hcu_sglang/mem_cache/window_pipeline.py"
       ],
       "source_alignment": "docs/hcu-window-tree-source-alignment.json",
       "tests": [
         "tests/runtime/window_tree_cpu.py",
         "tests/runtime/window_tree_gpu.py",
-        "tests/runtime/window_tree_rust.py"
+        "tests/runtime/window_tree_rust.py",
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
       ],
-      "validation_scope": "8 CPU contracts with real Python node splitting/ledgers; isolated GPU clone and actual native Rust CPU factory/window operations passed. No producer/H2D/storage/model-cache hit claim.",
+      "validation_scope": "Actual public pipeline prepares independent SWA/AUX ranges and Req AUX reader; same records consumed by allocation/insert/ACK control. Raw persistence/model cache-hit still unverified.",
       "evidence": [
-        "docs/hcu-window-tree-gates-validation-20261101.json"
+        "docs/hcu-window-pipeline-gates-validation-20261101.json"
       ]
     },
     {
@@ -14491,7 +14530,17 @@
       "relation": "changed",
       "fork_oid": "a31430944b1796d41563e835f5e74d7a7339f38b",
       "official_oid": "824d1a7baa4c02ba54f4fdf69bcdaf60645af88b",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Full Source factory migrated; remaining syntax-equivalent LRU rewrite and other component protocols reviewed separately.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_cache_init.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/unified_cache/components/full.py",
@@ -14515,7 +14564,17 @@
       "relation": "changed",
       "fork_oid": "3308ef753ea0c6ad42b9d46d1e644688a3691fd5",
       "official_oid": "2edd74446b118ce6ee95dbe92d428ee7a3609269",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full restore_buffer_mapping Source helper available through native SWA protocol view, leaving retention/gating/backup/component changes pending.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_component.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim."
     },
     {
       "path": "python/sglang/srt/mem_cache/unified_cache/linker_fault_injection.py",
@@ -14603,7 +14662,20 @@
       "relation": "changed",
       "fork_oid": "4d5baaf93761bbcadd72bff8ca2829914e4c8ede",
       "official_oid": "d1399f088dc0c8236497fb8c956a3b5a89e9865d",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Only full Source init_hicache caller migrated to pair AUX fence and factory args; other cache ctor/retention/linker/prefetch policy pending.",
+      "implementation": [
+        "hcu_sglang/mem_cache/window_cache_init.py"
+      ],
+      "source_alignment": "docs/hcu-window-pipeline-source-alignment.json",
+      "tests": [
+        "tests/runtime/window_pipeline_cpu.py",
+        "tests/runtime/window_pipeline_gpu.py"
+      ],
+      "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim.",
+      "evidence": [
+        "docs/hcu-window-pipeline-gates-validation-20261101.json"
+      ]
     },
     {
       "path": "python/sglang/srt/mem_cache/utils.py",

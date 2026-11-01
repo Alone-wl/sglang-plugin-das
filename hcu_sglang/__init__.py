@@ -131,6 +131,10 @@ def register() -> None:
     from hcu_sglang.mem_cache import window_tree, window_rust
     window_tree.register_hooks()
     window_rust.register_hooks()
+    from hcu_sglang.mem_cache import window_pool_name, window_pipeline, window_cache_init
+    window_pool_name.register_hooks()
+    window_pipeline.register_hooks()
+    window_cache_init.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

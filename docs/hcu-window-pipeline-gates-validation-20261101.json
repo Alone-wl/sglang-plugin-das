@@ -1,0 +1,81 @@
+{
+  "status": "passed_scoped_gates",
+  "plugin_version": "0.3.2.dev72",
+  "wheel_sha256": "348a661f96d463f063aa3a4eaa41479fbe8da872f487dde9923b24408fcbfe63",
+  "matching_source_wheel_installed_package_files": 627,
+  "hook_registered": 476,
+  "hook_applied": 476,
+  "resolution_seams": [
+    "handle_a2a_moe",
+    "handle_attention_backend_compatibility",
+    "handle_model_capability_adjustments",
+    "handle_model_specific_adjustments"
+  ],
+  "errors": [],
+  "tests": [
+    {
+      "test": "window_pipeline_cpu",
+      "count": 9,
+      "log_sha256": "bd7605595e5da868df108cdee208cb58e08f6e98e9b89a3aacd22a1e5eafbb6c"
+    },
+    {
+      "test": "window_tree_cpu",
+      "count": 8,
+      "log_sha256": "bbb9dc824ed759b19b4a54c590e4eeaf835904ecf42e27e5a2b1db0795d51742"
+    },
+    {
+      "test": "repository",
+      "count": 95,
+      "log_sha256": "e597b5b7619d6651a2199ed793523aef04952c3543ea9c68873d9f314306035e"
+    },
+    {
+      "test": "window_pipeline_gpu",
+      "count": 1,
+      "log_sha256": "70bece9387ebc2c2204e1d7ade68ec44d0d4267766f340a3aab0ea73f1fd59ca"
+    }
+  ],
+  "oracle": {
+    "plan_swa_missing_ranges": [
+      [
+        2,
+        4
+      ],
+      [
+        6,
+        8
+      ]
+    ],
+    "plan_aux_missing_ranges": [
+      [
+        4,
+        6
+      ],
+      [
+        6,
+        8
+      ]
+    ],
+    "h2d_full_values": [
+      1006,
+      1007
+    ],
+    "h2d_swa_values": [
+      2102,
+      2103,
+      2106,
+      2107
+    ],
+    "h2d_aux_values": [
+      3204,
+      3205,
+      3206,
+      3207
+    ],
+    "original_bounce_rows_freed_after_ack": [
+      8,
+      8,
+      8
+    ]
+  },
+  "scope": "Full public prepare/load/insert/ACK control with real tree repair/match, explicit allocator/controller/publication facade; real pinned-host CUDA stream/event copies and byte oracle. Source allocation/queue/ACK methods retained native but testcontroller substitutes physical queue scheduling. No native HiCacheController threads/L3/full cache-hit model or retention/linker equivalence claim; ordinary8GPU serving separate."
+}

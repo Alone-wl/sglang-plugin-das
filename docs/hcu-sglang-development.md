@@ -1026,3 +1026,13 @@ Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/
 [dev71分范围门禁](hcu-window-tree-gates-validation-20261101.json)：623包文件与源码/site一致，wheel SHA256 28b13d4a7d31e45f6b0ac8418cb81fe2f8439e40751ba3f844cc3654e7779344；471/471 Hook、4个seam、0 errors。8项窗口CPU、8项既有预算、本地/容器95项仓库测试通过；1项真实GPU独立数据/clone测试及实际Rust CPU工厂+binding测试通过。5个窗口方法与2个完整Source记录AST规范化一致，Rust加载延迟仅为适配方式变化，不改其SWA算法或AUX guard。L0/Skill/guide与实际宽窄屏检索/阅读/菜单通过。普通八卡回归继续，不将无hicache参数的服务用于证明storage/H2D或窗口cache-hit。
 
 [dev71普通八卡回归](hcu-tp8-deepseekv4-sparse-default-dev71-validation-20261101.json)：14:53:32–14:59:14通过，六项严格生成全部HTTP200/完整答案正确/正常stop，自有进程为空且端口关闭；623包文件与2cb0f1b/wheel/site相同，显式sparse保留。该run未加入hicache/buffer/storage参数，只是新树/factory接口安装后的普通集成，不证明window plan生产、H2D发布或缓存命中；这些下一阶段范围仍pending。原型dev69的128题保持其独立产物归属，不挪作dev71测量；全部DAS目标仍未完成。
+
+## 85. 2026-11-01 多窗口 staged plan 与 H2D 发布
+
+迁入Source BufferModePipeline全部16个变化/新增方法、完整buffer-only双窗口host fence，以及TreeComponent工厂与UnifiedRadixCache.init_hicache生产caller，使用owned windows记录替换该生产/消费闭环中的旧swa_tokens语义。Source未变allocation/queue/ACK核心保留native；缺失区间按组件切host bounce，仅为缺失行排队H2D，resident FULL范围修复树，tail随普通insert发布；完整原始bounce保留到ack。Tail-only backup沿Source False默认，keys和device rows一起裁剪并推进backend prefix context。
+
+固定native SWA组件通过只读view补齐pool_name与完整Source restore mapping helper；已有custom字段/callback原样保留。新Source控制器prefix helper在旧基类缺方法时以显式receiver调用，有现有callback则保留其行为。Root cache retention/readonly-match、其他SWA组件与L3/linker变化仍按独立file scope待迁移，不将generic pipeline迁入解释为所有cache模型完成。测试按真实树修复/接收者与显式传输fixture分层记录。
+
+配套新增PoolName.AUXILIARY_SWA完整Source枚举；捕获的legacy成员保持str/hash键相等，通过copyreg转换后pickle回owned成员，未修改内部Enum表。9项CPU通过：prepare生成SWA[(2,4),(6,8)]、AUX[(4,6),(6,8)]，各仅4行H2D，原三份8行bounce到ACK才释放；分配失败context回滚并保留staging，发布错误保留pending状态并fail-stop，covered窗口移除其派生sidecar。实际TreeCore repair/match保留，cache publication/allocator facade显式作为fixture。public init_hicache与base-component factory、tail keys/rows/prefix、双窗口共享arena fence通过。修正夹具固定prefix长度与原生日志/配置字段后无生产算法改动。隔离dev72 GPU fixture controller经真实pinned host→CUDA stream/event复制，逐池字节oracle及ACK释放顺序通过；不冒称native HiCacheController线程、L3或完整模型cache-hit。
+
+[dev72分范围门禁](hcu-window-pipeline-gates-validation-20261101.json)：627包文件与源码/site相同，wheel SHA256 348a661f96d463f063aa3a4eaa41479fbe8da872f487dde9923b24408fcbfe63；476/476 Hook、4个seam、0 errors，9项pipeline CPU、8项树CPU、本地/容器95项仓库测试通过。1项GPU pinned host/stream/event H2D逐池字节与ACK顺序通过，但physical queue/allocator/cache insert facade明确为fixture，不称native controller线程或L3模型。21个完整Source方法/函数及完整PoolName枚举AST规范化一致，legacy字符串键/pickle兼容通过。L0/Skill/guide及实际宽窄屏通过；普通八卡回归继续，其他cache retention/linker/FileIO与全量DAS目标未完成。

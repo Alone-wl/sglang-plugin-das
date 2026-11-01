@@ -9,6 +9,7 @@ from hcu_sglang.utils.detection import is_dcu
 
 
 _ENV_SPECS: dict[str, tuple[type, Any]] = {
+    "SGLANG_ENABLE_HICACHE_SWA_TAIL_ONLY_BACKUP": (EnvBool, False),
     "SGLANG_ENABLE_CP_V2": (EnvBool, False),
     'SGLANG_EXPERIMENTAL_LPLB_STATIC_PROBS': (EnvStr, None),
     'SGLANG_SIMULATED_EXPERT_BALANCE': (EnvBool, False),
