@@ -22,8 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2926,
-    "implemented": 23,
+    "pending": 2925,
+    "implemented": 24,
     "in_progress": 35,
     "upstream": 26
   },
@@ -14458,7 +14458,22 @@
       "relation": "changed",
       "fork_oid": "03215a865f8fbd81a4630816dc627237a2f9fd29",
       "official_oid": "4bfd28f59ed79a4e681e8e1d0926b3dedc5f9933",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Migrate all six changed/new Source functions: complete hybrid local-layer coverage, global indexing retaining trailing pure-MoE slots, PP-aware DeepGEMM budget refresh with native mutable state, H16 sync/cache release and both full capture callers. Four existing entry points use HCU-only AROUND; unchanged native helpers/types reused.",
+      "implementation": [
+        "hcu_sglang/graph_setup.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-graph-setup-source-alignment.json",
+      "tests": [
+        "tests/runtime/graph_setup_cpu.py",
+        "tests/runtime/graph_setup_gloo.py",
+        "tests/runtime/graph_setup_gpu.py"
+      ],
+      "evidence": [
+        "docs/hcu-graph-setup-collective-validation-20261101.json"
+      ],
+      "validation_scope": "9 CPU contracts pass incl public prefill/capture callers, aliases, native budget setter/state, PP group and lifecycle order; real4-rank Gloo native MIN plus separate earlier-stage collective passes, synthetic memory inquiries only. Isolated dev64 real GPU primitive Graph replays changed inputs after native platform cache release. Actual PP/hybrid/H16 models remain unverified; ordinary8GPU service and final artifact gates are separate."
     },
     {
       "path": "python/sglang/srt/model_executor/model_runner_components/load_model_utils.py",

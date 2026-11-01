@@ -107,6 +107,8 @@ def register() -> None:
     deepep_graph.register_hooks()
     from hcu_sglang import graph_batch
     graph_batch.register_hooks()
+    from hcu_sglang import graph_setup
+    graph_setup.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

@@ -940,3 +940,13 @@ dev62于10:39:39–10:45:24完成六项严格生成及本人loopback start/stop/
 隔离dev63门禁完成：604包文件与源码/site逐字节相同，wheel SHA256 b28a3dd1befcfb80e715defa8bfae0875c0907032164b44c2cb21293e0ba8f4a。6项批大小CPU测试、5项既有DeepEP Graph协议测试、446/446 Hook与3个resolution seam均通过且0 errors；本地与容器95项仓库测试、L0、Skill元信息、guide快照和实际宽窄屏交互通过。当前按原八卡基础配方启动独立服务验证普通模型回归，不重复追求已接受的128题完全对齐；服务结果另记。未验证的实际扩散模型路径保持未验证，全DAS迁移未完成。
 
 [dev63八卡回归摘要](hcu-tp8-deepseekv4-graph-batch-dev63-validation-20261101.json)：11:38:15–11:43:57按原基础配方完成六项严格生成，全部HTTP200、完整最终答案正确、正常stop，自有进程为空且端口关闭；604包文件与84f961e/wheel/site相同。DSPARK/DeepEP/Graph及原优化环境保持。该模型为普通解码，验证新函数在此路径没有阻断实际Graph捕获和服务；不能据此宣称Gemma4Renoise GPU分支、吞吐或全DAS迁移完成。已接受的dev62 GSM8K128对照不归用为dev63重跑结果。
+
+## 78. 2026-11-01 Graph 初始化的 PP 预算、混合层与 H16 缓存释放
+
+迁入固定Source cuda_graph_setup全部6个变化/新增函数：混合attention/MoE局部覆盖检查、保留尾部纯MoE的全局索引、H16捕获后同步释放、PP内存预算、完整capture_cuda_graphs与capture_prefill_graph调用方。复用native记录类型和不变helper；预算initialized状态仍写原生模块，不产生插件副本。现有4个入口为HCU AROUND，非HCU保留当前有效original；新增2个helper由owned调用方使用。Source完整函数AST在native globals限定、模块状态写入及相同HCU检测映射后一致，原注释/docstring保留，不新增说明性runtime注释。
+
+待验：真实调用方/预导入别名、尾部纯MoE、洞/重复层、PP组与native预算状态、capture/finalize/cache释放顺序、非HCU回退。CPU fixture控制流与实际collective/GPU/模型服务分别记录，不把模拟内存查询或runner构造当作模型Graph通过。
+
+Source控制流9项通过，包括完整public prefill/capture入口。真实4-rank Gloo在PP2时rank0/1执行本组sum=3，rank2/3执行末级TP内存MIN并由native setter得到2684354560字节；切换PP1后全rank得到3489660928字节，[证据](hcu-graph-setup-collective-validation-20261101.json)固定原始输出哈希。CUDA显存查询是fixture，归约与process group真实，不冒称GPU collective或实际PP模型。隔离dev64的1项真实GPU测试通过：实际CUDAGraph捕获后调用native platform synchronize/empty_cache，两次变输入replay精确；这是allocator/小型Graph安全性，不是H16 kernel或模型验证。
+
+[隔离dev64门禁](hcu-graph-setup-gates-validation-20261101.json)完成：605包文件与源码/site相同，wheel SHA256 b3d040c862457b000406b574096bc2cf52ac6980045343f5c0fb7dfc9091cd58；450/450 Hook、3个resolution seam、0 errors，9项新控制流、6项既有批大小与本地/容器95项仓库测试通过。L0、Skill元信息、guide快照及实际宽窄屏检索/阅读/菜单验收通过。实际八卡原配方服务仍按独立run继续，未将其提前标为通过；PP/hybrid/H16模型及全DAS迁移范围保持未完成。

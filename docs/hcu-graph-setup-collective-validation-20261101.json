@@ -1,0 +1,130 @@
+{
+  "status": "passed",
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "tested_owned_runtime_sha256": "d98dbdedbcc52b12e8d61b9db257467f57fa24e11fec8247a34c452dd06016e2",
+  "backend": "gloo",
+  "world_size": 4,
+  "results": [
+    {
+      "result": {
+        "status": "passed",
+        "rank": 0,
+        "backend": "gloo",
+        "world_size": 4,
+        "cases": [
+          {
+            "case": "pp2_earlier_stage_other_collective",
+            "sum": 3,
+            "participants": [
+              0,
+              1
+            ]
+          },
+          {
+            "case": "pp1_world_budget",
+            "budget_bytes": 3489660928,
+            "participants": [
+              0,
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "scope": "Real process-group collectives and native budget setter; GPU memory inquiry is synthetic, not GPU collective or model execution."
+      },
+      "sha256": "56787594c5c310c2dc5795df95b23b81a27feeba848551e27e22b66801eb4b97"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 1,
+        "backend": "gloo",
+        "world_size": 4,
+        "cases": [
+          {
+            "case": "pp2_earlier_stage_other_collective",
+            "sum": 3,
+            "participants": [
+              0,
+              1
+            ]
+          },
+          {
+            "case": "pp1_world_budget",
+            "budget_bytes": 3489660928,
+            "participants": [
+              0,
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "scope": "Real process-group collectives and native budget setter; GPU memory inquiry is synthetic, not GPU collective or model execution."
+      },
+      "sha256": "8c43a098831c439aef358b03d968bffca4e6ebb146619dc7b20f30622a2cdd0c"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 2,
+        "backend": "gloo",
+        "world_size": 4,
+        "cases": [
+          {
+            "case": "pp2_last_stage_draft",
+            "budget_bytes": 2684354560,
+            "participants": [
+              2,
+              3
+            ]
+          },
+          {
+            "case": "pp1_world_budget",
+            "budget_bytes": 3489660928,
+            "participants": [
+              0,
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "scope": "Real process-group collectives and native budget setter; GPU memory inquiry is synthetic, not GPU collective or model execution."
+      },
+      "sha256": "d39c1079ee6c19473de17259b6018f5cd9c9c71dfb6eb7499d59ec463c6fc471"
+    },
+    {
+      "result": {
+        "status": "passed",
+        "rank": 3,
+        "backend": "gloo",
+        "world_size": 4,
+        "cases": [
+          {
+            "case": "pp2_last_stage_draft",
+            "budget_bytes": 2684354560,
+            "participants": [
+              2,
+              3
+            ]
+          },
+          {
+            "case": "pp1_world_budget",
+            "budget_bytes": 3489660928,
+            "participants": [
+              0,
+              1,
+              2,
+              3
+            ]
+          }
+        ],
+        "scope": "Real process-group collectives and native budget setter; GPU memory inquiry is synthetic, not GPU collective or model execution."
+      },
+      "sha256": "6b399de51b1c158fc2102a16f5b3b3960ae7f3478b0e1fcf1b771469b3504bcb"
+    }
+  ],
+  "scope": "Real native get_available_gpu_memory CPU MIN collectives, actual TP/world process groups and native DeepGEMM setter. Only CUDA memory inquiry and cache-query operations are fixtures. Earlier PP stage enters a separate collective while draft-only last stage queries its TP budget; PP1 repeats a world budget. Not GPU collective, actual PP model or throughput evidence."
+}
