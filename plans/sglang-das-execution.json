@@ -13681,7 +13681,12 @@
       "tests": [
         "tests/runtime/prefill_admission_cpu.py"
       ],
-      "validation_scope": "8 CPU contracts through real constructor/public add_one_req and native memory budget preserve prior overdraw(-10) counterexample,144-token first-page boundary, exact/DLLM charge, capacity defer and AUX legacy readout. Ordinary model and final gates recorded separately; native window-plan production/transport not claimed."
+      "validation_scope": "8 CPU contracts through real constructor/public add_one_req and native memory budget preserve prior overdraw(-10) counterexample,144-token first-page boundary, exact/DLLM charge, capacity defer and AUX legacy readout. Ordinary model and final gates recorded separately; native window-plan production/transport not claimed.",
+      "evidence": [
+        "docs/hcu-prefill-admission-gates-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
+      ],
+      "ordinary_model_scope": "Frozen dd88288/dev68/619 files:8GPU BCG initialization and6 strict requests with cleanup passed, encoder flagFalse. Not encoder cache-hit/AUX transfer/BCG request-hit or dataset score."
     },
     {
       "path": "python/sglang/srt/managers/scheduler.py",
@@ -14307,7 +14312,12 @@
       "tests": [
         "tests/runtime/prefill_admission_cpu.py"
       ],
-      "validation_scope": "Actual native Prefill/SWA/SharedSWA object methods accept new parameter; old native signature rejection retained. CPU capacity and public admission contracts, not complete AUX transfer."
+      "validation_scope": "Actual native Prefill/SWA/SharedSWA object methods accept new parameter; old native signature rejection retained. CPU capacity and public admission contracts, not complete AUX transfer.",
+      "evidence": [
+        "docs/hcu-prefill-admission-gates-validation-20261101.json",
+        "docs/hcu-tp8-deepseekv4-prefill-bcg-dev68-validation-20261101.json"
+      ],
+      "ordinary_model_scope": "Frozen dd88288/dev68/619 files:8GPU BCG initialization and6 strict requests with cleanup passed, encoder flagFalse. Not encoder cache-hit/AUX transfer/BCG request-hit or dataset score."
     },
     {
       "path": "python/sglang/srt/mem_cache/pure_swa_radix_cache.py",
