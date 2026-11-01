@@ -1417,8 +1417,10 @@
     ],
     "validation_scope": "9 CPU contracts through public prepare/load/ACK and full cache init/factory, real tree repair/match, explicit allocation/publication facade; allocation failure, fail-stop ownership, sidecar skip, shared reserve and legacy enum pickle. GPU fixture controller uses real pinned H2D stream/event and byte oracle. Not full native controller/L3/cache-hit model acceptance.",
     "evidence": [
-      "docs/hcu-window-pipeline-gates-validation-20261101.json"
-    ]
+      "docs/hcu-window-pipeline-gates-validation-20261101.json",
+      "docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
+    ],
+    "ordinary_model_scope": "Frozen8e01b89/dev72/627 files:6 strict ordinary8GPU requests and cleanup pass, sparse preserved. No hicache/buffer/storage/cache-hit configuration or dataset rerun claim."
   },
   "python/sglang/srt/mem_cache/unified_radix_cache.py": {
     "status": "in_progress",
@@ -1433,8 +1435,10 @@
     ],
     "validation_scope": "Explicit partial file scope, interface/fixture H2D contracts only; no full storage/controller/model claim.",
     "evidence": [
-      "docs/hcu-window-pipeline-gates-validation-20261101.json"
-    ]
+      "docs/hcu-window-pipeline-gates-validation-20261101.json",
+      "docs/hcu-tp8-deepseekv4-sparse-default-dev72-validation-20261101.json"
+    ],
+    "ordinary_model_scope": "Frozen8e01b89/dev72/627 files:6 strict ordinary8GPU requests and cleanup pass, sparse preserved. No hicache/buffer/storage/cache-hit configuration or dataset rerun claim."
   },
   "python/sglang/srt/mem_cache/unified_cache/components/base.py": {
     "status": "in_progress",
