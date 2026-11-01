@@ -1326,8 +1326,10 @@
     "validation_scope": "Final70:9 CPU policy/CP/alias contracts,467 hooks/4 seams,620 matching package files and95 repository tests. Actual0731/V4.1 resolve_once preserves sparse env1; old68 actual probe cleared it. Frozen69 prototype127/128 matches saved DAS per-case outcomes with0 invalid; attributed to prototype build, not final70 measurement. CP/SM100/mega actual models remain unverified.",
     "evidence": [
       "docs/hcu-v4-defaults-gates-validation-20261101.json",
-      "docs/hcu-gsm8k128-sparse-default-dev69-validation-20261101.json"
-    ]
+      "docs/hcu-gsm8k128-sparse-default-dev69-validation-20261101.json",
+      "docs/hcu-tp8-deepseekv4-sparse-default-dev70-validation-20261101.json"
+    ],
+    "final70_model_scope": "Frozen32fb304/620 files: plain original8GPU recipe,6 strict requests and cleanup pass, actual server log preserves explicit sparse. Prototype69 GSM127/128 remains separate; no actual CP/SM100/mega or full benchmark claim."
   },
   "python/sglang/srt/arg_groups/model_hook.py": {
     "status": "in_progress",
