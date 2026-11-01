@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "run_id": "deepseekv4-fp8-tp8-load-aware-dev60-20261101-attempt1",
+  "recipe_commit": "e91f05febe5eb8e31034a68f870ae72bec2fc65f",
+  "recipe": "docs/model-deployment/sglang/deepseek-v4.md: DeepSeek-V4-Flash-0731-Channel-FP8-w8a8 IFB BW1100 8x SGLang0.5.18",
+  "recipe_url": "https://github.com/HYGON-AI/inference-cookbook-das/blob/e91f05febe5eb8e31034a68f870ae72bec2fc65f/docs/model-deployment/sglang/deepseek-v4.md",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "plugin_source_commit": "13497b5310c0c67a609b71103e8ee9a4245f0c9f",
+  "plugin_version": "0.3.2.dev60",
+  "wheel_sha256": "43e2eb0f125976ee6b29a008bcf068ba08a9be66cb8680d72c19b4ca7d304c99",
+  "wheel_source_and_installed_package_files_identical": 601,
+  "physical_gpus": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "tp": 8,
+  "mem_fraction_static": 0.9,
+  "graph": "Original DSPARK/DeepEP recipe: graph max32, context32768, max-running32,TP8/DP8/EP8 and64-thread weight loading retained.",
+  "dp": 8,
+  "ep": 8,
+  "owned_HCU_backend_log_lines": 16,
+  "deepep_config_sha256": "268521dacd03feeddea23e1e58f9b6bfb52b5befce0dffec0be705e7d9d2b18a",
+  "requests": [
+    {
+      "case": "arithmetic",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "57b292e4a7903e45c83fb3595edb27a1b4b216d931da7438abf0f18aa664c988"
+    },
+    {
+      "case": "chinese",
+      "http_status": 200,
+      "final_text": "北京",
+      "finish_reason": "stop",
+      "response_sha256": "9e8e6d5042ac40abed6c07417282aa668e14fc095e5d75e7ae4f9e525b14d444"
+    },
+    {
+      "case": "english",
+      "http_status": 200,
+      "final_text": "Paris",
+      "finish_reason": "stop",
+      "response_sha256": "5d08b4626ce13344038b97c321c482547c56dc7cbfcb4b611a0f91612a1154e1"
+    },
+    {
+      "case": "reading",
+      "http_status": 200,
+      "final_text": "4",
+      "finish_reason": "stop",
+      "response_sha256": "2bdcfb63a09881449b522d61b731264b054d8aac75ff189b79c1a161fac4b169"
+    },
+    {
+      "case": "code",
+      "http_status": 200,
+      "final_text": "10",
+      "finish_reason": "stop",
+      "response_sha256": "8949116646c1ace91c51398b61d9d9e19f1d1c1e3f2bbfbfc89f690904d62b0e"
+    },
+    {
+      "case": "cache_repeat",
+      "http_status": 200,
+      "final_text": "323",
+      "finish_reason": "stop",
+      "response_sha256": "bca076015c3e5cbe332caea0c734e0049374bb9564d35094bef9c5c31a504c08"
+    }
+  ],
+  "cleanup_remaining_pids": [],
+  "port_listening_after_cleanup": false,
+  "started_at": "2026-11-01T10:02:15+0800",
+  "finished_at": "2026-11-01T10:07:53+0800",
+  "variant": "Original recipe plus load_aware and8 redundant experts; all original optimized/DSPARK/DeepEP/Graph settings retained.",
+  "metadata_limitation": "All8 ranks log43 initialized solver layers and replicated-logical-expert count[8]. Complete candidate metadata is active; six answers still do not establish a dataset accuracy score or measured dispatch-load/performance result.",
+  "limits": "Six deterministic short requests, not a dataset accuracy score or throughput benchmark. This validates the isolated dev60 artifact, not other artifacts or unreviewed DAS modules.",
+  "all_rank_replicated_logical_experts": {
+    "0": 8,
+    "1": 8,
+    "2": 8,
+    "3": 8,
+    "4": 8,
+    "5": 8,
+    "6": 8,
+    "7": 8
+  },
+  "solver_layers_per_rank": 43
+}

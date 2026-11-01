@@ -7,7 +7,7 @@
 | 对象 | 当前定义 |
 |---|---|
 | 代码目录 / Python 包 | `hcu_sglang/` / `hcu_sglang` |
-| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev60` |
+| distribution / 开发版本 | `hcu-sglang-plugin` / `0.3.2.dev61` |
 | general plugin entry point | `hcu = hcu_sglang:register` |
 | 显式服务入口 | `python3 -m hcu_sglang` 或 `hcu-sglang-serve`，参数传给官方 launcher |
 | 来源插件版本 | `afc6205dd1a0f1979cfab9bf1f3272d2db14f46c`，原包 `sglang_dcu_plugin` |
@@ -880,3 +880,21 @@ Source CPU 8项通过：load-aware/LP/dynamic全候选、static nearest与旧函
 
 
 隔离dev60收尾：439/439 Hook、3个resolution seam、0 errors及85项仓库unittest通过；L0、Skill元信息、guide快照与实际宽窄屏检索/阅读/菜单检查通过。增加启动日志汇总每层实际复制逻辑专家数，后续完整候选八卡运行需看到非零replica计数，不能仅以六个回答通过判断均衡链已生效。全DAS与实际负载/性能范围继续未完成。
+
+
+## 73. 2026-11-01 EPLB dispatch统计与固定形状int64归约
+
+dev60实际八卡启动日志已在全部8个rank记录43层load-aware solver、每层复制逻辑专家数[8]，与旧nearest折叠不同；服务仍运行，未提前记录请求通过。继续迁入expert_distribution.py全部变化：capture期间不collect；DeepEP auto从normal/low-latency实际dispatch累加，避免padded top-k id误计expert0；窗口先本地sum成固定形状int64再all_reduce，支持rank步数不同与大计数。复用native recorder/gatherer/accumulator类和其余方法，新增auto类继承native低延迟gatherer；保留Source许可/注释。CPU、真实Gloo归约和GPU检查按实际结果补记。
+
+
+Source统计器验证：5项CPU与2项真实GPU/Graph通过，DeepEP auto normal+low-latency累加真实buffer，伪top-k padded IDs不增加计数；实际CUDAGraph capture跳过collect/host append。真实2-rank Gloo的窗口分别为1/3步和0/2步，归约shape固定[1,2]、dtype int64，输出[40,48]与[2**32,6]精确。该证据是CPU Gloo，不冒称GPU collective或性能；隔离8-rank NCCL/RCCL正在执行。
+
+[dev60八卡摘要](hcu-tp8-deepseekv4-load-aware-dev60-validation-20261101.json)记录10:02:15–10:07:53六项请求正常stop、全部8rank各43层solver与复制专家[8]、601包文件与13497b5/wheel/site相同以及清理。它验证完整候选功能变体的短生成，不是数据集准确率或实际dispatch负载均衡量化结果；新的统计器后续另验。
+
+
+隔离dev61：602包文件与源码/site逐字节一致，wheel SHA256 `5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0`。5项CPU与2项GPU/Graph重验通过；真实8-rank NCCL/RCCL在各rank本地窗口1..8步时全rank得到[480,216]，七个空窗口与rank7两个大计数窗口全rank得到[2**32,6]，shape[1,2]/int64保持，process group销毁正常。[独立collective摘要](hcu-expert-recording-collective-validation-20261101.json)固定各rank结果哈希与范围；这是合成counter correctness，不是模型dispatch负载或通信吞吐。
+
+后续模型验证使用单独的任务controller，在本人loopback服务ready后调用公开start/stop/dump recorder端点并保存响应，原始controller不改；模型参数沿dev60完整候选load-aware变体，仅追加stat recorder与明确dump目录。API/实际dump与模型结果未完成前不声明recording服务集成通过。
+
+
+隔离dev61最终门禁443/443 Hook、3个resolution seam、0 errors及85项仓库测试通过，L0/Skill/guide与实际宽窄屏交互验收通过。原始Source变更函数/class AST经native globals和staticmethod搬移规范化相同；新服务与EPLB真实模型统计仍保持待验，全DAS范围未关闭。

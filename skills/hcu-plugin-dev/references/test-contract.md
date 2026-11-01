@@ -162,3 +162,5 @@ JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.
 计数/采样Triton入口需覆盖共享列切片产生的非连续routed视图与drop/shared逻辑ID；用测试自有的相邻哨兵验证bounds，不能让无效ID触碰无关分配。Graph重放同时改变真实IDs与有效行数设备指针。metadata共享类型先核对完整fields：Source新增seed字段时用兼容子类和原factory桥接，不能误称完全相同。Source工厂kwargs必须与实际solver构造器核对；load-aware的无per-layer-collective设计不要替换成LP的all-reduce。
 
 均衡solver不能只用手造replica表验收：必须从native元数据工厂走到真实solver，检查num_valid_copies/num_replicated，确认上游没有nearest折叠导致算法退化。不同算法的候选保留规则与静态policy分开验证；nearest保持旧行为，locality_fair保留完整候选并优先本GPU/本节点。保存旧函数用于差分时放在容器内，HookRegistry会替换模块级原函数别名，避免“旧/新”实际都调用新Hook。
+
+EPLB统计需验证实际dispatch计数与top-k选择计数的差别：auto模式跨normal/low-latency累加，padding权重0但ID可能有效，不能用原始ID假装实际工作量。归约前先本地汇总固定shape，并用int64覆盖长窗口；真实多rank测试包括窗口步数不等、空窗口和超过int32总数。GPU capture测试需实际进入CUDAGraph，确认Python collect/host append被跳过，不能只mock capture状态。

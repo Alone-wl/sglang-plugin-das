@@ -1,0 +1,36 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/srt/eplb/expert_distribution.py",
+  "source_sha256": "18924a20ed6fdf48099ea17a544da7742abc8abbf6913c7c528f589b14833c19",
+  "owner": "hcu_sglang/eplb/recording.py",
+  "owner_sha256": "6d1f079d430a4a76a8dbb89fa4111f74879c01d4ac6e8b95e1018801eff4e823",
+  "all_changed_function_class_asts_match_after_native_global_and_staticmethod_relocation": [
+    "_on_forward_pass_end",
+    "init_new",
+    "_DeepepAutoSinglePassGatherer",
+    "dump",
+    "_dump_to_file"
+  ],
+  "adapters": [
+    "Unchanged native recorder/gatherer/accumulator classes and buffers retained. New auto gatherer subclasses existing low-latency implementation.",
+    "Full changed Source methods invoked through native public/private targets with non-HCU effective original preserved.",
+    "Moved static factory becomes a module function while native staticmethod descriptor stays preserved by HookRegistry."
+  ],
+  "source_validation": "5 CPU contracts and2 real GPU/Graph cases pass. Actual2-rank Gloo:unequal1/3-step windows and0/2-step windows reduce to fixed1x2 int64, preserving2**32.",
+  "limits": "Real8-rank NCCL/RCCL fixed-shape int64 aggregate-counter correctness is verified; the windows are synthetic. This is not throughput, model-derived dispatch balance or full rebalance/accuracy evidence. Full recorder-enabled service pending.",
+  "isolated_artifact": {
+    "version": "0.3.2.dev61",
+    "wheel_sha256": "5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0",
+    "matching_package_files": 602,
+    "cpu_tests_passed": 5,
+    "gpu_graph_tests_passed": 2,
+    "real_gpu_collective_world_size": 8,
+    "real_gpu_collective_backend": "nccl",
+    "collective_summary": "docs/hcu-expert-recording-collective-validation-20261101.json",
+    "pending": "Full recorder-enabled model service/API/dump validation and actual dispatch-load/performance evidence.",
+    "hooks_applied": 443,
+    "hook_errors": 0,
+    "named_resolution_seams": 3,
+    "repository_tests_passed": 85
+  }
+}

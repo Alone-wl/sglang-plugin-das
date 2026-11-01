@@ -22,8 +22,8 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2930,
-    "implemented": 20,
+    "pending": 2929,
+    "implemented": 21,
     "in_progress": 34,
     "upstream": 26
   },
@@ -10921,7 +10921,19 @@
       "relation": "changed",
       "fork_oid": "c2a531d335414d0a77c50892a7923c6faa3d0871",
       "official_oid": "070f08dea9b07f3d72e4ddd27b0c682e76465f2d",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "Own every changed Source method and new auto gatherer; reuse unchanged native classes/buffers. Skip capture-time collection, collect real normal/low-latency dispatch counts for DeepEP auto, locally sum windows to fixed-shape int64 before the collective and retain output/file behavior. All changed function/class ASTs match after explicit native globals/staticmethod relocation.",
+      "implementation": [
+        "hcu_sglang/eplb/recording.py",
+        "hcu_sglang/__init__.py"
+      ],
+      "source_alignment": "docs/hcu-expert-recording-source-alignment.json",
+      "tests": [
+        "tests/runtime/expert_recording_cpu.py",
+        "tests/runtime/expert_recording_gpu.py",
+        "tests/runtime/expert_recording_gloo.py"
+      ],
+      "validation_scope": "5 CPU contracts and2 real GPU/Graph checks pass. Real2-rank Gloo covers unequal1/3 and0/2 windows; isolated dev61 real8-rank NCCL/RCCL covers1..8 and seven-empty/one-nonempty windows. Fixed1x2 int64 reductions match[480,216] and[2**32,6] exactly on all8 ranks.602 package files match source/site. 443 hooks/3 seams/zero errors and85 repository tests passed; recorder-enabled service pending; no throughput or model-derived balance claim."
     },
     {
       "path": "python/sglang/srt/eplb/expert_location.py",

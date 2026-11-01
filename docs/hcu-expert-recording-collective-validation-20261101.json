@@ -1,0 +1,383 @@
+{
+  "status": "passed",
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "plugin_version": "0.3.2.dev61",
+  "wheel_sha256": "5267f9717f0e1db1c0827900dca68f95692d234ab5fab28021473f8cba7cc3f0",
+  "lanes": [
+    {
+      "scope": "source_cpu",
+      "world_size": 2,
+      "backend": "gloo",
+      "ranks": [
+        {
+          "rank": 0,
+          "result_sha256": "308b2d3e09e22ab4c790ef66df07be6dd9e1832e0fa39be9e58575ff01f2c96a",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 1,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  40,
+                  48
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "result_sha256": "0f18052fec07b542d7a19ca812d68b1a69d85d82d77c01ba4ee3d44183923f80",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 3,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  40,
+                  48
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 2,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scope": "isolated_gpu",
+      "world_size": 8,
+      "backend": "nccl",
+      "ranks": [
+        {
+          "rank": 0,
+          "result_sha256": "efe419dc689a521203cf7f7e63d79d40725fcc7750bfe310bb2e4ae0e59e3fbb",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 1,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "result_sha256": "ed19844a1e3b13bbe95a1aa951480fd74153e8a5bbbf7c8d4762fc973d3514f0",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 2,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 2,
+          "result_sha256": "f26b6c9a8689933533da6f3ac6f68467e24a28cce0d6af964520f6ab7707622f",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 3,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 3,
+          "result_sha256": "16f5593524f487f56cc4783da21efc5542d547b1cad7b217f68a99c9af2be673",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 4,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 4,
+          "result_sha256": "b9fd11a8bbd267539dd8603519f7cb1f5529f1ec12ebc69f518797997b3613ef",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 5,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 5,
+          "result_sha256": "842f5d81afd78c0e92a256472fc046e89e81f20d3fc1aaab07caa79c3396e27d",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 6,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 6,
+          "result_sha256": "670ec884c32856a810d02dd8c284ace04d08f6d5d5bb3846cc14fb16bea87d96",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 7,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 0,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "rank": 7,
+          "result_sha256": "7141cf61eb0f590937849b3ef5a94afaadeee50a7029f4ce80d3ea24166ef2f3",
+          "cases": [
+            {
+              "case": 0,
+              "local_steps": 8,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  480,
+                  216
+                ]
+              ]
+            },
+            {
+              "case": 1,
+              "local_steps": 2,
+              "dtype": "torch.int64",
+              "shape": [
+                1,
+                2
+              ],
+              "global_counts": [
+                [
+                  4294967296,
+                  6
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": "Real aggregate-counter collectives with synthetic windows, not model-derived dispatch loads, NCCL throughput or rebalance quality. Source Gloo and isolated-wheel NCCL scopes remain separate."
+}

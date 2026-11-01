@@ -101,6 +101,8 @@ def register() -> None:
     load_aware_integration.register_hooks()
     from hcu_sglang.eplb import placement
     placement.register_hooks()
+    from hcu_sglang.eplb import recording
+    recording.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu
