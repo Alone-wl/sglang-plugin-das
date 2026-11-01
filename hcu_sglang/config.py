@@ -59,3 +59,20 @@ def resolved_custom_all_reduce_backend(disabled=False):
     if backend == "auto" and is_dcu() and get_bool_env_var("SGLANG_USE_AITER_AR", default="false"):
         return "aiter"
     return backend
+
+
+EP_STATIC_DISPATCH_POLICY_ENV = "HCU_PLUGIN_EP_STATIC_DISPATCH_POLICY"
+
+
+def ep_static_dispatch_policy():
+    value = os.environ.get(EP_STATIC_DISPATCH_POLICY_ENV, "nearest")
+    if value not in ("nearest", "locality_fair"):
+        raise ValueError(f"Invalid static expert dispatch policy: {value!r}")
+    return value
+
+
+def configure_ep_static_dispatch_policy(value):
+    if value is not None:
+        if value not in ("nearest", "locality_fair"):
+            raise ValueError(f"Invalid static expert dispatch policy: {value!r}")
+        os.environ[EP_STATIC_DISPATCH_POLICY_ENV] = value

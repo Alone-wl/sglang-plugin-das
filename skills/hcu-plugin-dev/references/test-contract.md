@@ -160,3 +160,5 @@ JIT资源审查调用[read-only资源工具](../../../tools/audit_jit_resources.
 完整路由模块迁入时，先核对共享config/output/enum/protocol类型是否与native相同；相同类型保留同一对象身份，再验证原class与owned factory的构造和真实消费者。LightOP融合、int64/padding与shared-slot重映射各走真实GPU入口；能力探测/导入成功不等于内核执行。Source旧函数名与实际定义不一致时修正调用并保存可反向恢复的精确patch，测试真实EPLB谓词而非用常量关闭融合。合成EP均衡必须与模型精度分开验收。
 
 计数/采样Triton入口需覆盖共享列切片产生的非连续routed视图与drop/shared逻辑ID；用测试自有的相邻哨兵验证bounds，不能让无效ID触碰无关分配。Graph重放同时改变真实IDs与有效行数设备指针。metadata共享类型先核对完整fields：Source新增seed字段时用兼容子类和原factory桥接，不能误称完全相同。Source工厂kwargs必须与实际solver构造器核对；load-aware的无per-layer-collective设计不要替换成LP的all-reduce。
+
+均衡solver不能只用手造replica表验收：必须从native元数据工厂走到真实solver，检查num_valid_copies/num_replicated，确认上游没有nearest折叠导致算法退化。不同算法的候选保留规则与静态policy分开验证；nearest保持旧行为，locality_fair保留完整候选并优先本GPU/本节点。保存旧函数用于差分时放在容器内，HookRegistry会替换模块级原函数别名，避免“旧/新”实际都调用新Hook。

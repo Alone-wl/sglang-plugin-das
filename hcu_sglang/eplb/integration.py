@@ -16,7 +16,7 @@ import logging
 from sglang.srt.environ import envs
 from sglang.srt.eplb.expert_location import get_global_expert_location_metadata
 from sglang.srt.runtime_context import get_exec
-from hcu_sglang.eplb.lplb_solver import LoadAwareReplicaSolver, LPLBSolver, assert_lplb_supported_model, clear_global_lplb_solvers, set_global_lplb_solver
+from hcu_sglang.eplb.lplb_solver import LoadAwareReplicaSolver, LPLBSolver, assert_lplb_supported_model, clear_global_lplb_solvers, set_global_lplb_solver, get_global_lplb_solver
 from sglang.srt.eplb import eplb_manager as M
 from sglang.srt.arg_groups import parallel_hook as P
 from hcu_sglang.utils.detection import is_dcu
@@ -109,6 +109,9 @@ def init_lplb_solvers(*, model_config: ModelConfig) -> None:
         dispatch_algorithm,
         metadata.num_layers,
     )
+    if dispatch_algorithm == "load_aware":
+        counts = sorted({get_global_lplb_solver(lid).num_replicated for lid in range(metadata.num_layers)})
+        logger.info("Load-aware replicated logical experts per layer: %s", counts)
 
 
 def maybe_init_lplb_solvers(self):

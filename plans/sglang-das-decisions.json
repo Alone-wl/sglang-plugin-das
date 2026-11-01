@@ -87,7 +87,8 @@
     "implementation": [
       "hcu_sglang/eplb/integration.py"
     ],
-    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST.",
+    "placement_progress": "Existing Source CLI spelling ep-static-dispatch-policy uses a plugin-only destination and inherited process option until canonical field/schema migration. No new Struct or undeclared seed field; current normal CLI/resolution/pickle verification pending."
   },
   "python/sglang/srt/arg_groups/serving_hook.py": {
     "status": "in_progress",
@@ -986,7 +987,8 @@
     "implementation": [
       "hcu_sglang/eplb/integration.py"
     ],
-    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST."
+    "validation_scope": "8 real GPU kernel cases including256x264, bounds/strides and Graph;2 native factory/metadata/solver/TopK-or-Hash GPU pipeline cases;7 CPU contracts and real canonical CLI/ServerArgs resolution/pickle pass on frozen dev58. Latest dev59 differs only by inherited license header; its unchanged kernels and current artifact checks are recorded separately. Explicit load-aware8-GPU service and performance remain pending. Frozen dev59:2 current public GPU pipeline tests,7 CPU contracts,437 hooks/3 seams/no errors,85 repository tests and full canonical CLI/resolution/pickle pass. All kernel/solver/metadata bytes match verified dev58; only inherited license header changes integration.py with identical function AST.",
+    "placement_progress": "Source static-locality rule is now enforced around current native validation: locality_fair only with static. Other parallel/CP deltas remain open."
   },
   "python/sglang/srt/model_executor/model_runner.py": {
     "status": "in_progress",
@@ -996,5 +998,20 @@
     ],
     "tests": [],
     "load_aware_delta": "Source maybe_init_lplb_solvers accepts both lp/load_aware and still skips draft workers; public-method CPU control test passes. Other model-runner deltas remain pending."
+  },
+  "python/sglang/srt/eplb/expert_location.py": {
+    "status": "implemented",
+    "rationale": "All4 changed/new Source helpers are owned; other helper/class ASTs unchanged and reused natively. Keep full candidates for load-aware/LP/dynamic; only static+nearest collapses. Add deterministic locality-fair source-rank placement with a process option when the canonical field is absent. No undeclared frozen-seed writes.",
+    "implementation": [
+      "hcu_sglang/eplb/placement.py",
+      "hcu_sglang/config.py",
+      "hcu_sglang/__init__.py"
+    ],
+    "source_alignment": "docs/hcu-expert-placement-source-alignment.json",
+    "tests": [
+      "tests/runtime/expert_placement_cpu.py",
+      "tests/runtime/expert_placement_gpu.py"
+    ],
+    "validation_scope": "8 CPU contracts and2 isolated dev60 native-builder/solver/public-dispatch GPU tests pass.601 source/site package files identical. Full normal CLI/resolution/pickle succeeds for static/locality_fair+redundant8. 439 hooks/3 seams/zero errors and85 repository tests passed;8-GPU complete-candidate service/performance pending."
   }
 }

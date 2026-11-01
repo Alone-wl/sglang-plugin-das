@@ -99,6 +99,8 @@ def register() -> None:
     routing.register_hooks()
     from hcu_sglang.eplb import integration as load_aware_integration
     load_aware_integration.register_hooks()
+    from hcu_sglang.eplb import placement
+    placement.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

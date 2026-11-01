@@ -1,0 +1,36 @@
+{
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/srt/eplb/expert_location.py",
+  "source_sha256": "c19b208f1b8324e3f2a39d9ea0511adb1d946bc272d24a866f0d8549b7b48f3e",
+  "owner": "hcu_sglang/eplb/placement.py",
+  "owner_sha256": "633e0947843d751f99a60b89fa56963fce7f5a2d0e336d00a18b12496bf902c4",
+  "source_function_asts_match_after_native_globals_and_policy_getter_relocation": [
+    "_compute_logical_to_all_physical_map",
+    "compute_logical_to_rank_dispatch_physical_map",
+    "_assign_locality_fair_experts",
+    "_choose_least_assigned_expert"
+  ],
+  "review_patch": "docs/patches/hcu-expert-placement-adapters.patch",
+  "patch_sha256": "07385d5a5b0d0f50c7a45386c98e502ffcecd64a6b5264b4a947d67f2c13cec3",
+  "adapters": [
+    "Unchanged metadata classes/native helpers retained; all4 Source changed/new helpers owned.",
+    "The actual Source policy value is read from a canonical field when present, otherwise an inherited plugin process option with default nearest.",
+    "Existing standard CLI spelling uses a plugin-only parser destination, stored before frozen seed construction and inherited via worker environment. No undeclared seed/Struct fields are written.",
+    "Only static+nearest can collapse candidate lists; LP/load-aware/dynamic keep all replicas.",
+    "Static locality-fair prioritizes same GPU, then same node, then deterministic least-assigned remote replicas; it is not dynamic token-load balancing."
+  ],
+  "validation": "8 CPU contracts pass, including true saved-original differential, native metadata factory to actual solver count, nearest parity, static locality/fairness/invalid topology, standard CLI sidecar/worker process inheritance and validation.2 isolated native metadata-builder/solver/public-dispatch GPU cases pass, including locality_fair static table on GPU. Full normal CLI/ServerArgs resolution/pickle passes for static/locality_fair+redundant8.",
+  "limits": "Metadata helpers perform deployment-time CPU selection and return the original device/dtype. Single-device GPU tests with rank metadata do not prove actual multi-rank load distribution/performance. Native full schema field migration remains separate; standard CLI sidecar process inheritance is verified.",
+  "isolated_artifact": {
+    "version": "0.3.2.dev60",
+    "wheel_sha256": "43e2eb0f125976ee6b29a008bcf068ba08a9be66cb8680d72c19b4ca7d304c99",
+    "matching_source_and_site_package_files": 601,
+    "gpu_tests_passed": 2,
+    "cpu_tests_passed": 8,
+    "pending": "8-GPU complete-candidate load-aware replay and actual load/performance evidence.",
+    "hooks_applied": 439,
+    "hook_errors": 0,
+    "named_resolution_seams": 3,
+    "repository_tests_passed": 85
+  }
+}
