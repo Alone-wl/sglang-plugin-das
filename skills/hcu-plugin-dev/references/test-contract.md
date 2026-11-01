@@ -168,3 +168,5 @@ EPLB统计需验证实际dispatch计数与top-k选择计数的差别：auto模�
 Graph layout状态必须成对验收：capture完成后保存实际buffer layout，replay前恢复该layout再设置dispatch mode，插入另一模型layout后仍应回到原值。检查真实当前类名和完整producer入口，不以注册日志替代实际调用。方法迁出后既测object-return也测public file-output分支，并核对free-global解析；只测file helper不能证明调用者的time/Path等命名空间完整。
 
 数据集精度见[固定GSM8K子集验收](../../../docs/validation.md#固定-gsm8k-子集与原始响应验收)：冻结数据、prefix/评分索引、采样与模型身份；当前题oracle不可进prompt。先验证HTTP/模型/正常stop，再按固定协议评分；缺失/错误/截断不得丢出分母或选择性重试。无接受阈值时只报告测量，不把六项QA或128题子集冒称通用精度或DAS回归比较。
+
+成对精度对照需从原始结果独立复算并校验controller状态、清理、完整serving参数及优化环境。同数据/同分不足以代表同配置；功能变体与基础配方应标incomparable，分别建立匹配控制组。逐题报告单端正确/双方正确/双方错误，保持oracle原样，不因错题歧义、调试或重试提高已报告分数。

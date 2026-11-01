@@ -1,0 +1,1145 @@
+{
+  "status": "accepted_approximately_equal_by_user",
+  "user_acceptance": "不用完全对齐精度 128 个测试大致一样即可",
+  "interpretation": "This observed127/128 versus126/128 pair is accepted as roughly equal; not an invented future threshold or full-model guarantee.",
+  "source_fork_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "official_commit": "baa9befa381511cd4d56f83980951e5a45fffc6d",
+  "plugin_runtime_commit": "56043f05881ba48dd8adcd984a17a568d891b2ad",
+  "plugin_version": "0.3.2.dev62",
+  "dataset_revision": "3101c7d5072418e28b9008a6636bde82a006892c",
+  "dataset_sha256": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+  "controls": [
+    {
+      "label": "das-source",
+      "run_id": "deepseekv4-fp8-tp8-gsm8k128-das-source-20261101-attempt1",
+      "started_at": "2026-11-01T11:05:53+0800",
+      "finished_at": "2026-11-01T11:12:17+0800",
+      "num_samples": 128,
+      "correct": 127,
+      "accuracy": 0.9921875,
+      "invalid_responses": 0,
+      "score_sha256": "f17e6a2d8e3ef140bf7518b037291321f837672f3659af3a9fc871f2ad3dd39c",
+      "manifest_sha256": "42420c7869ea1b1a8dec568b2c6bcc0b7bd3adb629a4f9d3327988a7358d6dfb",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false
+    },
+    {
+      "label": "plugin-base",
+      "run_id": "deepseekv4-fp8-tp8-gsm8k128-plugin-base-20261101-attempt1",
+      "started_at": "2026-11-01T11:12:50+0800",
+      "finished_at": "2026-11-01T11:17:44+0800",
+      "num_samples": 128,
+      "correct": 126,
+      "accuracy": 0.984375,
+      "invalid_responses": 0,
+      "score_sha256": "e58e428ef783c263d9b2768ffb80a056ddfdf7bd8b9305e3c91860a841b553bf",
+      "manifest_sha256": "6748b65eb3879f7877b32b3c3e71a0bc4895652a0d6d38d29c0a0fab3216a395",
+      "cleanup_remaining_pids": [],
+      "port_listening_after_cleanup": false
+    }
+  ],
+  "paired": {
+    "status": "comparable",
+    "configuration_scope": "declared_serving_args_and_env_only",
+    "live_resolved_config_verified": false,
+    "mismatches": [],
+    "baseline_accuracy": 0.9921875,
+    "candidate_accuracy": 0.984375,
+    "baseline_invalid": 0,
+    "candidate_invalid": 0,
+    "limits": "Paired outcomes for this pinned subset and declared matching serving arguments; no weight-file hash, full-benchmark accuracy, statistical significance or acceptance threshold is established.",
+    "outcomes": {
+      "both_correct": 126,
+      "baseline_only_correct": 1,
+      "candidate_only_correct": 0,
+      "both_incorrect": 1
+    },
+    "paired": [
+      {
+        "sample_index": 5,
+        "outcome": "both_correct",
+        "baseline_prediction": "64",
+        "candidate_prediction": "64",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 6,
+        "outcome": "both_correct",
+        "baseline_prediction": "260",
+        "candidate_prediction": "260",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 7,
+        "outcome": "both_correct",
+        "baseline_prediction": "160",
+        "candidate_prediction": "160",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 8,
+        "outcome": "both_correct",
+        "baseline_prediction": "45",
+        "candidate_prediction": "45",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 9,
+        "outcome": "both_correct",
+        "baseline_prediction": "460",
+        "candidate_prediction": "460",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 10,
+        "outcome": "both_correct",
+        "baseline_prediction": "366",
+        "candidate_prediction": "366",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 11,
+        "outcome": "both_correct",
+        "baseline_prediction": "694",
+        "candidate_prediction": "694",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 12,
+        "outcome": "baseline_only_correct",
+        "baseline_prediction": "13",
+        "candidate_prediction": "12",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 13,
+        "outcome": "both_correct",
+        "baseline_prediction": "18",
+        "candidate_prediction": "18",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 14,
+        "outcome": "both_correct",
+        "baseline_prediction": "60",
+        "candidate_prediction": "60",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 15,
+        "outcome": "both_correct",
+        "baseline_prediction": "125",
+        "candidate_prediction": "125",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 16,
+        "outcome": "both_correct",
+        "baseline_prediction": "230",
+        "candidate_prediction": "230",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 17,
+        "outcome": "both_correct",
+        "baseline_prediction": "57500",
+        "candidate_prediction": "57500",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 18,
+        "outcome": "both_correct",
+        "baseline_prediction": "7",
+        "candidate_prediction": "7",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 19,
+        "outcome": "both_correct",
+        "baseline_prediction": "6",
+        "candidate_prediction": "6",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 20,
+        "outcome": "both_correct",
+        "baseline_prediction": "15",
+        "candidate_prediction": "15",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 21,
+        "outcome": "both_correct",
+        "baseline_prediction": "14",
+        "candidate_prediction": "14",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 22,
+        "outcome": "both_correct",
+        "baseline_prediction": "7",
+        "candidate_prediction": "7",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 23,
+        "outcome": "both_correct",
+        "baseline_prediction": "8",
+        "candidate_prediction": "8",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 24,
+        "outcome": "both_correct",
+        "baseline_prediction": "26",
+        "candidate_prediction": "26",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 25,
+        "outcome": "both_correct",
+        "baseline_prediction": "2",
+        "candidate_prediction": "2",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 26,
+        "outcome": "both_correct",
+        "baseline_prediction": "243",
+        "candidate_prediction": "243",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 27,
+        "outcome": "both_correct",
+        "baseline_prediction": "16",
+        "candidate_prediction": "16",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 28,
+        "outcome": "both_correct",
+        "baseline_prediction": "25",
+        "candidate_prediction": "25",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 29,
+        "outcome": "both_correct",
+        "baseline_prediction": "104",
+        "candidate_prediction": "104",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 30,
+        "outcome": "both_correct",
+        "baseline_prediction": "109",
+        "candidate_prediction": "109",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 31,
+        "outcome": "both_correct",
+        "baseline_prediction": "80",
+        "candidate_prediction": "80",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 32,
+        "outcome": "both_correct",
+        "baseline_prediction": "35",
+        "candidate_prediction": "35",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 33,
+        "outcome": "both_correct",
+        "baseline_prediction": "70",
+        "candidate_prediction": "70",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 34,
+        "outcome": "both_correct",
+        "baseline_prediction": "23",
+        "candidate_prediction": "23",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 35,
+        "outcome": "both_correct",
+        "baseline_prediction": "9",
+        "candidate_prediction": "9",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 36,
+        "outcome": "both_correct",
+        "baseline_prediction": "75",
+        "candidate_prediction": "75",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 37,
+        "outcome": "both_correct",
+        "baseline_prediction": "2",
+        "candidate_prediction": "2",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 38,
+        "outcome": "both_correct",
+        "baseline_prediction": "10",
+        "candidate_prediction": "10",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 39,
+        "outcome": "both_correct",
+        "baseline_prediction": "18",
+        "candidate_prediction": "18",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 40,
+        "outcome": "both_correct",
+        "baseline_prediction": "8",
+        "candidate_prediction": "8",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 41,
+        "outcome": "both_correct",
+        "baseline_prediction": "200",
+        "candidate_prediction": "200",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 42,
+        "outcome": "both_correct",
+        "baseline_prediction": "26",
+        "candidate_prediction": "26",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 43,
+        "outcome": "both_correct",
+        "baseline_prediction": "48",
+        "candidate_prediction": "48",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 44,
+        "outcome": "both_correct",
+        "baseline_prediction": "20",
+        "candidate_prediction": "20",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 45,
+        "outcome": "both_correct",
+        "baseline_prediction": "104",
+        "candidate_prediction": "104",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 46,
+        "outcome": "both_correct",
+        "baseline_prediction": "163",
+        "candidate_prediction": "163",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 47,
+        "outcome": "both_correct",
+        "baseline_prediction": "800",
+        "candidate_prediction": "800",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 48,
+        "outcome": "both_correct",
+        "baseline_prediction": "8",
+        "candidate_prediction": "8",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 49,
+        "outcome": "both_correct",
+        "baseline_prediction": "30",
+        "candidate_prediction": "30",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 50,
+        "outcome": "both_correct",
+        "baseline_prediction": "294",
+        "candidate_prediction": "294",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 51,
+        "outcome": "both_correct",
+        "baseline_prediction": "5",
+        "candidate_prediction": "5",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 52,
+        "outcome": "both_correct",
+        "baseline_prediction": "15",
+        "candidate_prediction": "15",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 53,
+        "outcome": "both_correct",
+        "baseline_prediction": "40",
+        "candidate_prediction": "40",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 54,
+        "outcome": "both_correct",
+        "baseline_prediction": "40",
+        "candidate_prediction": "40",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 55,
+        "outcome": "both_correct",
+        "baseline_prediction": "14",
+        "candidate_prediction": "14",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 56,
+        "outcome": "both_correct",
+        "baseline_prediction": "3",
+        "candidate_prediction": "3",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 57,
+        "outcome": "both_correct",
+        "baseline_prediction": "83",
+        "candidate_prediction": "83",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 58,
+        "outcome": "both_correct",
+        "baseline_prediction": "57",
+        "candidate_prediction": "57",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 59,
+        "outcome": "both_correct",
+        "baseline_prediction": "187",
+        "candidate_prediction": "187",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 60,
+        "outcome": "both_correct",
+        "baseline_prediction": "17",
+        "candidate_prediction": "17",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 61,
+        "outcome": "both_correct",
+        "baseline_prediction": "1430",
+        "candidate_prediction": "1430",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 62,
+        "outcome": "both_correct",
+        "baseline_prediction": "25000",
+        "candidate_prediction": "25000",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 63,
+        "outcome": "both_correct",
+        "baseline_prediction": "1596",
+        "candidate_prediction": "1596",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 64,
+        "outcome": "both_correct",
+        "baseline_prediction": "300",
+        "candidate_prediction": "300",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 65,
+        "outcome": "both_correct",
+        "baseline_prediction": "36",
+        "candidate_prediction": "36",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 66,
+        "outcome": "both_correct",
+        "baseline_prediction": "48",
+        "candidate_prediction": "48",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 67,
+        "outcome": "both_correct",
+        "baseline_prediction": "595",
+        "candidate_prediction": "595",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 68,
+        "outcome": "both_correct",
+        "baseline_prediction": "36",
+        "candidate_prediction": "36",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 69,
+        "outcome": "both_correct",
+        "baseline_prediction": "60",
+        "candidate_prediction": "60",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 70,
+        "outcome": "both_correct",
+        "baseline_prediction": "7425",
+        "candidate_prediction": "7425",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 71,
+        "outcome": "both_correct",
+        "baseline_prediction": "60",
+        "candidate_prediction": "60",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 72,
+        "outcome": "both_correct",
+        "baseline_prediction": "221",
+        "candidate_prediction": "221",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 73,
+        "outcome": "both_correct",
+        "baseline_prediction": "255",
+        "candidate_prediction": "255",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 74,
+        "outcome": "both_correct",
+        "baseline_prediction": "88",
+        "candidate_prediction": "88",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 75,
+        "outcome": "both_correct",
+        "baseline_prediction": "60",
+        "candidate_prediction": "60",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 76,
+        "outcome": "both_correct",
+        "baseline_prediction": "5",
+        "candidate_prediction": "5",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 77,
+        "outcome": "both_correct",
+        "baseline_prediction": "100",
+        "candidate_prediction": "100",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 78,
+        "outcome": "both_correct",
+        "baseline_prediction": "6",
+        "candidate_prediction": "6",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 79,
+        "outcome": "both_correct",
+        "baseline_prediction": "70",
+        "candidate_prediction": "70",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 80,
+        "outcome": "both_correct",
+        "baseline_prediction": "10",
+        "candidate_prediction": "10",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 81,
+        "outcome": "both_correct",
+        "baseline_prediction": "17",
+        "candidate_prediction": "17",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 82,
+        "outcome": "both_correct",
+        "baseline_prediction": "623",
+        "candidate_prediction": "623",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 83,
+        "outcome": "both_correct",
+        "baseline_prediction": "600",
+        "candidate_prediction": "600",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 84,
+        "outcome": "both_correct",
+        "baseline_prediction": "15",
+        "candidate_prediction": "15",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 85,
+        "outcome": "both_correct",
+        "baseline_prediction": "44",
+        "candidate_prediction": "44",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 86,
+        "outcome": "both_correct",
+        "baseline_prediction": "22",
+        "candidate_prediction": "22",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 87,
+        "outcome": "both_correct",
+        "baseline_prediction": "9360",
+        "candidate_prediction": "9360",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 88,
+        "outcome": "both_correct",
+        "baseline_prediction": "8000",
+        "candidate_prediction": "8000",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 89,
+        "outcome": "both_correct",
+        "baseline_prediction": "24",
+        "candidate_prediction": "24",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 90,
+        "outcome": "both_correct",
+        "baseline_prediction": "225",
+        "candidate_prediction": "225",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 91,
+        "outcome": "both_correct",
+        "baseline_prediction": "28",
+        "candidate_prediction": "28",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 92,
+        "outcome": "both_correct",
+        "baseline_prediction": "4",
+        "candidate_prediction": "4",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 93,
+        "outcome": "both_correct",
+        "baseline_prediction": "36",
+        "candidate_prediction": "36",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 94,
+        "outcome": "both_correct",
+        "baseline_prediction": "348",
+        "candidate_prediction": "348",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 95,
+        "outcome": "both_correct",
+        "baseline_prediction": "40",
+        "candidate_prediction": "40",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 96,
+        "outcome": "both_correct",
+        "baseline_prediction": "3",
+        "candidate_prediction": "3",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 97,
+        "outcome": "both_correct",
+        "baseline_prediction": "12",
+        "candidate_prediction": "12",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 98,
+        "outcome": "both_correct",
+        "baseline_prediction": "5",
+        "candidate_prediction": "5",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 99,
+        "outcome": "both_correct",
+        "baseline_prediction": "58",
+        "candidate_prediction": "58",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 100,
+        "outcome": "both_correct",
+        "baseline_prediction": "175",
+        "candidate_prediction": "175",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 101,
+        "outcome": "both_correct",
+        "baseline_prediction": "6",
+        "candidate_prediction": "6",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 102,
+        "outcome": "both_correct",
+        "baseline_prediction": "26",
+        "candidate_prediction": "26",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 103,
+        "outcome": "both_correct",
+        "baseline_prediction": "140",
+        "candidate_prediction": "140",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 104,
+        "outcome": "both_correct",
+        "baseline_prediction": "500",
+        "candidate_prediction": "500",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 105,
+        "outcome": "both_correct",
+        "baseline_prediction": "20",
+        "candidate_prediction": "20",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 106,
+        "outcome": "both_correct",
+        "baseline_prediction": "72",
+        "candidate_prediction": "72",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 107,
+        "outcome": "both_correct",
+        "baseline_prediction": "3",
+        "candidate_prediction": "3",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 108,
+        "outcome": "both_correct",
+        "baseline_prediction": "50",
+        "candidate_prediction": "50",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 109,
+        "outcome": "both_correct",
+        "baseline_prediction": "28",
+        "candidate_prediction": "28",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 110,
+        "outcome": "both_correct",
+        "baseline_prediction": "45",
+        "candidate_prediction": "45",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 111,
+        "outcome": "both_correct",
+        "baseline_prediction": "16",
+        "candidate_prediction": "16",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 112,
+        "outcome": "both_correct",
+        "baseline_prediction": "24",
+        "candidate_prediction": "24",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 113,
+        "outcome": "both_correct",
+        "baseline_prediction": "25",
+        "candidate_prediction": "25",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 114,
+        "outcome": "both_correct",
+        "baseline_prediction": "6",
+        "candidate_prediction": "6",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 115,
+        "outcome": "both_correct",
+        "baseline_prediction": "90",
+        "candidate_prediction": "90",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 116,
+        "outcome": "both_correct",
+        "baseline_prediction": "42",
+        "candidate_prediction": "42",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 117,
+        "outcome": "both_correct",
+        "baseline_prediction": "360",
+        "candidate_prediction": "360",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 118,
+        "outcome": "both_correct",
+        "baseline_prediction": "4",
+        "candidate_prediction": "4",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 119,
+        "outcome": "both_incorrect",
+        "baseline_prediction": "99076.92",
+        "candidate_prediction": "91077",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 120,
+        "outcome": "both_correct",
+        "baseline_prediction": "240",
+        "candidate_prediction": "240",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 121,
+        "outcome": "both_correct",
+        "baseline_prediction": "27",
+        "candidate_prediction": "27",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 122,
+        "outcome": "both_correct",
+        "baseline_prediction": "48",
+        "candidate_prediction": "48",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 123,
+        "outcome": "both_correct",
+        "baseline_prediction": "50",
+        "candidate_prediction": "50",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 124,
+        "outcome": "both_correct",
+        "baseline_prediction": "10",
+        "candidate_prediction": "10",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 125,
+        "outcome": "both_correct",
+        "baseline_prediction": "10",
+        "candidate_prediction": "10",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 126,
+        "outcome": "both_correct",
+        "baseline_prediction": "82",
+        "candidate_prediction": "82",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 127,
+        "outcome": "both_correct",
+        "baseline_prediction": "120",
+        "candidate_prediction": "120",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 128,
+        "outcome": "both_correct",
+        "baseline_prediction": "880",
+        "candidate_prediction": "880",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 129,
+        "outcome": "both_correct",
+        "baseline_prediction": "10000",
+        "candidate_prediction": "10000",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 130,
+        "outcome": "both_correct",
+        "baseline_prediction": "30",
+        "candidate_prediction": "30",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 131,
+        "outcome": "both_correct",
+        "baseline_prediction": "940",
+        "candidate_prediction": "940",
+        "baseline_valid": true,
+        "candidate_valid": true
+      },
+      {
+        "sample_index": 132,
+        "outcome": "both_correct",
+        "baseline_prediction": "60",
+        "candidate_prediction": "60",
+        "baseline_valid": true,
+        "candidate_valid": true
+      }
+    ],
+    "accuracy_delta": -0.0078125
+  },
+  "common_resolved_reconstruction_differences": {
+    "enable_decoder_swa_bounded_replay": {
+      "das": null,
+      "plugin": false
+    },
+    "enable_fused_qk_norm_rope": {
+      "das": null,
+      "plugin": false
+    },
+    "enable_tf32_matmul": {
+      "das": null,
+      "plugin": false
+    },
+    "mm_enable_dp_encoder": {
+      "das": null,
+      "plugin": false
+    }
+  },
+  "resolved_reconstruction_scope": "Independent normal startup reconstruction, not saved live server_info; common-field diffs retained without pretending complete effective-state equality.",
+  "das_only_resolved_fields": [
+    "custom_all_reduce_backend",
+    "dsa_prefill_cp_mode",
+    "enable_cp_cache_layer_split",
+    "enable_dsa_prefill_context_parallel",
+    "enable_megamoe_for_layernorm_sp",
+    "enable_prefill_context_parallel",
+    "enable_prefill_idle_coalescing",
+    "ep_static_dispatch_policy",
+    "glm_adaptive_max_tokens",
+    "glm_check_chat_prompt_length",
+    "glm_check_total_num_tokens",
+    "glm_decoding_constraint_module",
+    "glm_disable_nothink",
+    "glm_ignore_decoding_constraint_exception",
+    "glm_special_token_escape_seed",
+    "hy3_sp",
+    "minimax_opt",
+    "mla_kv_prefetch_ring_size",
+    "monokernel_backend",
+    "mooncake_enable_page_wise_load",
+    "mooncake_enable_waiting_queue_dfs_prefetch",
+    "mooncake_page_wise_load_threshold",
+    "mooncake_waiting_queue_dfs_prefetch_max_bytes",
+    "mooncake_waiting_queue_dfs_prefetch_max_requests",
+    "mooncake_waiting_queue_dfs_prefetch_workers",
+    "pack_paged_kv_to_varlen",
+    "pack_paged_kv_to_varlen_min_kv_tokens",
+    "pack_paged_kv_to_varlen_min_q_tokens",
+    "prefill_cp_mode",
+    "prefill_idle_coalesce_burst_max_delay_ms",
+    "prefill_idle_coalesce_max_batch_size",
+    "prefill_idle_coalesce_max_delay_ms",
+    "prefill_idle_coalesce_settle_ms",
+    "record_nolora_graph",
+    "speculative_draft_lm_head_vp_size"
+  ],
+  "plugin_only_resolved_fields": [
+    "speculative_skip_dp_mlp_sync"
+  ],
+  "limits": "Pinned128-example subset only. One additional oracle mismatch accepted by user, not relabeled or retried away. No significance, full GSM8K, general accuracy or throughput claim; all-DAS migration remains incomplete."
+}
