@@ -1116,3 +1116,7 @@ git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
 ### Attention 与模型
 
 补齐 MLA/FLA/GDN、Qwen/Bailing/GLM 与多模态调用，保留上游接管及正确 KV/通信归属。CPU 15 项、FLA GPU 4 项通过；完整模型与所有 provider 未验证。
+
+### 缓存与通信拓扑
+
+修复容量、LightOP、SWA/DSV4/MLA、cache builder/retention、DP/CP group 和 prefix 协议；接入完整 LayerSplit page plan producer/consumer。allocator 11、topology 10、prefix 6、LayerSplit CPU 2 项以及真实 Gloo 进程组通过；GPU scatter/gather 在 LayerSplit 测试中用 CPU 数学夹具。

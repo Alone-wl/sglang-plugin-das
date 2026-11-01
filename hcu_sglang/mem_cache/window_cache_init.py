@@ -177,6 +177,8 @@ def around_init(original, self, *args, **kwargs):
 
 
 def register_hooks():
+    from hcu_sglang.mem_cache import cache_retention
+    cache_retention.register_hooks()
     if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType

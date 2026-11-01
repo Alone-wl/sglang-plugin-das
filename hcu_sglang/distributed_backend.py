@@ -418,6 +418,9 @@ def init_model_parallel_group(
     max_world_size: P.Optional[int] = None,
     custom_all_reduce_backend: P.Optional[str] = None,
 ) -> P.GroupCoordinator:
+    if group_name == "attention_tp" and not getattr(P, "_ATTN_TP_USE_AITER_CUSTOM_COMM", False):
+        use_custom_allreduce = False
+        custom_all_reduce_backend = "off"
     if use_custom_allreduce is None:
         use_custom_allreduce = P._ENABLE_CUSTOM_ALL_REDUCE
     if use_mscclpp is None:
@@ -486,12 +489,136 @@ def after_set_all_reduce_flags(result):
     return result
 
 
+
+def get_attn_dp_tp_group():
+    group = getattr(P, '_ATTN_DP_TP', None)
+    assert group is not None, 'attention DP-TP group is not initialized'
+    return group
+
+
+def around_initialize_model_parallel(original, backend=None, duplicate_tp_group=False,
+        duplicate_attn_cp_group=False, enable_symm_mem=False, recovered_rank=False, rank_offset=0, max_world_size=None):
+    result = original(backend=backend, duplicate_tp_group=duplicate_tp_group,
+        enable_symm_mem=enable_symm_mem, recovered_rank=recovered_rank,
+        rank_offset=rank_offset, max_world_size=max_world_size)
+    if not is_hcu():
+        return result
+    parallel = P.get_parallel()
+    tp_size = parallel.tp_size
+    cp_size = parallel.attn_cp_size
+    dp_size = parallel.attn_dp_size
+    attn_tp_size = tp_size // cp_size // dp_size
+    assert getattr(P, '_ATTN_DP_TP', None) is None, 'attention DP-TP group is already initialized'
+    if cp_size == 1:
+        P._ATTN_DP_TP = P._TP
+    elif dp_size == 1:
+        P._ATTN_DP_TP = P._ATTN_TP
+    else:
+        world_size = tp_size * parallel.pp_size
+        group_ranks = []
+        for tp_group_idx in range(world_size // tp_size):
+            tp_base = tp_group_idx * tp_size
+            for cp_idx in range(cp_size):
+                ranks = []
+                for dp_idx in range(dp_size):
+                    start = tp_base + (dp_idx * cp_size + cp_idx) * attn_tp_size
+                    ranks.extend(range(start, start + attn_tp_size))
+                group_ranks.append(ranks)
+        backend = backend or P.torch.distributed.get_backend(P.get_world_group().device_group)
+        P._ATTN_DP_TP = P.init_model_parallel_group(
+            group_ranks, P.get_world_group().local_rank, backend,
+            use_custom_allreduce=False, group_name='attention_dp_tp',
+            recovered_rank=recovered_rank, rank_offset=rank_offset,
+            max_world_size=max_world_size)
+    if duplicate_attn_cp_group:
+        _SOURCE_COMM_METHODS['_init_attn_cp_overlap_group'](
+            world_size=tp_size * parallel.pp_size, attn_cp_size=cp_size,
+            attn_tp_size=attn_tp_size, backend=backend,
+            recovered_rank=recovered_rank, rank_offset=rank_offset,
+            max_world_size=max_world_size)
+    return result
+
+
+def get_attn_cp_overlap_group():
+    return getattr(P, '_ATTN_CP_OVERLAP', None) or P.get_attn_cp_group()
+
+
+_SOURCE_COMM_METHODS = {}
+
+
+def _around_source_method(name):
+    def around(original, *args, **kwargs):
+        if not is_hcu():
+            return original(*args, **kwargs)
+        return _SOURCE_COMM_METHODS[name](*args, **kwargs)
+    return around
+
+
+def around_destroy_model_parallel(original):
+    if not is_hcu():
+        return original()
+    from sglang.srt.distributed.bootstrap import reset_parallel_initialised
+
+    reset_parallel_initialised()
+    P.get_parallel().clear_stamp()
+    dwdp_mgr = P.get_global_dwdp_manager()
+    if dwdp_mgr is not None:
+        dwdp_mgr.cleanup()
+        P.set_global_dwdp_manager(None)
+    names = ('_SHARED_EXPERTS_TP', '_TP', '_PP', '_DCP', '_MOE_EP', '_MOE_TP',
+        '_MOE_DP', '_ATTN_CP_OVERLAP', '_ATTN_CP', '_ATTN_DP_TP', '_ATTN_TP',
+        '_PDMUX_PREFILL_TP_GROUP')
+    destroyed = set()
+    for name in names:
+        group = getattr(P, name, None)
+        if group is not None and id(group) not in destroyed:
+            group.destroy()
+            destroyed.add(id(group))
+    for name in names:
+        setattr(P, name, None)
+
+
 def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     if is_hcu():
+        import sglang.srt.distributed as distributed
+
+        import types
+        from hcu_sglang import distributed_methods
+
+        P.get_bool_env_var = get_bool_env_var
+        if not hasattr(P, "_ATTN_CP_OVERLAP"):
+            P._ATTN_CP_OVERLAP = None
+        if not hasattr(P, "_ATTN_DP_TP"):
+            P._ATTN_DP_TP = None
+        P._is_hcu = True
+        P._ATTN_TP_USE_AITER_CUSTOM_COMM = get_bool_env_var('SGLANG_ENABLE_ATTN_TP_USE_AITER_CUSTOM_COMM')
+        P._use_fused_reshape_to_float = get_bool_env_var('SGLANG_USE_FUSED_RESHAPE_TO_FLOAT')
+        for name in ('_reduce_scatter_tensor', '_maybe_aiter_reduce_scatter',
+                '_all_gather_into_tensor', 'all_gather', '_all_to_all_single',
+                'all_to_all_single', '_init_attn_cp_overlap_group'):
+            fn = getattr(distributed_methods, name)
+            _SOURCE_COMM_METHODS[name] = types.FunctionType(
+                fn.__code__, vars(P), name, fn.__defaults__)
+            _SOURCE_COMM_METHODS[name].__kwdefaults__ = fn.__kwdefaults__
+            if name != '_init_attn_cp_overlap_group':
+                HookRegistry.register('sglang.srt.distributed.parallel_state.GroupCoordinator.' + name,
+                    _around_source_method(name), HookType.AROUND)
+        P.get_attn_cp_overlap_group = get_attn_cp_overlap_group
+        distributed.get_attn_cp_overlap_group = get_attn_cp_overlap_group
+        P.get_attn_dp_tp_group = get_attn_dp_tp_group
+        distributed.get_attn_dp_tp_group = get_attn_dp_tp_group
         P.set_custom_all_reduce_backend = set_custom_all_reduce_backend
         P.get_custom_all_reduce_backend = get_custom_all_reduce_backend
+        distributed.set_custom_all_reduce_backend = set_custom_all_reduce_backend
+        distributed.get_custom_all_reduce_backend = get_custom_all_reduce_backend
+        for name in ("get_attn_dp_tp_group", "get_attn_cp_overlap_group",
+                "set_custom_all_reduce_backend", "get_custom_all_reduce_backend"):
+            if name not in P.__all__:
+                P.__all__.append(name)
     for target, wrapper, kind in (
+        ("sglang.srt.distributed.parallel_state.initialize_model_parallel", around_initialize_model_parallel, HookType.AROUND),
+        ("sglang.srt.distributed.parallel_state.destroy_model_parallel", around_destroy_model_parallel, HookType.AROUND),
         ("sglang.srt.distributed.parallel_state.GroupCoordinator.__init__", around_coordinator_init, HookType.AROUND),
         ("sglang.srt.distributed.parallel_state.init_world_group", around_init_world_group, HookType.AROUND),
         ("sglang.srt.distributed.parallel_state.init_model_parallel_group", around_init_model_parallel_group, HookType.AROUND),
