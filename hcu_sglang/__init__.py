@@ -74,6 +74,8 @@ def register() -> None:
 
     jit_overlay_loader.register_hooks()
     configs.register_hooks()
+    from hcu_sglang import configs_mamba
+    configs_mamba.register_hooks()
     server_args.register()
     server_args_hooks.register()
     speculative_compat.register_hooks()
@@ -93,6 +95,8 @@ def register() -> None:
     dsv4_compressor.register_hooks()
     triton_hcu.register_hooks()
     gdn_backend.register()
+    from hcu_sglang.layers.attention.linear import kda_backend
+    kda_backend.register_hooks()
     linear_attention.register()
     layernorm_gated.register()
     from hcu_sglang.layers.moe import routing
@@ -109,6 +113,11 @@ def register() -> None:
     graph_batch.register_hooks()
     from hcu_sglang import graph_setup
     graph_setup.register_hooks()
+    from hcu_sglang import cp_runtime, forward_batch
+    cp_runtime.register_hooks()
+    from hcu_sglang import dsa_utils
+    dsa_utils.register_hooks()
+    forward_batch.register_hooks()
     from hcu_sglang import prefill_output, prefill_graph_runner
     prefill_output.register_hooks()
     prefill_graph_runner.register_hooks()
@@ -190,4 +199,6 @@ def register() -> None:
     qwen3.register()
     qwen3_moe.register()
     qwen3_5.register()
+    from hcu_sglang import speculative_dspark
+    speculative_dspark.register_hooks()
     logger.info("[hcu_sglang] optimization hooks registered")

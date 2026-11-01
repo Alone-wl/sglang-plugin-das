@@ -27,6 +27,30 @@
 
 285 份 JIT overlay 全量核查：281 份与 Source 字节相同，另外四份为包入口和既有 launch bounds、空 grid、HIP BF16/warp 适配。Rust 两条原生构建/运行路径通过；原 ignored Cargo cache 有损坏文件，本轮使用已有工具链与独立 cache 离线重解包，没有修改原 cache，也不对损坏来源作推断。
 
+## 最终集成检查
+
+- 仓库 unittest：117 项全部通过，显式启用 layer/GPU 测试开关，无跳过。
+- 固定 official 源码加载：597/597 Hook 全部应用、4 个具名 resolution seam，错误为零。目标集合已独立保存；从仓库外加载独立 wheel 安装目录并与合同核对，同样为 597/597、4 seam、0 errors。
+- L0：556 个 Python、8 个 Skill 通过；226 处 Markdown 锚点通过。
+- guide、迁移计划及执行台账快照检查通过。计划检查只核对保存快照，不表示重新采集全部来源。
+- 本地候选 wheel：721 个包文件与最终源码逐字节相同，包含 KDA HIP 源资产；SHA256 `30ba576f8e66fa15ee197c24b0b93e44d9557f8d20d77ab36e46b613f5e9345d`。没有覆盖系统安装，使用独立临时 target 验证。
+
+复现基础检查：
+
+```bash
+export PYTHONPATH="$OFFICIAL_ROOT/python:$PLUGIN_ROOT"
+export HCU_PLUGIN_RUN_LAYER_FIX_TESTS=1 HCU_PLUGIN_RUN_GPU_TESTS=1
+python3 -m unittest discover -s tests -v
+python3 ci/l0_gate.py
+python3 tools/build_guide.py --check
+python3 tools/build_migration_plan.py --check
+python3 tools/build_migration_execution.py --check
+```
+
+严格加载前先调用 `hcu_sglang.compat.aiter.bootstrap_aiter_compat()`，随后运行 `tools/validate_plugin_runtime.py`，指定固定 official、当前插件、`--plugin-package hcu_sglang` 及 `--expected-targets tests/contracts/hcu_source_alignment_targets.json`。与空 target、旧安装或错误路径混用时应判失败。
+
+最终空白检查去除了少量新文件的 EOF 空行；方法逻辑与之前模块测试一致，最终 wheel 对照使用清理后的字节。代理早期方法哈希记录对应其冻结时刻，最终包字节以 wheel-members-final.json 为准。
+
 ## 验证边界
 
 以上证明具体方法、注册、状态与消费者，不证明全部 fork 行为、全部模型、shape 或性能等价。没有执行新的完整模型服务、完整多进程 PD 服务或八卡数据集验收。容器缺少 deepgemm.mega 及部分 AITER API，这些 provider 的完整数值与 Graph lane 保持未验证；没有用其他实现替代来源算法来制造通过。

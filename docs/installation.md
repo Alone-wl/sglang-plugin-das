@@ -135,7 +135,7 @@ PYCODE
 # wheel 使用 SITE；editable 改为 PLUGIN_ROOT="$PLUGIN"。
 PLUGIN_ROOT="$SITE"
 # 合同必须来自与 wheel 相同版本的源码；自行构建时可使用上面的 BUILD。
-CONTRACT="$PLUGIN/docs/hcu-sglang-targets.json"
+CONTRACT="$PLUGIN/tests/contracts/hcu_source_alignment_targets.json"
 python3 - "$REPO" "$OFFICIAL" "$PLUGIN_ROOT" "$CONTRACT" "$ARTIFACTS/runtime.json" <<'PYCODE'
 from pathlib import Path
 import runpy
