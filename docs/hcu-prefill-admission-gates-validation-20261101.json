@@ -1,0 +1,45 @@
+{
+  "status": "passed_scoped_gates",
+  "plugin_version": "0.3.2.dev68",
+  "wheel_sha256": "458c34789eab6969fd1d6b91969dc50dd5218670e6c7d387523438afc548c4c9",
+  "matching_source_wheel_installed_package_files": 619,
+  "hook_registered": 466,
+  "hook_applied": 466,
+  "resolution_seams": [
+    "handle_a2a_moe",
+    "handle_attention_backend_compatibility",
+    "handle_model_capability_adjustments",
+    "handle_model_specific_adjustments"
+  ],
+  "errors": [],
+  "tests": [
+    {
+      "test_log": "prefill_admission_cpu-wheel68.log",
+      "count": 8,
+      "sha256": "4454ef2ea908fa9d26b35b73dd9041af5e022c401b4dda89d17c8f90394c650a"
+    },
+    {
+      "test_log": "replay_validation_cpu-wheel68.log",
+      "count": 5,
+      "sha256": "f171eb503fb99926218b0b944011dcc74dbf4ccb5c5b6926047a496dfa29b52d"
+    },
+    {
+      "test_log": "repository68.log",
+      "count": 95,
+      "sha256": "f23ee897c9825f9f41820d0f92e1f83453cfe4f0540b4d898818a96168cef61a"
+    }
+  ],
+  "actual_v41_resolve_once": {
+    "encoder_off": "passed",
+    "resolved_decoder_replay": false,
+    "resolved_chunked_prefill_size": 4096,
+    "resolved_attn_dp_size": 8,
+    "resolved_replica_dp_size": 1,
+    "resolved_report_sha256": "a4ba2dd26e5cbaebd6d721ed64e34c5ec36ded56ff41999899df11889e9d8eef",
+    "encoder_on": "rejected",
+    "error": "--enable-encoder-swa-bounded-replay does not support hardware other than CUDA or gfx950 yet",
+    "rejected_log_sha256": "f0b19006e658491ee6e7ff7c82381c02bbddc8ff3e52f533598abe8d6bfc9620",
+    "pending_source_default_difference": "Native apply_deepseek_v4_defaults still disables explicitly enabled sparse prefill for this V4.1 architecture; migration pending, so this preflight is not an optimized-model delivery claim."
+  },
+  "scope": "CPU scheduler/ABI/policy changes with public admission and named resolution dispatcher. No new GPU kernel claim. Complete AUX window-plan producer/transport, remaining V4 defaults/CP rules and compatible encoder model validation remain pending. Ordinary8GPU BCG serving recorded separately."
+}

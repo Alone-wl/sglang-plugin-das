@@ -119,6 +119,13 @@ def register() -> None:
     from hcu_sglang import encoder_swa_replay, encoder_swa_worker
     encoder_swa_replay.register_hooks()
     encoder_swa_worker.register_hooks()
+    from hcu_sglang import prefill_admission, prefill_memory_budget, prefill_request
+    prefill_admission.register_hooks()
+    prefill_memory_budget.register_hooks()
+    prefill_request.register_hooks()
+    from hcu_sglang import replay_validation, model_replay_budget
+    replay_validation.register_hooks()
+    model_replay_budget.register_hooks()
     standard_dispatcher.register_hooks()
     alignment.register_hooks()
     from hcu_sglang.utils.detection import is_dcu

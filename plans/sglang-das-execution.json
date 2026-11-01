@@ -22,9 +22,9 @@
   },
   "semantics": "File dispositions are review records, not a runtime equivalence or completion percentage. Unlisted decisions remain pending. Historical mapping clues never imply validation.",
   "summary": {
-    "pending": 2913,
-    "implemented": 27,
-    "in_progress": 44,
+    "pending": 2909,
+    "implemented": 29,
+    "in_progress": 46,
     "upstream": 26
   },
   "files": [
@@ -9920,7 +9920,16 @@
       "relation": "changed",
       "fork_oid": "717d99785b44baac47e99f3407c5e90355dcf389",
       "official_oid": "bdb1e765225d09a721d127a03140888a16e5d489",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Full Source V4.1 features validator and replay min-budget helper migrated; other attention defaults/CP validation changes pending. CUDA/gfx950/HIP restrictions retained.",
+      "implementation": [
+        "hcu_sglang/replay_validation.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+      "tests": [
+        "tests/runtime/replay_validation_cpu.py"
+      ],
+      "validation_scope": "5 CPU contracts preserve budget/page boundary, source feature guards/default declaration and real named seam dispatch. Actual resolve_once/model checks remain separate."
     },
     {
       "path": "python/sglang/srt/arg_groups/field_order.py",
@@ -10084,7 +10093,16 @@
       "relation": "changed",
       "fork_oid": "bccde3c3689fa54aff0c2914e634b8fd23c9f215",
       "official_oid": "b71a4cc53584ad962c22f2b49a6f7aaa4a068191",
-      "status": "pending"
+      "status": "in_progress",
+      "rationale": "Source capability function is identical to native except final replay-budget check. Named seam calls previous then exact Source tail, respecting INSTANCE early return; other model-specific/GLM changes pending.",
+      "implementation": [
+        "hcu_sglang/model_replay_budget.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+      "tests": [
+        "tests/runtime/replay_validation_cpu.py"
+      ],
+      "validation_scope": "5 CPU contracts preserve budget/page boundary, source feature guards/default declaration and real named seam dispatch. Actual resolve_once/model checks remain separate."
     },
     {
       "path": "python/sglang/srt/arg_groups/model_override_base.py",
@@ -13633,14 +13651,16 @@
       "fork_oid": "f2bc746affeae690369aa403586c77df6d932768",
       "official_oid": "6bc0dbf6a4e548f3bf858945b2bcd9ba9f7edae5",
       "status": "in_progress",
-      "rationale": "Only native-compatible declared global_cp_num_tokens field added for copy/pickle; other Source ScheduleBatch differences and model-worker handoff pending.",
+      "rationale": "Only native-compatible declared global_cp_num_tokens field added for copy/pickle; other Source ScheduleBatch differences and model-worker handoff pending. Source Req AUX property/needs-load-back added as native subtype; native legacy staged plan has no AUX windows so interprets AUX0 without replacing its ABI.",
       "implementation": [
-        "hcu_sglang/prefill_graph_sync.py"
+        "hcu_sglang/prefill_graph_sync.py",
+        "hcu_sglang/prefill_request.py"
       ],
       "source_alignment": "docs/hcu-prefill-sync-source-alignment.json",
       "tests": [
         "tests/runtime/prefill_sync_cpu.py",
-        "tests/runtime/prefill_sync_gloo.py"
+        "tests/runtime/prefill_sync_gloo.py",
+        "tests/runtime/prefill_admission_cpu.py"
       ],
       "validation_scope": "Explicit partial file review; no full CP/elastic/model claim."
     },
@@ -13650,7 +13670,18 @@
       "relation": "changed",
       "fork_oid": "197d7bbacaebde812a1c90fc0c69af88cd6eace1",
       "official_oid": "9f6d1521735d09f91ddf0bcda938c2f73d187cef",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "All11 changed/new Source PrefillAdder methods and frozen admission record migrated as native subclass. Replay rows charged to compute budgets only, chunk limits reduced before admission; idle staged deferral and retraction accounting paired. Native unchanged constructor/helpers retained.",
+      "implementation": [
+        "hcu_sglang/prefill_admission.py",
+        "hcu_sglang/prefill_memory_budget.py",
+        "hcu_sglang/prefill_request.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_admission_cpu.py"
+      ],
+      "validation_scope": "8 CPU contracts through real constructor/public add_one_req and native memory budget preserve prior overdraw(-10) counterexample,144-token first-page boundary, exact/DLLM charge, capacity defer and AUX legacy readout. Ordinary model and final gates recorded separately; native window-plan production/transport not claimed."
     },
     {
       "path": "python/sglang/srt/managers/scheduler.py",
@@ -14267,7 +14298,16 @@
       "relation": "changed",
       "fork_oid": "7737277c8340022b04022a5731c552ea286ccf8c",
       "official_oid": "5a22403596cf63a86e5ae867befbbe578073184b",
-      "status": "pending"
+      "status": "implemented",
+      "rationale": "All three Source check_prefill signature/method changes migrated; unchanged allocator reservation and budget arithmetic remain native. New auxiliary parameter is accepted with Source semantics, not invented extra reservation math.",
+      "implementation": [
+        "hcu_sglang/prefill_memory_budget.py"
+      ],
+      "source_alignment": "docs/hcu-prefill-admission-source-alignment.json",
+      "tests": [
+        "tests/runtime/prefill_admission_cpu.py"
+      ],
+      "validation_scope": "Actual native Prefill/SWA/SharedSWA object methods accept new parameter; old native signature rejection retained. CPU capacity and public admission contracts, not complete AUX transfer."
     },
     {
       "path": "python/sglang/srt/mem_cache/pure_swa_radix_cache.py",

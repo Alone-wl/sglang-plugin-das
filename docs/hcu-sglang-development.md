@@ -988,3 +988,13 @@ Source的8个完整同步函数/方法与7个完整计数/拓扑helper经native 
 [dev67分范围门禁](hcu-encoder-swa-gates-validation-20261101.json)：614包文件与源码/site一致，wheel SHA256 b741efaa6649b133f4961d6147a47c206735bf8a222da56914044eead37b268e；460/460 Hook、3个resolution seam、0 errors，8项encoder CPU、6项同步CPU、1项真实GPU映射Graph及本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏验收通过。实际resolve_once对V4.1-Flash进一步拒绝当前硬件（CUDA/gfx950限制），与Source保留条件相同；没有绕过硬件/DP约束。当前HCU的完整encoder feature服务仍未验证，普通BCG服务回归另记，不将算法GPU primitive通过外推为该模型能力。
 
 [dev67普通八卡BCG回归](hcu-tp8-deepseekv4-prefill-bcg-dev67-validation-20261101.json)：13:01:45–13:07:31通过，8rank完成prefill捕获、六项严格生成全部HTTP200/正确完整答案/正常stop，自有进程为空、端口关闭。614包文件与cb69307/wheel/site相同。此run明确encoder flag为False，只验证新worker普通生成路径与既有BCG回归，不称encoder cache-hit或兼容硬件模型验证；V4.1预检限制和下一阶段PrefillAdder预算/feature validator差异保留。旧128题分数与其artifact不归用到dev67。
+
+## 82. 2026-11-01 Prefill replay 预算与 feature 校验
+
+迁入Source全部11个变化/新增PrefillAdder方法及冻结admission记录，复用native构造与不变helper；compute预算按page-ceiled或exact原始extend加replay行，KV预算只收page-ceiled extend及headroom。首次命中chunk先扣replay，idle容量失败才defer staged，retraction完成storage admission accounting。配套三个memory budget的完整Source check_prefill接口与Req辅助SWA属性/needs-load-back读出；固定native staged plan仅有SWA，无AUX窗口，明确按0 AUX解释，保留原plan构造ABI，窗口plan生产/传输继续pending。
+
+Source完整features校验和最小128+page预算迁入，保留CUDA/gfx950/HIP/DP等限制及decoder auto声明。源码证明handle_model_capability_adjustments除末尾预算校验外与native AST相同，沿现有具名seam先调用previous再追加Source尾部，并保留INSTANCE早退；不复制旧分支覆盖其他合法适配，不修改冻结seed。实际CPU预算、公开admission与resolve_once配置验证按本轮证据记录，未将gfx938模型encoder feature限制绕过。
+
+隔离dev68的8项预算与5项校验CPU测试通过：旧公开adder将150预算扣成-10、提交25行extend的反例保留；新实现只提交16行extend并收128 replay，chunk余6，KV仅32。143预算不提交，144预算提交首个16-token页并耗尽chunk；exact与DLLM compute分别扣原始/ceiled extend加replay。三种native预算新接口、idle deferral、retraction storage完成及legacy/AUX读出通过。实际具名resolution dispatcher确认previous先执行、重复注册不叠加以及128+page拒绝逻辑；未mock掉预算reader。18个完整Source方法/函数及admission记录AST规范化一致，native capability body除Source尾部外一致。
+
+[dev68分范围门禁](hcu-prefill-admission-gates-validation-20261101.json)：619包文件与源码/site一致，wheel SHA256 458c34789eab6969fd1d6b91969dc50dd5218670e6c7d387523438afc548c4c9；466/466 Hook、4个具名resolution seam、0 errors；8项预算、5项校验和本地/容器95项仓库测试通过，L0/Skill/guide与实际宽窄屏通过。实际V4.1 resolve_once在encoder-off下成功，decoder auto=False、per-rank chunk4096、attention DP8/replica DP1；encoder-on仍按Source硬件约束拒绝。另捕获未迁移的V4.1 defaults覆盖显式sparse-prefill问题，不将该预检声称为优化配置交付。普通8GPU BCG回归结果另记；当前改动为CPU调度/接口/配置，未冒称新的GPU kernel数值验收。
