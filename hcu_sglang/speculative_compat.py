@@ -6,22 +6,19 @@ from typing import Any, Callable
 
 import torch
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def around_handle_dspark(original: Callable[..., None], server_args: Any) -> None:
-    if not is_dcu() or server_args.device.startswith(("cuda", "npu")):
+    if not is_hcu():
         return original(server_args)
-    original_device = server_args.device
-    server_args.device = "cuda"
-    try:
-        return original(server_args)
-    finally:
-        server_args.device = original_device
+    from hcu_sglang.speculative_dspark import _handle_dspark
+
+    return _handle_dspark(server_args)
 
 
 def around_inference_only(original: Callable[..., Any], *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     with torch.inference_mode():
         return original(*args, **kwargs)
@@ -29,7 +26,7 @@ def around_inference_only(original: Callable[..., Any], *args, **kwargs):
 
 def around_dspark_dequant_supported(original: Callable[..., bool], linear: Any) -> bool:
     if (
-        is_dcu()
+        is_hcu()
         and getattr(getattr(linear, "weight", None), "dtype", None)
         == torch.float8_e4m3fn
         and not hasattr(linear, "weight_scale_inv")
@@ -54,7 +51,7 @@ def _get_dspark_ragged_settings():
 
 def before_dspark_verify_planner_init(*args, **kwargs) -> None:
     del args, kwargs
-    if not is_dcu():
+    if not is_hcu():
         return None
 
     ragged_verify_mode, static_mode, prep_in_cuda_graph = _get_dspark_ragged_settings()
@@ -75,31 +72,23 @@ def _needs_mhc_hidden_states(model_runner: Any) -> bool:
 
 
 def around_prepare_for_draft(original: Callable[..., Any], *args, **kwargs):
-    forward_batch, can_run_decode_cuda_graph = original(*args, **kwargs)
+    result = original(*args, **kwargs)
+    forward_batch = result[0]
     draft_model_runner = kwargs.get("draft_model_runner")
-    if draft_model_runner is None and len(args) >= 4:
-        draft_model_runner = args[3]
+    if draft_model_runner is None and len(args) >= 5:
+        draft_model_runner = args[4]
     if _needs_mhc_hidden_states(draft_model_runner):
         forward_batch.return_hidden_states_before_norm = True
-    return forward_batch, can_run_decode_cuda_graph
+    return result
 
 
-def around_eagle_prepare_for_verify(original: Callable[..., Any], *args, **kwargs):
-    forward_batch, can_run_cuda_graph = original(*args, **kwargs)
-    target_worker = kwargs.get("target_worker")
-    if target_worker is None and len(args) >= 4:
-        target_worker = args[3]
-    model_runner = getattr(target_worker, "model_runner", None)
-    if _needs_mhc_hidden_states(model_runner):
-        forward_batch.return_hidden_states_before_norm = True
-    return forward_batch, can_run_cuda_graph
 
 
 def around_tbo_filter_batch(
     original: Callable[..., Any], cls: type, batch: Any, *args, **kwargs
 ):
     child_batch = original(cls, batch, *args, **kwargs)
-    if is_dcu() and getattr(batch, "return_hidden_states_before_norm", False):
+    if is_hcu() and getattr(batch, "return_hidden_states_before_norm", False):
         child_batch.return_hidden_states_before_norm = True
     return child_batch
 
@@ -153,11 +142,6 @@ def register_hooks() -> None:
     HookRegistry.register(
         "sglang.srt.speculative.eagle_worker_common.prepare_for_draft",
         around_prepare_for_draft,
-        HookType.AROUND,
-    )
-    HookRegistry.register(
-        "sglang.srt.speculative.eagle_worker_common.eagle_prepare_for_verify",
-        around_eagle_prepare_for_verify,
         HookType.AROUND,
     )
     HookRegistry.register(

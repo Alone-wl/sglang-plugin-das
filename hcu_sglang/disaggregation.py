@@ -5,14 +5,14 @@ from __future__ import annotations
 import logging
 from typing import Any, Callable, List, Tuple
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 logger = logging.getLogger(__name__)
 
 
 def after_prefill_bootstrap_queue_init(result: Any, queue: Any, *args, **kwargs) -> Any:
     del args, kwargs
-    if not is_dcu():
+    if not is_hcu():
         return result
 
     tp_worker = queue.scheduler.tp_worker
@@ -321,7 +321,7 @@ def around_get_mha_kv_ptrs_with_pp(
     src_kv_ptrs: List[int],
     dst_kv_ptrs: List[int],
 ):
-    if not is_dcu():
+    if not is_hcu():
         return original(self, src_kv_ptrs, dst_kv_ptrs)
     if not hasattr(self, "model_config"):
         from sglang.srt.configs.model_config import ModelConfig
@@ -333,6 +333,8 @@ def around_get_mha_kv_ptrs_with_pp(
 def register_hooks() -> None:
     from hcu_sglang.disagg.integration import register_hooks as register_pd
     register_pd()
+    from hcu_sglang.disaggregation_glm5 import register_hooks as register_glm5_pd
+    register_glm5_pd()
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
 
     HookRegistry.register(

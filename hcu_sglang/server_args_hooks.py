@@ -7,10 +7,10 @@ import os
 from sglang.srt.arg_groups.arg_utils import is_record
 from copy import deepcopy
 from hcu_sglang.config import (configure_minimax_opt, minimax_opt_enabled,
-    configure_cp_cache_layer_split, cp_cache_layer_split_enabled)
+    configure_cp_cache_layer_split, cp_cache_layer_split_enabled, configure_draft_lm_head_vp)
 from typing import Any, Callable
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ def _restore_env_fields(envs: Any, snapshot: dict[str, str | None]) -> None:
 def handle_model_specific_adjustments(
     original: Callable[..., Any], server_args: Any
 ) -> Any:
-    if not is_dcu() or _model_arch(server_args) != "DeepseekV4ForCausalLM":
+    if not is_hcu() or _model_arch(server_args) != "DeepseekV4ForCausalLM":
         return original(server_args)
 
     from sglang.srt.environ import envs
@@ -64,17 +64,17 @@ def handle_model_specific_adjustments(
 def after_deepseek_family_overrides(
     result: dict[str, Any], server_args: Any, hf_config: Any
 ) -> dict[str, Any]:
-    if not is_dcu():
+    if not is_hcu():
         return result
-    from sglang.srt.configs.model_config import is_deepseek_dsa
+    from sglang.srt.configs.model_config import get_dsa_index_kpool, is_deepseek_dsa
 
-    if is_deepseek_dsa(hf_config):
+    if is_deepseek_dsa(hf_config) and get_dsa_index_kpool(hf_config) == 1:
         result["page_size"] = 64
     return result
 
 
 def after_dsa_split_backend_resolution(result: dict[str, Any], view: Any):
-    if not is_dcu() or view.enable_hisparse:
+    if not is_hcu() or view.enable_hisparse:
         return result
     if view.dsa_prefill_backend is not None or view.dsa_decode_backend is not None:
         return result
@@ -126,7 +126,7 @@ def _resolving_view(server_args):
 
 
 def handle_a2a_moe(result: Any, server_args: Any) -> Any:
-    if not is_dcu():
+    if not is_hcu():
         return result
 
     from sglang.srt.environ import envs
@@ -189,6 +189,11 @@ def after_add_cli_args(result: Any, parser: Any) -> Any:
         parser.add_argument("--cuda-graph-max-bs", dest=canonical.dest,
                             type=canonical.type, default=argparse.SUPPRESS,
                             help="Compatibility alias for --cuda-graph-max-bs-decode.")
+    if "--speculative-draft-lm-head-vp-size" not in existing:
+        parser.add_argument(
+            "--speculative-draft-lm-head-vp-size", type=int, choices=(1, 4, 8, 16),
+            default=None, help="Enable HCU node-local EAGLE draft LM-head VP; 1 disables it.",
+        )
     if "--minimax-opt" not in existing:
         parser.add_argument(
             "--minimax-opt",
@@ -215,11 +220,13 @@ def before_add_cli_args(*args, **kwargs):
 
 
 def before_from_cli_args(cls, args):
+    configure_draft_lm_head_vp(getattr(args, "speculative_draft_lm_head_vp_size", None))
     configure_minimax_opt(getattr(args, "minimax_opt", None))
     configure_cp_cache_layer_split(getattr(args, "hcu_plugin_cp_cache_layer_split", None))
 
 
 def after_from_cli_args(result: Any, cls: Any, args: Any) -> Any:
+    configure_draft_lm_head_vp(getattr(args, "speculative_draft_lm_head_vp_size", None))
     configure_minimax_opt(getattr(args, "minimax_opt", None))
     configure_cp_cache_layer_split(getattr(args, "hcu_plugin_cp_cache_layer_split", None))
     if not is_record(result):
@@ -237,8 +244,11 @@ def _hcu_model_defaults(server_args, hf_config):
 def _hcu_post_process(view):
     from sglang.srt.arg_groups.model_override_base import model_config_of
     from sglang.srt.configs.model_config import is_deepseek_dsa
+    from hcu_sglang.speculative.draft_lm_head_vp_hooks import validate_config
+
+    validate_config(view)
     changes = {}
-    if not is_dcu():
+    if not is_hcu():
         if cp_cache_layer_split_enabled():
             raise ValueError("--enable-cp-cache-layer-split requires the HCU plugin platform")
         return changes

@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "ops": {
+    "sglang_mla_sparse": "dtk",
+    "int8_scaled_mm": "lightop",
+    "sglang_grouped_topk": "triton"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "source_repository": "HYGON-AI/sglang-das",
+  "source_commit": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
+  "source_path": "python/sglang/kernels/aot/csrc/kvcacheio/transfer.cu",
+  "source_sha256": "001c90ddc08689b2f25ff51f4d35768c8349639698a7f0f0d951b4054354c8a7",
+  "symbols": [
+    "ceil_div",
+    "safe_min",
+    "launch_alloc_decode_kernel",
+    "launch_alloc_extend_kernel",
+    "hcu_alloc_decode_kernel",
+    "hcu_alloc_extend_kernel",
+    "launch_assign_req_to_token_pool",
+    "hcu_assign_req_to_token_pool",
+    "get_last_loc_kernel",
+    "hcu_get_last_loc"
+  ],
+  "output_path": "hcu_sglang/jit_overlay/csrc/memory/hcu_allocation.cu",
+  "output_sha256": "51d75ca9b8f335c257421f597cf4215c9da7a7a5a44682a0cff11c6e1d8970d6",
+  "changes": [
+    "Standalone includes and pybind module; extracted function bodies unchanged."
+  ]
+}

@@ -28,7 +28,7 @@ def _load_config_class():
 
 @cache
 def _load_base_config_class():
-    from hcu_sglang.layers.quantization.slimquant_w4a8 import (
+    from hcu_sglang.layers.quantization.slimquant_config import (
         SlimQuantW4A8Int8Config,
     )
 
@@ -81,8 +81,18 @@ def install_quantization_method() -> bool:
         SLIMQUANT_MARLIN_NAME: LazySlimQuantW4A8Int8MarlinConfig,
     }
     for name, config in methods.items():
-        quantization.BASE_QUANTIZATION_METHODS.setdefault(name, config)
-        quantization.QUANTIZATION_METHODS.setdefault(name, config)
+        for registry in (
+            quantization.BASE_QUANTIZATION_METHODS,
+            quantization.QUANTIZATION_METHODS,
+        ):
+            existing = registry.get(name)
+            if existing is not None and existing is not config:
+                raise RuntimeError(
+                    f"Quantization {name!r} is already registered by {existing!r}; "
+                    "disable the other provider. With hcu-adapter, set "
+                    "HCU_SLIMQUANT=0 before starting Python."
+                )
+            registry.setdefault(name, config)
 
     model_config = sys.modules.get("sglang.srt.configs.model_config")
     if model_config is not None:
@@ -100,7 +110,11 @@ def around_get_quantization_config(
 
 def around_verify_quantization(original: Callable[..., Any], model_config):
     install_quantization_method()
-    if getattr(model_config, "quantization", None) not in _HCU_QUANTIZATION_NAMES:
+    requested = getattr(model_config, "quantization", None)
+    if requested is None:
+        checkpoint_config = model_config._parse_quant_hf_config() or {}
+        requested = checkpoint_config.get("quant_method")
+    if requested not in _HCU_QUANTIZATION_NAMES:
         return original(model_config)
 
     module = sys.modules.get("sglang.srt.configs.model_config")
@@ -115,6 +129,15 @@ def around_verify_quantization(original: Callable[..., Any], model_config):
         module.is_hip = original_is_hip
 
 
+def around_get_all_weights(original, loader, model_config, model):
+    weights = original(loader, model_config, model)
+    quant_config = getattr(model, "quant_config", None)
+    converter = getattr(quant_config, "convert_weights", None)
+    if type(quant_config).__module__.startswith("hcu_sglang.layers.quantization.") and callable(converter):
+        return converter(weights)
+    return weights
+
+
 def register_hooks() -> None:
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
 
@@ -126,5 +149,10 @@ def register_hooks() -> None:
     HookRegistry.register(
         "sglang.srt.configs.model_config.ModelConfig._verify_quantization",
         around_verify_quantization,
+        HookType.AROUND,
+    )
+    HookRegistry.register(
+        "sglang.srt.model_loader.loader.DefaultModelLoader._get_all_weights",
+        around_get_all_weights,
         HookType.AROUND,
     )

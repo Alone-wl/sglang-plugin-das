@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from sglang.srt.model_executor.forward_context import get_token_to_kv_pool
+
 import logging
 import os
 
@@ -9,13 +11,13 @@ from hcu_sglang.models.fused_rotary import (
     get_kv_cache_dtype,
     mark_fused_kv_store,
 )
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 logger = logging.getLogger(__name__)
 
 
 def after_init(result, attention, *args, **kwargs):
-    if not is_dcu():
+    if not is_hcu():
         return result
     layer_id = kwargs.get("layer_id")
     if layer_id is None and len(args) >= 5:
@@ -28,7 +30,7 @@ def after_init(result, attention, *args, **kwargs):
 
 def around_forward(original, attention, positions, hidden_states, forward_batch):
     if (
-        not is_dcu()
+        not is_hcu()
         or os.getenv("SGLANG_USE_FUSED_SPLIT_QKV_RMS_ROTARY_EMBEDDING", "0")
         != "1"
     ):
@@ -47,7 +49,7 @@ def around_forward(original, attention, positions, hidden_states, forward_batch)
             qkv.device, dtype=qkv.dtype, non_blocking=True
         )
         attention.rotary_emb.cos_sin_cache = cos_sin_cache
-    k_buffer, v_buffer = forward_batch.token_to_kv_pool.get_kv_buffer(
+    k_buffer, v_buffer = get_token_to_kv_pool().get_kv_buffer(
         attention.layer_id
     )
     q, k, v = split_qkv_rms_rotary_embedding_fuse_with_kv_store_quant(

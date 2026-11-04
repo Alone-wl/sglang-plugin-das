@@ -32,6 +32,28 @@ def lazy_function(module_name: str, function_name: str):
     return proxy
 
 
+def _method_hook(source_module, source_name):
+    replacement = lazy_function(source_module, source_name)
+    supported = (
+        "hcu_sglang.models.deepseek.deepseek_v2.",
+        "hcu_sglang.models.deepseek.deepseek_common.",
+        "hcu_sglang.models.deepseek.deepseek_nextn.",
+    )
+    if not source_module.startswith(supported):
+        return replacement, HookType.REPLACE
+
+    def around(original, instance, *args, **kwargs):
+        from hcu_sglang.models.glm5_next import use_upstream_method
+
+        if use_upstream_method(instance):
+            if source_name == "__init__":
+                instance._hcu_glm5_upstream = True
+            return original(instance, *args, **kwargs)
+        return replacement(instance, *args, **kwargs)
+
+    return around, HookType.AROUND
+
+
 def register_method_replaces_from_path(
     base_module: str,
     class_name: str,
@@ -44,10 +66,9 @@ def register_method_replaces_from_path(
     method_names = tuple(method_names)
     for name in method_names:
         source_name = source_method_map.get(name, name)
+        hook, hook_type = _method_hook(source_module, source_name)
         HookRegistry.register(
-            f"{base_module}.{class_name}.{name}",
-            lazy_function(source_module, source_name),
-            HookType.REPLACE,
+            f"{base_module}.{class_name}.{name}", hook, hook_type
         )
     return len(method_names)
 
@@ -60,10 +81,9 @@ def register_mixin_method_replaces_from_path(
 ) -> int:
     method_specs = tuple(method_specs)
     for target_name, source_name in method_specs:
+        hook, hook_type = _method_hook(source_module, source_name)
         HookRegistry.register(
-            f"{mixin_module}.{mixin_class}.{target_name}",
-            lazy_function(source_module, source_name),
-            HookType.REPLACE,
+            f"{mixin_module}.{mixin_class}.{target_name}", hook, hook_type
         )
     return len(method_specs)
 
@@ -238,12 +258,12 @@ def patch_deepseek_common_module_attrs() -> None:
 
 
 def patch_deepseek_common_attention_backend() -> None:
-    """Register DCU MLA attention backend handler."""
+    """Register HCU MLA attention backend handler."""
     from hcu_sglang.models.deepseek.deepseek_common.hooks import (
         attention_backend_handler,
     )
 
-    attention_backend_handler.register_attention_dcu_mla_backend()
+    attention_backend_handler.register_attention_hcu_mla_backend()
 
 
 def patch_deepseek_v2_module_attrs() -> None:

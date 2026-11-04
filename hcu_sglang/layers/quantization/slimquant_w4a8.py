@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 import torch
 import torch.nn.functional as F
@@ -11,7 +11,7 @@ from lightop.quant import per_token_quant_int8
 from torch.nn.parameter import Parameter
 
 from hcu_sglang.compat.parallel import get_tensor_model_parallel_world_size
-from sglang.srt.layers.linear import LinearBase, set_weight_attrs
+from sglang.srt.layers.linear import set_weight_attrs
 from sglang.srt.layers.moe import MoeRunner, MoeRunnerBackend, MoeRunnerConfig
 from sglang.srt.layers.parameter import (
     ChannelQuantScaleParameter,
@@ -21,10 +21,9 @@ from sglang.srt.layers.parameter import (
 from sglang.srt.layers.quantization.base_config import (
     FusedMoEMethodBase,
     LinearMethodBase,
-    QuantizationConfig,
-    QuantizeMethodBase,
 )
 from hcu_sglang.layers.quantization import quant_ops
+from hcu_sglang.layers.quantization.slimquant_config import SlimQuantW4A8Int8Config
 from sglang.srt.utils import get_bool_env_var
 
 from hcu_sglang.layers.quantization.cache_config import W8a8GetCacheJSON
@@ -62,6 +61,18 @@ def baseline_scaled_mm(
     return output.to(out_dtype)
 
 
+def _adjust_block_config(config, *, n, k):
+    adjusted = dict(config)
+    for key, dimension in (("BLOCK_SIZE_N", n), ("BLOCK_SIZE_K", k)):
+        block = 1 << (min(int(adjusted[key]), dimension).bit_length() - 1)
+        while dimension % block:
+            block //= 2
+        if key == "BLOCK_SIZE_K" and block < 2:
+            raise ValueError("SlimQuant packed K must be divisible by two")
+        adjusted[key] = block
+    return adjusted
+
+
 def fused_experts_impl_w4a8_triton(
     hidden_states: torch.Tensor,
     w1: torch.Tensor,
@@ -78,6 +89,7 @@ def fused_experts_impl_w4a8_triton(
     w2_scale: torch.Tensor,
     routed_scaling_factor: float,
     shared_output: Optional[torch.Tensor],
+    swiglu_limit: Optional[float] = None,
 ) -> torch.Tensor:
     """Run SlimQuant W4A8 Triton GEMMs without whole-layer LightOp fusion."""
     assert hidden_states.ndim == 2 and hidden_states.is_contiguous()
@@ -104,10 +116,19 @@ def fused_experts_impl_w4a8_triton(
         cache3 = cache13[: token_count * top_k * n2].view(token_count, top_k, n2)
 
         config1, config2 = w4a8_triton.get_w8a8moe_json(
-            token_count, w1.shape[0], n1, n2, n1 // 2
+            E=w1.shape[0], m=token_count, n1=n1, n2=n2, k=n1 // 2
         )
-        sorted_ids, expert_ids, padded_count = w4a8_triton.moe_align_block_size(
-            current_ids, config1["BLOCK_SIZE_M"], global_num_experts, expert_map
+        config1 = _adjust_block_config(config1, n=n1, k=n2)
+        config2 = _adjust_block_config(config2, n=n2, k=n1 // 2)
+        from sglang.srt.layers.moe.fused_moe_triton import moe_align_block_size
+
+        local_ids = current_ids
+        if expert_map is not None:
+            local_ids = torch.where(
+                current_ids >= 0, expert_map[current_ids.clamp_min(0)], -1
+            ).to(current_ids.dtype)
+        sorted_ids, expert_ids, padded_count = moe_align_block_size(
+            local_ids, config1["BLOCK_SIZE_M"], w1.shape[0]
         )
         qx, x_scale = per_token_quant_int8(current_x)
         w4a8_triton.invoke_fused_moe_kernel_w4a8(
@@ -129,6 +150,9 @@ def fused_experts_impl_w4a8_triton(
 
         gate, up = cache1.chunk(2, dim=-1)
         if activation == "silu":
+            if swiglu_limit is not None:
+                gate = gate.clamp(max=swiglu_limit)
+                up = up.clamp(min=-swiglu_limit, max=swiglu_limit)
             activated = F.silu(gate) * up
         elif activation == "gelu":
             activated = F.gelu(gate) * up
@@ -137,6 +161,10 @@ def fused_experts_impl_w4a8_triton(
         qactivated, activated_scale = per_token_quant_int8(
             activated.reshape(token_count * top_k, n1 // 2)
         )
+        if config2["BLOCK_SIZE_M"] != config1["BLOCK_SIZE_M"]:
+            sorted_ids, expert_ids, padded_count = moe_align_block_size(
+                local_ids, config2["BLOCK_SIZE_M"], w2.shape[0]
+            )
         w4a8_triton.invoke_fused_moe_kernel_w4a8(
             qactivated,
             w2,
@@ -161,56 +189,9 @@ def fused_experts_impl_w4a8_triton(
     return output
 
 
-class SlimQuantW4A8Int8Config(QuantizationConfig):
-    """Config class for W8A8 Int8 Quantization.
-
-    - Weight: static, per-channel, symmetric
-    - Activation: dynamic, per-token, symmetric
-    """
-
-    def __init__(self):
-        pass
-
-    @classmethod
-    def get_supported_act_dtypes(cls) -> List[torch.dtype]:
-        return [torch.float16, torch.bfloat16]
-
-    @classmethod
-    def get_min_capability(cls) -> int:
-        return 75
-
-    @classmethod
-    def get_name(self) -> str:
-        return "slimquant_w4a8"
-
-    @classmethod
-    def get_config_filenames(cls) -> List[str]:
-        return []
-
-    @classmethod
-    def from_config(cls, config: Dict[str, Any]) -> "SlimQuantW4A8Int8Config":
-        return cls()
-
-    def get_quant_method(
-        self,
-        layer: torch.nn.Module,
-        prefix: str,
-    ) -> Optional["QuantizeMethodBase"]:
-        from sglang.srt.layers.moe.fused_moe_triton import (
-            FusedMoE,
-        )
-
-        if isinstance(layer, LinearBase):
-            return SlimQuantW4A8Int8LinearMethod(self)
-        elif isinstance(layer, FusedMoE):
-            return SlimQuantW4A8Int8MoEMethod(self)
-        return None
-
-    def get_scaled_act_names(self) -> List[str]:
-        return []
-
-
 class SlimQuantW4A8Int8LinearMethod(LinearMethodBase):
+
+    supports_prequantized_input = True
 
     def __init__(self, quantization_config: SlimQuantW4A8Int8Config):
         self.quantization_config = quantization_config
@@ -291,9 +272,16 @@ class SlimQuantW4A8Int8LinearMethod(LinearMethodBase):
         input_quant_args: Optional[list[torch.Tensor]] = None,
         silu_quant_args: Optional[list[torch.Tensor]] = None,
     ):
-        if _use_fused_rms_quant and input_quant_args is not None:
-            assert len(input_quant_args) == 2
+
+        # Explicit q/scale must not depend on an unrelated global RMS switch.
+        if input_quant_args is not None:
             x_q, x_scale = input_quant_args
+            if (x_q.dtype, x_scale.dtype) != (torch.int8, torch.float32):
+                raise ValueError("Expected INT8 input and FP32 per-token scale")
+            if x.ndim != 2 or x_q.shape != x.shape or x_scale.shape != (x.shape[0], 1):
+                raise ValueError("Invalid prequantized INT8 input/scale shape")
+            if x_q.device != x.device or x_scale.device != x.device:
+                raise ValueError("Prequantized input/scale must share the input device")
         elif _use_fused_silu_mul_quant and silu_quant_args is not None:
             x_q, x_scale = silu_quant_args
         else:
@@ -471,6 +459,14 @@ class SlimQuantW4A8Int8MoEMethod:
 
     def process_weights_after_loading(self, layer: torch.nn.Module) -> None:
         E = layer.w13_weight.shape[0]
+        from hcu_sglang.layers.moe.deepgemm_int8 import (
+            DeepGemmInt8Runner,
+            prepare_weights,
+        )
+
+        if isinstance(self.runner, DeepGemmInt8Runner):
+            prepare_weights(layer, 4)
+            return
         N1 = layer.w13_weight.shape[1]
         N2 = layer.w2_weight.shape[1]
         K = N1 // 2
@@ -503,6 +499,15 @@ class SlimQuantW4A8Int8MoEMethod:
         self, layer: torch.nn.Module, moe_runner_config: MoeRunnerConfig
     ):
         self.moe_runner_config = moe_runner_config
+        from hcu_sglang.layers.moe.deepgemm_int8 import (
+            DeepGemmInt8Runner,
+            requested,
+        )
+
+        if requested():
+            self.runner = DeepGemmInt8Runner(moe_runner_config)
+            self.fuse_routed_scaling_factor_in_topk = True
+            return
         self.runner = MoeRunner(MoeRunnerBackend.TRITON, moe_runner_config)
 
     def _apply_triton(
@@ -546,6 +551,7 @@ class SlimQuantW4A8Int8MoEMethod:
             w2_scale=layer.w2_weight_scale,
             routed_scaling_factor=routed_scaling_factor,
             shared_output=shared_output,
+            swiglu_limit=self.moe_runner_config.swiglu_limit,
         )
         return output
 
@@ -558,6 +564,10 @@ class SlimQuantW4A8Int8MoEMethod:
         i_s: Optional[torch.Tensor] = None,
     ):
         from sglang.srt.layers.moe.token_dispatcher.standard import StandardCombineInput
+        from hcu_sglang.layers.moe.deepgemm_int8 import DeepGemmInt8Runner
+
+        if isinstance(self.runner, DeepGemmInt8Runner):
+            return self.runner.run(dispatch_output, layer)
 
         output = self._apply_triton(
             layer,

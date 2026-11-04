@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import torch
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def _enabled(name: str) -> bool:
@@ -16,9 +16,9 @@ def _enabled(name: str) -> bool:
 
 
 def _load_kvcacheio():
-    from sgl_kernel import kvcacheio
+    from hcu_sglang.mem_cache import allocation_kernels
 
-    return kvcacheio
+    return allocation_kernels
 
 
 def around_get_last_loc(
@@ -27,7 +27,7 @@ def around_get_last_loc(
     req_pool_indices_tensor: torch.Tensor,
     prefix_lens_tensor: torch.Tensor,
 ) -> torch.Tensor:
-    if not is_dcu() or not _enabled("SGLANG_GET_LAST_LOC"):
+    if not is_hcu() or not _enabled("SGLANG_GET_LAST_LOC"):
         return original(
             req_to_token,
             req_pool_indices_tensor,
@@ -49,7 +49,7 @@ def around_assign_req_to_token_pool(
     out_cache_loc: torch.Tensor,
     batch_size: int,
 ) -> Any:
-    if not is_dcu() or not _enabled("SGLANG_ASSIGN_REQ_TO_TOKEN_POOL"):
+    if not is_hcu() or not _enabled("SGLANG_ASSIGN_REQ_TO_TOKEN_POOL"):
         return original(
             req_pool_indices,
             req_to_token,
@@ -71,8 +71,10 @@ def around_assign_req_to_token_pool(
 
 
 def after_paged_allocator_init(result: Any, allocator: Any, *args, **kwargs) -> Any:
-    if is_dcu():
+    if is_hcu():
         allocator.sglang_kvalloc_kernel = _enabled("SGLANG_KVALLOC_KERNEL")
+        if allocator.sglang_kvalloc_kernel:
+            _load_kvcacheio().prepare()
     return result
 
 
@@ -87,7 +89,7 @@ def around_alloc_extend(
     extend_num_tokens: int,
     num_new_pages: int | None = None,
 ) -> torch.Tensor | None:
-    if not is_dcu() or not getattr(allocator, "sglang_kvalloc_kernel", False):
+    if not is_hcu() or not getattr(allocator, "sglang_kvalloc_kernel", False):
         return original(
             allocator,
             prefix_lens,
@@ -114,6 +116,15 @@ def around_alloc_extend(
     ):
         allocator.merge_and_sort_free()
 
+    if num_new_pages is None:
+        num_new_pages = get_num_new_pages(
+            seq_lens=seq_lens_cpu,
+            page_size=allocator.page_size,
+            prefix_lens=prefix_lens_cpu,
+        )
+    if num_new_pages > len(allocator.free_pages):
+        return None
+
     out_indices = torch.empty(
         (extend_num_tokens,),
         dtype=torch.int64,
@@ -132,15 +143,6 @@ def around_alloc_extend(
     if allocator.debug_mode:
         assert len(torch.unique(out_indices)) == len(out_indices)
 
-    if num_new_pages is None:
-        num_new_pages = get_num_new_pages(
-            seq_lens=seq_lens_cpu,
-            page_size=allocator.page_size,
-            prefix_lens=prefix_lens_cpu,
-        )
-    if num_new_pages > len(allocator.free_pages):
-        return None
-
     allocator.free_pages = allocator.free_pages[num_new_pages:]
     return out_indices
 
@@ -152,7 +154,7 @@ def around_alloc_decode(
     seq_lens_cpu: torch.Tensor,
     last_loc: torch.Tensor,
 ) -> torch.Tensor | None:
-    if not is_dcu() or not getattr(allocator, "sglang_kvalloc_kernel", False):
+    if not is_hcu() or not getattr(allocator, "sglang_kvalloc_kernel", False):
         return original(
             allocator,
             seq_lens,
@@ -171,6 +173,14 @@ def around_alloc_decode(
     if allocator.need_sort and batch_size > len(allocator.free_pages):
         allocator.merge_and_sort_free()
 
+    num_new_pages = get_num_new_pages(
+        seq_lens=seq_lens_cpu,
+        page_size=allocator.page_size,
+        decode=True,
+    )
+    if num_new_pages > len(allocator.free_pages):
+        return None
+
     out_indices = torch.empty(
         (batch_size,),
         dtype=torch.int64,
@@ -188,14 +198,6 @@ def around_alloc_decode(
     if allocator.debug_mode:
         assert len(torch.unique(out_indices)) == len(out_indices)
 
-    num_new_pages = get_num_new_pages(
-        seq_lens=seq_lens_cpu,
-        page_size=allocator.page_size,
-        decode=True,
-    )
-    if num_new_pages > len(allocator.free_pages):
-        return None
-
     allocator.free_pages = allocator.free_pages[num_new_pages:]
     return out_indices
 
@@ -205,7 +207,7 @@ def around_free(
     allocator: Any,
     free_index: torch.Tensor,
 ) -> Any:
-    if not is_dcu():
+    if not is_hcu() or not getattr(allocator, "sglang_kvalloc_kernel", False):
         return original(allocator, free_index)
     if free_index.numel() == 0:
         return None

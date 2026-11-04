@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import importlib
+import functools
+import logging
 from typing import Any, Callable
 
 import torch
 
-from hcu_sglang.utils.detection import is_dcu
+from hcu_sglang.utils.detection import is_hcu
 
 
 def after_get_default_target_flags(flags: list[str], arch: Any = None) -> list[str]:
-    if not is_dcu():
+    if not is_hcu():
         return flags
     return [
         "-DHIP_FP8_TYPE_FNUZ=1" if flag == "-DHIP_FP8_TYPE_E4M3=1" else flag
@@ -29,7 +31,7 @@ def around_assign_extend_cache_locs_func(
     draft_token_num: int,
     device: Any,
 ) -> torch.Tensor:
-    if not is_dcu():
+    if not is_hcu():
         return original(
             req_pool_indices,
             req_to_token,
@@ -77,7 +79,7 @@ def around_scaled_fp8_quant(
     num_token_padding: int | None = None,
     use_per_token_if_dynamic: bool = False,
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    if not (is_dcu() and scale is None and use_per_token_if_dynamic):
+    if not (is_hcu() and scale is None and use_per_token_if_dynamic):
         return original(input, scale, num_token_padding, use_per_token_if_dynamic)
 
     from lightop.quant import per_token_quant_fp8
@@ -98,7 +100,7 @@ def around_scaled_fp8_quant(
 
 
 def _dispatch_mhc(name: str, original: Callable[..., Any], *args: Any, **kwargs: Any):
-    if not is_dcu():
+    if not is_hcu():
         return original(*args, **kwargs)
     from hcu_sglang.kernels import mhc
 
@@ -121,6 +123,83 @@ def around_mhc_post(original: Callable[..., Any], *args: Any, **kwargs: Any):
     return _dispatch_mhc("mhc_post", original, *args, **kwargs)
 
 
+@functools.lru_cache(maxsize=1)
+def _native_mhc_functions():
+    from aiter.ops.tilelang import mhc_post_fwd, mhc_pre_big_fuse
+
+    logging.getLogger(__name__).info(
+        "HCU native mHC enabled by SGLANG_HCU_NATIVE_MHC=1; "
+        "AITER pre/post, output normalization remains with the caller"
+    )
+    return mhc_pre_big_fuse, mhc_post_fwd
+
+
+def _native_mhc_enabled(residual: torch.Tensor) -> bool:
+    from sglang.srt.environ import envs
+
+    return (
+        is_hcu()
+        and envs.SGLANG_HCU_NATIVE_MHC.get()
+        and residual.ndim == 3
+        and residual.shape[0] > 0
+        and residual.shape[1:] == (4, 4096)
+        and residual.dtype == torch.bfloat16
+        and residual.is_cuda
+        and residual.is_contiguous()
+    )
+
+
+def around_native_mhc_pre(
+    original, residual, fn, hc_scale, hc_base, rms_eps, hc_pre_eps,
+    hc_sinkhorn_eps, hc_post_mult_value, sinkhorn_repeat,
+    norm_weight=None, norm_eps=None,
+):
+    if not (
+        _native_mhc_enabled(residual)
+        and fn.shape == (24, 16384)
+        and hc_scale.shape == (3,)
+        and hc_base.shape == (24,)
+        and all(
+            value.dtype == torch.float32
+            and value.device == residual.device
+            and value.is_contiguous()
+            for value in (fn, hc_scale, hc_base)
+        )
+    ):
+        return original(
+            residual, fn, hc_scale, hc_base, rms_eps, hc_pre_eps,
+            hc_sinkhorn_eps, hc_post_mult_value, sinkhorn_repeat,
+            norm_weight, norm_eps,
+        )
+    pre, _ = _native_mhc_functions()
+    post, comb, output = pre(
+        residual, fn, hc_scale, hc_base, rms_eps, hc_pre_eps,
+        hc_sinkhorn_eps, hc_post_mult_value, sinkhorn_repeat, n_splits=16,
+    )
+    return post, comb, output, False
+
+
+def around_native_mhc_post(original, x, residual, post_layer_mix, comb_res_mix):
+    if not (
+        _native_mhc_enabled(residual)
+        and x.shape == (residual.shape[0], 4096)
+        and x.dtype == torch.bfloat16
+        and x.device == residual.device
+        and x.is_contiguous()
+        and post_layer_mix.shape == (residual.shape[0], 4, 1)
+        and comb_res_mix.shape == (residual.shape[0], 4, 4)
+        and all(
+            value.dtype == torch.float32
+            and value.device == residual.device
+            and value.is_contiguous()
+            for value in (post_layer_mix, comb_res_mix)
+        )
+    ):
+        return original(x, residual, post_layer_mix, comb_res_mix)
+    _, post = _native_mhc_functions()
+    return post(x, residual, post_layer_mix.squeeze(-1), comb_res_mix)
+
+
 def around_mhc_fused_post_pre(
     original: Callable[..., Any], *args: Any, **kwargs: Any
 ):
@@ -130,7 +209,7 @@ def around_mhc_fused_post_pre(
 def around_vision_flash3_init(
     original: Callable[..., Any], instance: Any, *args: Any, **kwargs: Any
 ):
-    if not is_dcu():
+    if not is_hcu():
         return original(instance, *args, **kwargs)
     vision = importlib.import_module("sglang.srt.layers.attention.vision")
     from hcu_sglang.layers.attention.flashattention_interface import (
@@ -167,6 +246,8 @@ def register_hooks() -> None:
     )
     mhc_target = "sglang.kernels.ops.layernorm.mhc"
     for name, hook in (
+        ("_mhc_pre_dispatch", around_native_mhc_pre),
+        ("_mhc_post_dispatch", around_native_mhc_post),
         ("hc_split_sinkhorn", around_hc_split_sinkhorn),
         ("prewarm_mhc_pre", around_prewarm_mhc_pre),
         ("mhc_pre", around_mhc_pre),

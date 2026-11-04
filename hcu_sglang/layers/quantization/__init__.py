@@ -1,4 +1,4 @@
-"""DCU quantization adaptations."""
+"""HCU quantization adaptations."""
 
 import logging
 
@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 def register_hooks() -> None:
     from hcu_sglang.layers.quantization import (
+        deepep_int8,
         fp8,
         gptq,
         registry,
@@ -25,4 +26,5 @@ def register_hooks() -> None:
     unquantized_marlin.register_hooks()
     w8a8_aiter.register_hooks()
     w8a8_lightop.register_hooks()
+    deepep_int8.register_hooks()
     logger.debug("[hcu_sglang] quantization hooks registered")

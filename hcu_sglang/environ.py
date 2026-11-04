@@ -4,11 +4,26 @@ from __future__ import annotations
 
 from typing import Any
 
-from sglang.srt.environ import EnvBool, EnvFloat, EnvInt, EnvStr, Envs, _default_hip
-from hcu_sglang.utils.detection import is_dcu
+from sglang.srt.environ import EnvBool, EnvBoolWithAlias, EnvFloat, EnvInt, EnvStr, Envs, _default_hip
+from hcu_sglang.utils.detection import is_hcu
 
 
 _ENV_SPECS: dict[str, tuple[type, Any]] = {
+    "SGLANG_HCU_NATIVE_MHC": (EnvBool, False),
+
+    'SGLANG_OPT_USE_FUSED_CLAMP_ACT_MUL': (EnvBool, True),
+    'SGLANG_USE_FUSED_SILU_MUL_FP8_QUANT': (EnvBool, False),
+    'SGLANG_AITER_INTREE_GEMM_TUNE': (EnvBool, True),
+    'SGLANG_AITER_INTREE_MHC_TILE_M16': (EnvBool, True),
+    'SGLANG_DSV4_DECODER_TAIL_GRAPH_MAX_ROWS': (EnvInt, 2048),
+    'SGLANG_DSV4_DENSE_MXSCALE': (EnvBool, False),
+    'SGLANG_DSV4_FUSE_MHC_REPEAT_CP_SPLIT': (EnvBool, False),
+    "SGLANG_W4A8_TPMOE_BACKEND": (EnvStr, "auto"),
+    "SGLANG_FORCE_AITER_MOE_C": (EnvBool, False),
+    "SGLANG_DSPARK_FORCE_W4A8_TPMOE_BACKEND": (EnvStr, None),
+    "SGLANG_NSA_MQA_LOGITS_MEMORY_BUDGET_GB": (EnvFloat, None),
+    "SGLANG_HCU_TOPK_V2_PAGED": (EnvBool, False),
+    'SGLANG_DSA_HCU_USE_LIGHTOP_DECODE_GATHER': (EnvBool, False),
     'SGLANG_DSV4_COMPRESS_RLC': (EnvBool, False),
     'SGLANG_DSV4_FP4_LOGITS_BUDGET_MB': (EnvInt, 2048),
     'SGLANG_DSV4_PAGED_MQA_LOGITS_FREE_MEM_FRACTION': (EnvFloat, None),
@@ -113,9 +128,18 @@ def _install_field(name: str, field_type: type, default: Any, *, replace: bool) 
 
 def register_envs() -> None:
     """Install fork-only fields and HCU-specific default overrides."""
+    for name, alias in {
+        "SGLANG_DSA_HCU_LIGHTOP_MASK_TOPK": "SGLANG_USE_LIGHTOP_MASK_TOPK",
+        "SGLANG_DSA_HCU_REUSE_SORTED_TOPK": "SGLANG_NSA_HCU_REUSE_SORTED_TOPK",
+    }.items():
+        if not hasattr(Envs, name):
+            field = EnvBoolWithAlias(False, deprecated_name=alias)
+            field.name = name
+            setattr(Envs, name, field)
+
     for name, (field_type, default) in _ENV_SPECS.items():
         _install_field(name, field_type, default, replace=False)
 
-    if is_dcu():
+    if is_hcu():
         for name, (field_type, default) in _HCU_DEFAULT_OVERRIDES.items():
             _install_field(name, field_type, default, replace=True)

@@ -30,3 +30,20 @@ def cp_cache_layer_split_enabled():
 def configure_cp_cache_layer_split(value):
     if value is not None:
         os.environ[CP_CACHE_LAYER_SPLIT_ENV] = "1" if value else "0"
+
+
+DRAFT_LM_HEAD_VP_ENV = "HCU_PLUGIN_DRAFT_LM_HEAD_VP_SIZE"
+
+
+def draft_lm_head_vp_size():
+    size = int(os.environ.get(DRAFT_LM_HEAD_VP_ENV, "1"))
+    if size not in (1, 4, 8, 16):
+        raise ValueError(f"{DRAFT_LM_HEAD_VP_ENV} must be one of 1, 4, 8, 16")
+    return size
+
+
+def configure_draft_lm_head_vp(value):
+    if value is not None:
+        if value not in (1, 4, 8, 16):
+            raise ValueError("Draft LM-head VP size must be one of 1, 4, 8, 16")
+        os.environ[DRAFT_LM_HEAD_VP_ENV] = str(value)

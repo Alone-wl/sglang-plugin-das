@@ -32,4 +32,7 @@ def around_setup_state_kv_args(original, kv_args, token_to_kv_pool,
                 kv_args.state_slice_outer_counts.append([])
                 kv_args.state_layer_ids.append([])
         configure_v4_transfer(kv_args, token_to_kv_pool, draft_token_to_kv_pool)
+    from hcu_sglang.mem_cache.glm5_layer_split import configure_indexer_layer_ids
+
+    configure_indexer_layer_ids(kv_args, token_to_kv_pool)
     return result

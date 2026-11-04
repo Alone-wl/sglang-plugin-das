@@ -1,4 +1,4 @@
-"""SGLang DCU general plugin - model and layer adaptations."""
+"""SGLang HCU general plugin - model and layer adaptations."""
 
 import logging
 
@@ -32,7 +32,12 @@ def register() -> None:
         base_backend,
         debug_flash_mla_adapter,
         dsa_kernels,
+        dsa_empty_batch,
+        dsa_lightop_mla,
+        dsa_kpool_short,
+        dsa_packed_kv,
         dsa_topk,
+        current_dsa,
         dsv4_compressor,
         flashattention_backend,
         triton_hcu,
@@ -44,11 +49,12 @@ def register() -> None:
     )
     from hcu_sglang.layers.attention.linear import gdn_backend
     from hcu_sglang.layers import norm_activation, quantization, linear_fusion, layer_boundary, rotary
-    from hcu_sglang.layers.moe import aiter_w4a8, lightop_runner, mega_moe, topk
+    from hcu_sglang.layers.moe import alignment, aiter_w4a8, lightop_runner, mega_moe, topk, standard_dispatcher
     from hcu_sglang.mem_cache import allocation as mem_cache_allocation
     from hcu_sglang.mem_cache import (
         dsa,
         dsv4,
+        glm5_layer_split,
         hcu_host_pool,
         hcu_mha_pool,
         kv_cache_dtype,
@@ -58,7 +64,7 @@ def register() -> None:
     from hcu_sglang.models import bailing_moe
     from hcu_sglang.models import dspark
     from hcu_sglang.models import hunyuan
-    from hcu_sglang.models import glm4_moe
+    from hcu_sglang.models import glm4_moe, glm5_next
     from hcu_sglang.models import minimax_m2
     from hcu_sglang.models import utils as model_utils
     from hcu_sglang.multimodal_gen import attention as multimodal_attention
@@ -76,6 +82,9 @@ def register() -> None:
     server_args.register()
     server_args_hooks.register()
     speculative_compat.register_hooks()
+    from hcu_sglang.speculative import draft_lm_head_vp_hooks
+
+    draft_lm_head_vp_hooks.register_hooks()
     multimodal_processor.register_hooks()
     batch_overlap.register_hooks()
     quick_all_reduce.register_hooks()
@@ -87,13 +96,25 @@ def register() -> None:
     flashattention_backend.register()
     debug_flash_mla_adapter.register_hooks()
     dsa_kernels.register_hooks()
+    dsa_empty_batch.register_hooks()
+    dsa_lightop_mla.register_hooks()
+    dsa_kpool_short.register_hooks()
+    dsa_packed_kv.register_hooks()
     dsa_topk.register_hooks()
+    current_dsa.register_hooks()
     dsv4_compressor.register_hooks()
     triton_hcu.register_hooks()
     gdn_backend.register()
     linear_attention.register()
     layernorm_gated.register()
     topk.register()
+    standard_dispatcher.register_hooks()
+    alignment.register_hooks()
+    from hcu_sglang.utils.detection import is_hcu
+    if is_hcu():
+        from hcu_sglang.layers.moe import deepep_current, deepep_fp8
+        deepep_current.register_hooks()
+        deepep_fp8.register_hooks()
     aiter_w4a8.register_hooks()
     lightop_runner.register_hooks()
     mega_moe.register_hooks()
@@ -105,6 +126,7 @@ def register() -> None:
     mem_cache_allocation.register_hooks()
     kv_cache_dtype.register_hooks()
     swa.register_hooks()
+    glm5_layer_split.register_hooks()
     hcu_host_pool.register_hooks()
     hcu_mha_pool.register_hooks()
     mla.register_hooks()
@@ -122,6 +144,7 @@ def register() -> None:
     minimax_h3.register_hooks()
     qknorm_rope.register_hooks()
     wan_sla.register_hooks()
+    glm5_next.register_hooks()
     register_deepseek()
     model_utils.register_hooks()
     qwen2.register()

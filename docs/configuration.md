@@ -84,3 +84,7 @@ V3 的外部运行时输出实际引入 `HCU_PLUGIN_MINIMAX_OPT`，由 `--minima
 ## 5. 变更与排障记录
 
 每次配置改动同步默认值说明、支持范围、测试与启动日志示例。发生冲突时先列出“原始值 → 解析值 → 最终值 → 实际分支命中”，再修改实现。验证模板见 [validation-record](../templates/validation-record.md)，详细状态约束见开发 Skill 的 [runtime-and-env](../skills/hcu-plugin-dev/references/runtime-and-env.md)。
+
+## HCU mHC 原生候选
+
+`SGLANG_HCU_NATIVE_MHC` 为 plugin 注册的布尔项，默认 `False`。显式设为 `1` 并重启后，在 HCU、连续 BF16 residual `[M,4,4096]`、FP32 fn `[24,16384]`/scale `[3]`/base `[24]` 的非空调用中选择 AITER tilelang mHC pre/post。首次命中打印选择日志；其他形状及关闭时调用当前有效原入口。所需 `aiter.ops.tilelang.mhc_pre_big_fuse/mhc_post_fwd` 延迟导入，显式选择后不吞 vendor 错误。pre 返回 `norm_fused=False`，输出 RMSNorm 仍由官方消费者执行，不跳过传入的 norm 权重。该开关不改变旧 `SGLANG_ROCM_USE_AITER_TILELANG_MHC`、DeepSeek-V4 私有方法或 adapter 的 mHC 算子实现。当前仅为 GLM5.3 候选，完整模型精度/性能以开发记录为准。
