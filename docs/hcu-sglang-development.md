@@ -393,3 +393,8 @@ KPool 处理完整索引行，保留主体索引后的有效尾部，并掩蔽�
 
 SCNet 单卡数值探针覆盖 8、32、64 head、带空行和尾部索引，均通过 FP32 Torch
 对拍及变索引 Graph replay。完整 P/D 服务、AIME25 和 HumanEval 仍待验证。
+
+完整 Decode Graph 的首个失败调用来自 V32_NO_ROPE 路径。保留 LightOp 对
+528 字节 packed KV 的 gather/dequant 和 compact 索引，将后续 512 维 BF16
+注意力交给同一 Triton 实现。回归矩阵补充 512/512 无 RoPE 形状并在 SCNet
+复跑通过，原拓扑的完整 P/D 和精度仍待验证。

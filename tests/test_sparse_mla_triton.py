@@ -14,15 +14,15 @@ class SparseMLATritonTest(unittest.TestCase):
         from hcu_sglang.layers.attention.current_dsa.sparse_mla_triton import sparse_mla
 
         torch.manual_seed(42)
-        for heads in (8, 32, 64):
-            with self.subTest(heads=heads):
-                q = torch.randn(3, heads, 576, device="cuda", dtype=torch.bfloat16)
-                kv = torch.randn(53, 1, 576, device="cuda", dtype=torch.bfloat16)
+        for heads, query_dim in ((8, 576), (32, 576), (64, 576), (64, 512)):
+            with self.subTest(heads=heads, query_dim=query_dim):
+                q = torch.randn(3, heads, query_dim, device="cuda", dtype=torch.bfloat16)
+                kv = torch.randn(53, 1, query_dim, device="cuda", dtype=torch.bfloat16)
                 indices = torch.randint(53, (3, 35), device="cuda", dtype=torch.int32)
                 indices[0, 4:32] = -1
                 indices[1] = -1
                 sink = torch.randn(heads, device="cuda")
-                scale = 576**-0.5
+                scale = query_dim**-0.5
 
                 def check(result):
                     selected = kv[indices.clamp_min(0).long(), 0].float()

@@ -3,7 +3,7 @@ from hcu_sglang.utils.detection import is_hcu
 
 def packed_decode(q, cache, indices, scale):
     import torch
-    from flash_mla.flash_mla_interface import flash_mla_with_kvcache, get_mla_metadata
+    from hcu_sglang.layers.attention.current_dsa.sparse_mla_triton import sparse_mla
     from lightop import op
 
     rows, heads, dim = q.shape
@@ -21,21 +21,8 @@ def packed_decode(q, cache, indices, scale):
     gathered = torch.empty((rows, indices.shape[-1], dim), dtype=q.dtype, device=q.device)
     compact = torch.empty_like(safe)
     op.decode_gather_and_up_convert_with_indices(cache, safe, gathered, lengths, compact)
-    padded = q.new_zeros((rows, 1, 64, dim))
-    padded[:, 0, :heads] = q
-    metadata, _ = get_mla_metadata()
-    output, _ = flash_mla_with_kvcache(
-        q=padded,
-        k_cache=gathered.view(-1, 64, 1, dim),
-        block_table=torch.empty((rows, 0), dtype=torch.int32, device=q.device),
-        cache_seqlens=lengths,
-        head_dim_v=dim,
-        tile_scheduler_metadata=metadata,
-        softmax_scale=scale,
-        indices=compact[:, None],
-        is_fp8_kvcache=False,
-    )
-    return torch.where(active[:, None, None, None], output[:, :, :heads], 0).contiguous()
+    output = sparse_mla(q, gathered, compact, scale, dim, None, None)
+    return torch.where(active[:, None, None], output, 0).unsqueeze(1)
 
 
 def around_forward_kv(original, backend, q_all, kv_cache, v_head_dim, sm_scale, layer, metadata, page_table_1, *args, **kwargs):

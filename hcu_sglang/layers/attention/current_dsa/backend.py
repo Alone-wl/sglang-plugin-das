@@ -2672,7 +2672,8 @@ class DeepseekSparseAttnBackend(
         if (
             _is_hcu
             and q_all.dtype == kv_cache.dtype == torch.bfloat16
-            and q_all.shape[-1] == kv_cache.shape[-1] == 576
+            and q_all.shape[-1] == kv_cache.shape[-1]
+            and q_all.shape[-1] in (512, 576)
             and v_head_dim == 512
         ):
             from .sparse_mla_triton import sparse_mla
