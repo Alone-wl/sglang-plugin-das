@@ -382,3 +382,14 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 ### 2026-11-04 主对话复核后更新交接
 
 已归档远端 24/24 prefill 重复性配对及九题 6/9（错7/90/127，127仍复读），不归属统一提交组合。补独立 router.sh、无插桩官方包哈希与启动前源码检查；诊断树仅 model_runner.py 追加 observer 安装。网页配置按用户要求暂不接入。本次仅静态验证，未启动服务或新增单测。详见 [交接](glm5.3-flash-handoff.md)。
+
+## 2026-11-04 GLM5.3 Flash HCU sparse MLA
+
+SCNet 的 FlashMLA sparse prefill 在 gfx936 上报告找不到设备内核镜像。参考 DAS
+`f3c0395f73` 的 Triton per-token sparse MLA，在现有 plugin sparse 调用处接入
+BF16 576/512 路径。每个程序计算 16 个 query head，支持原拓扑的 64 head。
+KPool 处理完整索引行，保留主体索引后的有效尾部，并掩蔽无效槽位。Attention sink
+参与归一化分母，输出沿用 BF16。
+
+SCNet 单卡数值探针覆盖 8、32、64 head、带空行和尾部索引，均通过 FP32 Torch
+对拍及变索引 Graph replay。完整 P/D 服务、AIME25 和 HumanEval 仍待验证。

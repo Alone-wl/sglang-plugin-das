@@ -2669,6 +2669,23 @@ class DeepseekSparseAttnBackend(
         attn_sink: Optional[torch.Tensor] = None,
         indices_are_sorted: bool = False,
     ) -> torch.Tensor:
+        if (
+            _is_hcu
+            and q_all.dtype == kv_cache.dtype == torch.bfloat16
+            and q_all.shape[-1] == kv_cache.shape[-1] == 576
+            and v_head_dim == 512
+        ):
+            from .sparse_mla_triton import sparse_mla
+
+            if self.dsa_index_kpool > 1 or (
+                topk_length is not None and topk_length.shape[0] != q_all.shape[0]
+            ):
+                topk_length = None
+            return sparse_mla(
+                q_all, kv_cache, page_table_1, sm_scale, v_head_dim,
+                topk_length, attn_sink,
+            )
+
         flash_mla_sparse_fwd = get_flashmla_op("flash_mla_sparse_fwd", is_hcu=_is_hcu)
 
         # FlashMLA sparse kernel requires num_heads to be a multiple of 64 (Hopper) or 128 (Blackwell)
