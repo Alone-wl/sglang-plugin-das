@@ -11,5 +11,17 @@
   "migration_snapshot": "passed",
   "launch_bash_syntax": "passed",
   "eof_only_normalizations": 2,
-  "unexplained_remote_hash_mismatches": 0
+  "unexplained_remote_hash_mismatches": 0,
+  "handoff_refresh": {
+    "remote_prefill_repeatability_pairs": "24/24",
+    "remote_selected_badcases": "6/9",
+    "wrong": [
+      7,
+      90,
+      127
+    ],
+    "case127_repetition": "50-word windows up to 3 occurrences",
+    "unified_commit_pair_model_validation": "not_run",
+    "adapter_web_integration": "deferred_by_user"
+  }
 }

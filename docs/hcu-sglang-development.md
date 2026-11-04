@@ -378,3 +378,7 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 ### 2026-11-04 远端候选同步与交接分支
 
 `feat/glm5.3-flash` 完整同步 short-topk-alignment 的 decode plugin 运行时与打包配置，避免遗漏 row_fusion 和量化接口依赖。保留 W8A8/SlimQuant 双路径；配套 adapter 同步 FP32 beta 候选。来源哈希、静态验证范围、脚本及未闭环问题见 [交接文档](glm5.3-flash-handoff.md)。此次未启动模型，不继承历史全集精度。
+
+### 2026-11-04 主对话复核后更新交接
+
+已归档远端 24/24 prefill 重复性配对及九题 6/9（错7/90/127，127仍复读），不归属统一提交组合。补独立 router.sh、无插桩官方包哈希与启动前源码检查；诊断树仅 model_runner.py 追加 observer 安装。网页配置按用户要求暂不接入。本次仅静态验证，未启动服务或新增单测。详见 [交接](glm5.3-flash-handoff.md)。

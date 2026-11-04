@@ -10,12 +10,17 @@ set -euo pipefail
 case "$GLM53_NODE" in 22|23|24) ;; *) exit 2 ;; esac
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 PLUGIN_DIR=$(cd "$SCRIPT_DIR/../.." && pwd)
-export PYTHONPATH="$ADAPTER_DIR:$SGLANG_DIR/python:$PLUGIN_DIR${PYTHONPATH:+:$PYTHONPATH}"
+SGLANG_PYTHON_DIR=$(python3 "$SCRIPT_DIR/verify_upstream.py" "$SGLANG_DIR")
+export PYTHONPATH="$ADAPTER_DIR:$SGLANG_PYTHON_DIR:$PLUGIN_DIR"
 export SGLANG_PLUGINS=hcu HCU_SLIMQUANT=0
 export SGLANG_USE_FUSED_SILU_MUL_QUANT=1
 unset W8A8_SUPPORT_METHODS
 if [ "$GLM53_NODE" != 22 ]; then export W8A8_SUPPORT_METHODS=3; fi
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 OMP_NUM_THREADS=4
+export HF_HOME="$WORK_DIR/cache/huggingface"
+export SGLANG_PYSPY_DUMP_BEFORE_CRASH=0
+export LD_LIBRARY_PATH=/opt/dtk/dcc/lib:/opt/dtk/.hyhal/rocm_smi/lib:/opt/dtk/hip/lib:/opt/dtk/lib:${LD_LIBRARY_PATH:-}
+unset NCCL_TOPO_FILE
 export NCCL_SOCKET_IFNAME="${NCCL_SOCKET_IFNAME:-bond1}"
 export GLOO_SOCKET_IFNAME="${GLOO_SOCKET_IFNAME:-bond1}"
 export NCCL_IB_HCA="${NCCL_IB_HCA:-shca_0,shca_1,shca_2,shca_3}"
