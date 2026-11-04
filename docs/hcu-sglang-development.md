@@ -398,3 +398,8 @@ SCNet 单卡数值探针覆盖 8、32、64 head、带空行和尾部索引，均
 528 字节 packed KV 的 gather/dequant 和 compact 索引，将后续 512 维 BF16
 注意力交给同一 Triton 实现。回归矩阵补充 512/512 无 RoPE 形状并在 SCNet
 复跑通过，原拓扑的完整 P/D 和精度仍待验证。
+
+后续完整 Graph 启动观察到 vendor backend 退出和控制器 EOF，日志未标出
+退出的算子。对 528 字节 V32_NO_ROPE 行，按 DAS 的 FP8 与四组 FP32 scale
+布局，在 Triton 注意力内解量化选中的 KV 行，移除该调用对 LightOp gather
+的依赖。SCNet 的 packed FP8 eager 和变索引 Graph 回归通过。

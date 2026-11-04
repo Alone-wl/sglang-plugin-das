@@ -2,27 +2,9 @@ from hcu_sglang.utils.detection import is_hcu
 
 
 def packed_decode(q, cache, indices, scale):
-    import torch
     from hcu_sglang.layers.attention.current_dsa.sparse_mla_triton import sparse_mla
-    from lightop import op
 
-    rows, heads, dim = q.shape
-    if rows == 0:
-        return q.new_empty((0, 1, heads, dim))
-    padding = (-indices.shape[-1]) % 64
-    if padding:
-        indices = torch.nn.functional.pad(indices, (0, padding), value=-1)
-    cache = cache.view(torch.uint8).view(-1, 528)
-    valid = (indices >= 0) & (indices < cache.shape[0])
-    active = valid.any(-1)
-    safe = torch.where(valid, indices, -1).contiguous()
-    safe[:, 0] = torch.where(active, safe[:, 0], 0)
-    lengths = torch.full((rows,), cache.shape[0], dtype=torch.int32, device=q.device)
-    gathered = torch.empty((rows, indices.shape[-1], dim), dtype=q.dtype, device=q.device)
-    compact = torch.empty_like(safe)
-    op.decode_gather_and_up_convert_with_indices(cache, safe, gathered, lengths, compact)
-    output = sparse_mla(q, gathered, compact, scale, dim, None, None)
-    return torch.where(active[:, None, None], output, 0).unsqueeze(1)
+    return sparse_mla(q, cache, indices, scale, q.shape[-1], None, None, packed=True).unsqueeze(1)
 
 
 def around_forward_kv(original, backend, q_all, kv_cache, v_head_dim, sm_scale, layer, metadata, page_table_1, *args, **kwargs):

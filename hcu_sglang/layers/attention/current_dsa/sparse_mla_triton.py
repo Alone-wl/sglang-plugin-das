@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the SGLang project
+import torch
 import triton
 import triton.language as tl
 
@@ -12,6 +13,8 @@ def _sparse_mla_prefill_kernel(
     len_ptr,
     o_ptr,
     sink_ptr,
+    scale_ptr,
+    PACKED: tl.constexpr,
     KV_ROWS: tl.constexpr,
     HAS_LENGTHS: tl.constexpr,
     HAS_SINK: tl.constexpr,
@@ -60,8 +63,17 @@ def _sparse_mla_prefill_kernel(
             row = tl.where(valid, idx, 0).to(tl.int64)
         else:
             row = tl.where(valid, idx, 0)
-        kb = kv_ptr + row[:, None] * D_QK
-        kv_main = tl.load(kb + dv[None, :], mask=valid[:, None], other=0.0)
+        if PACKED:
+            kb = kv_ptr + row[:, None] * 528
+            scales = tl.load(
+                scale_ptr + row[:, None] * 132 + 128 + dv[None, :] // 128,
+                mask=valid[:, None], other=0.0,
+            )
+            fp8 = tl.load(kb + dv[None, :], mask=valid[:, None], other=0.0)
+            kv_main = (fp8.to(tl.float32) * scales).to(tl.bfloat16)
+        else:
+            kb = kv_ptr + row[:, None] * D_QK
+            kv_main = tl.load(kb + dv[None, :], mask=valid[:, None], other=0.0)
         qk = tl.dot(q_main, tl.trans(kv_main))
         if D_TAIL > 0:
             kv_tail = tl.load(kb + (D_V + dt)[None, :], mask=valid[:, None], other=0.0)
@@ -93,17 +105,20 @@ def _sparse_mla_prefill_kernel(
     )
 
 
-def sparse_mla(q, kv, indices, scale, value_dim, lengths, sink):
+def sparse_mla(q, kv, indices, scale, value_dim, lengths, sink, *, packed=False):
     tokens, heads, query_dim = q.shape
     output = q.new_empty((tokens, heads, value_dim))
     if tokens == 0:
         return output
-    kv = kv.reshape(-1, query_dim).contiguous()
+    kv = kv.reshape(-1, 528 if packed else query_dim).contiguous()
+    scales = kv.view(torch.float32) if packed else q
+    if packed:
+        kv = kv.view(torch.float8_e4m3fn)
     _sparse_mla_prefill_kernel[(tokens, triton.cdiv(heads, 16))](
         q.contiguous(), kv, indices.contiguous(),
         lengths.contiguous() if lengths is not None else indices,
         output, sink.contiguous() if sink is not None else q,
-        kv.shape[0], lengths is not None, sink is not None,
+        scales, packed, kv.shape[0], lengths is not None, sink is not None,
         scale, indices.shape[-1], heads, 16, query_dim, value_dim, 16, True,
         num_warps=4, num_stages=1,
     )
