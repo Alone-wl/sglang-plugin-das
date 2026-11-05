@@ -382,24 +382,3 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 ### 2026-11-04 主对话复核后更新交接
 
 已归档远端 24/24 prefill 重复性配对及九题 6/9（错7/90/127，127仍复读），不归属统一提交组合。补独立 router.sh、无插桩官方包哈希与启动前源码检查；诊断树仅 model_runner.py 追加 observer 安装。网页配置按用户要求暂不接入。本次仅静态验证，未启动服务或新增单测。详见 [交接](glm5.3-flash-handoff.md)。
-
-## 2026-11-04 GLM5.3 Flash HCU sparse MLA
-
-SCNet 的 FlashMLA sparse prefill 在 gfx936 上报告找不到设备内核镜像。参考 DAS
-`f3c0395f73` 的 Triton per-token sparse MLA，在现有 plugin sparse 调用处接入
-BF16 576/512 路径。每个程序计算 16 个 query head，支持原拓扑的 64 head。
-KPool 处理完整索引行，保留主体索引后的有效尾部，并掩蔽无效槽位。Attention sink
-参与归一化分母，输出沿用 BF16。
-
-SCNet 单卡数值探针覆盖 8、32、64 head、带空行和尾部索引，均通过 FP32 Torch
-对拍及变索引 Graph replay。完整 P/D 服务、AIME25 和 HumanEval 仍待验证。
-
-完整 Decode Graph 的首个失败调用来自 V32_NO_ROPE 路径。保留 LightOp 对
-528 字节 packed KV 的 gather/dequant 和 compact 索引，将后续 512 维 BF16
-注意力交给同一 Triton 实现。回归矩阵补充 512/512 无 RoPE 形状并在 SCNet
-复跑通过，原拓扑的完整 P/D 和精度仍待验证。
-
-后续完整 Graph 启动观察到 vendor backend 退出和控制器 EOF，日志未标出
-退出的算子。对 528 字节 V32_NO_ROPE 行，按 DAS 的 FP8 与四组 FP32 scale
-布局，在 Triton 注意力内解量化选中的 KV 行，移除该调用对 LightOp gather
-的依赖。SCNet 的 packed FP8 eager 和变索引 Graph 回归通过。
