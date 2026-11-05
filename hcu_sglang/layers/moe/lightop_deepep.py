@@ -8,10 +8,6 @@ import torch
 
 
 def _copy_counts_to_device(counts: list[int], device: torch.device) -> torch.Tensor:
-    if any(int(count) % 256 for count in counts):
-        raise RuntimeError(
-            "LightOp DeepEP normal mode requires 256-aligned expert counts"
-        )
     return torch.tensor(counts, dtype=torch.int32, device=device)
 
 
@@ -25,6 +21,11 @@ def _scatter(
     all_tokens: int,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     from lightop import moe as lightop_moe
+
+    if any(int(count) % 256 for count in counts.cpu().tolist()):
+        raise RuntimeError(
+            "LightOp DeepEP normal mode requires 256-aligned expert counts"
+        )
 
     output_index = torch.full(
         topk_ids.shape, -1, device=topk_ids.device, dtype=torch.int32

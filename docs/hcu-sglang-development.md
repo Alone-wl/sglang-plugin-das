@@ -383,12 +383,10 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 
 已归档远端 24/24 prefill 重复性配对及九题 6/9（错7/90/127，127仍复读），不归属统一提交组合。补独立 router.sh、无插桩官方包哈希与启动前源码检查；诊断树仅 model_runner.py 追加 observer 安装。网页配置按用户要求暂不接入。本次仅静态验证，未启动服务或新增单测。详见 [交接](glm5.3-flash-handoff.md)。
 
-### 2026-11-06 DeepEP normal expert counts 同步候选
+### 2026-11-06 P/D 性能路径静态复核
 
-在 `feat/glm5.3-flash` 的 `c661691` 基线上，按 hcu-plugin-dev 检查既有 LightOp runner 的 CPU/GPU 边界。`fused_deepep_lightop` 的 normal INT8/FP8 分支从 dispatcher 接收 CPU counts 列表，经 `_copy_counts_to_device` 复制为 int32 GPU tensor，原 `_scatter` 随即 `.cpu().tolist()` 取回同一列表以检查 256 对齐。参考 `sglang-das` 的 `ep_moe/layer.py` 在复制前检查原始 CPU 列表；本次仅迁移这一检查位置，保留错误消息、设备端 counts、native scatter/GEMM/gather 参数及空 dispatch 行为。LL 路径不受影响；不新增 Hook、环境变量或 adapter 依赖，官方源码不改。
+当前实验启动配置为 `--quantization w8a8_int8 --moe-a2a-backend deepep --moe-runner-backend deep_gemm`。`layers/quantization/deepep_int8.py` 的 `around_create_runner` 在 `requested()` 命中后构造 `DeepGemmInt8Runner`，`around_apply` 及 `around_run_moe_core` 调用该 runner。P 的 normal 路径为 `layers/moe/deepgemm_int8.py:_normal`，在 CPU counts 列表上做 256 对齐检查后复制至设备；D 的 low-latency 路径为同类的 `_masked`。源代码接线只说明该配置下的预期路径，真实服务命中和耗时仍需 profile 证明。
 
-CPU 回归从真实 `fused_deepep_lightop` 入口进入 normal INT8/FP8 分支，仅替代 Torch/vendor 计算及 combine 数据载体。设备 tensor 的 `.cpu()` 故意报错，改前四个子用例在原回读处失败；改后正常分支、非法对齐在复制前拒绝及空 dispatch 三项测试通过。该证据证明消除主机回读及调用合同，不能证明数值或服务性能收益。
+此前本地提交 `252f36e` 消除了 `lightop_deepep.py` 中的 counts 回读，但该函数以 `("deepep", "lightop")` 注册，不能作为当前 DeepGEMM 部署的优化。已撤回该候选及其专用测试，没有部署或性能收益结论。后续必须先证明实际 runner 命中，再比较同硬件、同参数、同负载下的算子与端到端耗时；保留 DeepEP、EAGLE、CP、HiCache 等原功能。
 
-Python 3.11 下 L0 通过，完整 unittest 68 项中 67 项通过；既有 launcher 测试期望直接运行官方入口，但当前 launcher 转发至插件的 `launch_server`，导致 1 项失败。单独执行该用例，并以 `git show HEAD:hcu_sglang/__main__.py` 加载未修改 launcher 后再次执行，均复现同一失败；本提交不改无关 launcher 行为或测试。导览已重建，`tools/build_guide.py --check` 通过。
-
-SCNet 跳板机出现认证后命令无响应及连接超时，当前候选尚未部署。GPU 数值、P 原接受配置分支命中、算子 profile、同硬件预热 A/B 与完整 P/D 精度回归均为 pending。此同步不能直接归因为 P 的主要瓶颈；D 的 LL 延迟仍需完整模型 profile 定位。实验恢复后，脚本和原始结果继续保存于容器 `/home/work/agent/das-glm53-tx-pd/perfopt-20261105/`。
+目前 SCNet 跳板机持续出现 SSH 连接超时或认证后命令无响应；不启动远端 shell 的端口转发同样未建立。未据此判断原 P/D 服务退出，也未重复加载模型。完整模型 profile、数值与精度回归、P/D 优化及 A/B 均为 pending。实验脚本与结果继续使用容器 `/home/work/agent/das-glm53-tx-pd/perfopt-20261105/`。本次只完成静态调用链复核，L0 和导览检查通过，不继承历史 GPU 验证为当前验收。
