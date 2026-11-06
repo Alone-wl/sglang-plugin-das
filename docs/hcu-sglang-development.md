@@ -408,3 +408,17 @@ P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传
 后续 `probe-v2.log` 与 `result.json`：GPU 0/3、真实 LightOp scatter→两次 DeepGEMM→激活→gather，BF16 输出与原路径逐位一致，共 16 项，覆盖 1/16/129/257 行、零计数专家、两种 offloader 配置（禁止 CE 时仅证明保留旧路径，不证明 no-CE 语义）。使用真实 4096 hidden / 2048 intermediate / 4 local experts；没有实际多 rank collective，不能代替 EP8 整模型验收。两卡每臂预热 5 次，三轮交替顺序、每轮 30 次，小样本候选约 0.38–0.39ms、原路径约 0.43–0.45ms。此为该 FFN 样本的主机加设备时间，不是整体 P 提速。P normal 原配置禁用 Graph，本轮不宣称 normal Graph 支持。整模型 A/B、profile 与数据集回归仍待候选部署后的独立验证。
 
 设备环境为 gfx936、Torch 2.11.0、HIP 6.3.26113、驱动 6.3.31-V1.5.0a；结果附内核版本和 topology 架构字段。当前离线 68 项中 67 项通过，唯一失败仍是上述改前可复现的 launcher 用例；L0、diff 与导览 freshness 检查通过，浏览器验收仍受前述协议限制。
+
+### 2026-11-06 CP 缓存命中分歧与协调候选
+
+原代码完成 AIME25 25/30（83.33%）、HumanEval 163/164（99.39%），之后三轮 P 稳定基线在首个重复 4K 预热请求卡住，没有有效新基准成绩。非阻塞 Python 栈和 locals 确认同一请求在 CP rank 0 的逻辑行数为每卡 512、rank 3 为每卡 32，即新 token 总数 4096 与 256。不同缓存命中导致 collective 输入不一致。watchdog 随后启动 8 个阻塞 py-spy 诊断，又将 scheduler 停在 ptrace；已终止本服务的诊断与失效 P，D 保持健康。watchdog 的巨大缓存页清单是在途请求快照，不能作为独立泄漏根因。
+
+新增机制归 plugin：上游与参考 fork 的统一缓存 match 均未协调最终可用的 Mamba/device prefix，不能把新增协调能力塞入 adapter。正式 AROUND Hook 为 `UnifiedRadixCache._match_tree` 和 Python `UnifiedTreeCore.match_prefix`，通过 ContextVar 将一次真实 COW match 的 cache 传给对应 core；其他 core 和非 COW 查询保留原调用。只在 HCU、Mamba、CP>1 生效。利用原 cache 的 attention CPU groups，对设备/host 命中与 branching 元数据做 min/max 一致性检查；分歧时消费中间 lookup 的 cache actions，缩短查询并重新匹配，直到得到所有 rank 共同可用的前缀。COW、最终 cache actions 和 linker 仍由原 `_match_tree` 执行一次。没有修改上游源码，没有关闭 HiCache、CP 或 SBO；普通一致命中保持命中。
+
+真实上游 cache fixture、GPU pool 和 8-rank Gloo 在 `cp-cache-consensus/` 复现改前命中 `[0,32,32,32,32,32,32,32]`，改后共同选择零前缀。离线回归覆盖 action/COW 顺序、一致命中、无关 core、作用域异常清理与非 CP/非 COW 路径。实际正向缓存 COW、重复长请求、P/D 集成和新版本精度尚待完成；Python core 之外的树后端、streaming session shortcut、L3 linker 不在本轮实证范围。
+
+后续正向 8-rank fixture 保留全部 rank 的 32-token 缓存命中，并且每 rank 只分配一次 COW，来源 slot 与原 cached slot 相同。仓内分布式用例进一步覆盖 page_size=256、Mamba extra_buffer、512-token 一致命中与单 rank 状态被驱逐后的共同回退，8 rank 全部通过；首次 fixture 未启用 extra_buffer 的配置错误保留于 `registered-test.log`，修正后为 `registered-test-v2.log`。离线 4 项通过、1 项分布式用例默认跳过，全套仍有既有 launcher 失败。
+
+仅部署 CP 协调的 manifest 为 `cp-fix-deployment.json`，仍保留原 normal INT8 runner。P 重启后的三个实际长前缀请求均完整输出正确答案 2、2、7，首个请求 3931 prompt tokens、cached=0，后两次 cached=3840，分别约 12.62/3.03/0.96 秒；这是集成/缓存命中证据，不当作稳定性能 A/B。证明没有通过关闭缓存逃避分歧。原始请求及响应保存在 `cpfix-repeated-prefix-smoke.json`。三轮不带 profile 的同硬件 P 基线已启动，新组合的全集精度仍待回归。
+
+该三轮基线只有首轮有效：Mean TTFT 16480.66ms、时长 27.56 秒。第二轮预热期间，P 在 Mamba checkpoint 的 `_alloc_mamba_slot` 报 `Can not alloc mamba cache`，其余两轮没有有效成绩；客户端的空 E2E percentile 异常来自请求全部失败，不能用统计补零修饰。CP 命中协调已实际执行 56 次，后续缺口转为源状态锁及 checkpoint 槽位压力。原生实现会在压力下释放已消费 COW 源的 Mamba 锁，官方路径缺少这段生命周期处理，下一候选需在真实结果 fence 后验证，保留 FULL KV 锁与原 96-slot 配置。
