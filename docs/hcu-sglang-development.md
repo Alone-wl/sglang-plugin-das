@@ -422,3 +422,9 @@ P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传
 仅部署 CP 协调的 manifest 为 `cp-fix-deployment.json`，仍保留原 normal INT8 runner。P 重启后的三个实际长前缀请求均完整输出正确答案 2、2、7，首个请求 3931 prompt tokens、cached=0，后两次 cached=3840，分别约 12.62/3.03/0.96 秒；这是集成/缓存命中证据，不当作稳定性能 A/B。证明没有通过关闭缓存逃避分歧。原始请求及响应保存在 `cpfix-repeated-prefix-smoke.json`。三轮不带 profile 的同硬件 P 基线已启动，新组合的全集精度仍待回归。
 
 该三轮基线只有首轮有效：Mean TTFT 16480.66ms、时长 27.56 秒。第二轮预热期间，P 在 Mamba checkpoint 的 `_alloc_mamba_slot` 报 `Can not alloc mamba cache`，其余两轮没有有效成绩；客户端的空 E2E percentile 异常来自请求全部失败，不能用统计补零修饰。CP 命中协调已实际执行 56 次，后续缺口转为源状态锁及 checkpoint 槽位压力。原生实现会在压力下释放已消费 COW 源的 Mamba 锁，官方路径缺少这段生命周期处理，下一候选需在真实结果 fence 后验证，保留 FULL KV 锁与原 96-slot 配置。
+
+### 2026-11-06 已消费 Mamba 源状态的锁生命周期
+
+参考 fork 的 `MambaComponent._alloc_mamba_slot(req)` 在 lazy-buffer 压力路径释放已消费的 COW 源状态锁。当前部署没有启用该新 lazy-buffer 模式，新增 plugin 只实现共同的生命周期规则：在 `SchedulerBatchResultProcessor.snapshot_auxiliary_output_starts` 正式 AFTER seam 上，原方法先执行；仅 HCU GLM extra-buffer 的 extend 批次、且 `copy_done.query()` 已完成时，释放整个已完成批次的旧 Mamba 源锁。FULL KV 锁保留，receipt 标记 Mamba 已释放，最终 unlock 不重复释放；未完成 fence、decode、其他模型和 session 路径保持原行为。各生产调用点都在 copy_done.synchronize 后调用此 seam，另以 event query 防护。这里不实现 lazy buffer，不增大槽位、不关闭缓存或 overlap。
+
+`mamba-cow-pressure/probe.py` 使用真实 cache、Mamba GPU pool、两个请求共享源状态及已完成的 COW 拷贝，将池填满；原路径稳定复现 `Can not alloc mamba cache`。候选 8 张卡均能释放旧源并复用其 slot，FULL 锁仍为 2，Mamba 锁为 0；将复用 slot 改写为 99 后，两个请求自身 temporal/conv 状态仍逐位为原值 1/2，最终 unlock 不双重释放。仓内分布式测试合并 page256 CP match 与该压力场景，`registered-test-cow.log` 的 8 rank 全部通过；另有 3 项 CPU fence/receipt/准入回归。实现与 root entry 已部署，manifest 为 `mamba-lock-fix-deployment.json`，P 按原 96 槽参数重启。稳定三轮及全集新组合回归仍待完成，normal INT8 异步计数仍未部署。

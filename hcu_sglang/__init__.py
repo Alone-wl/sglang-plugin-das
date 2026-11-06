@@ -60,6 +60,7 @@ def register() -> None:
         hcu_mha_pool,
         kv_cache_dtype,
         mla,
+        mamba_checkpoint_locks,
         swa,
     )
     from hcu_sglang.models import bailing_moe
@@ -101,6 +102,7 @@ def register() -> None:
     dsa_lightop_mla.register_hooks()
     dsa_kpool_short.register_hooks()
     cp_prefix_consensus.register_hooks()
+    mamba_checkpoint_locks.register_hooks()
     dsa_packed_kv.register_hooks()
     dsa_topk.register_hooks()
     current_dsa.register_hooks()

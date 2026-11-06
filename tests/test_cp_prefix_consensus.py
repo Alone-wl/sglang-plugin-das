@@ -157,8 +157,10 @@ class PrefixConsensusTests(unittest.TestCase):
             from sglang.srt.mem_cache.unified_cache.component_type import ComponentType
             from sglang.srt.plugins.hook_registry import HookRegistry
             from sglang.srt.sampling.sampling_params import SamplingParams
+            from hcu_sglang.mem_cache import mamba_checkpoint_locks
 
             consensus.register_hooks()
+            mamba_checkpoint_locks.register_hooks()
             HookRegistry.apply_hooks()
             cfg = upstream.CacheConfig(
                 page_size=256, kv_size=2048, max_context_len=2048,
@@ -199,6 +201,48 @@ class PrefixConsensusTests(unittest.TestCase):
                 else:
                     self.assertEqual(int(query.kv.mamba_cow_src_index.item()),
                                      int(owner.kv.mamba_pool_idx.item()))
+
+            from sglang.srt.managers.scheduler_components.batch_result_processor import SchedulerBatchResultProcessor
+            from sglang.srt.model_executor.forward_batch_info import ForwardMode
+
+            query.lock = cache.lock(result.best_match_node)
+            second = request("second-cow")
+            second_hit = cache.match_prefix(MatchPrefixParams(
+                key=RadixKey(array("q", tokens)), cow_mamba=True, req=second))
+            second.lock = cache.lock(second_hit.best_match_node)
+            pool.mamba_pool._hcu_glm5_cache = True
+            state = pool.mamba_pool.mamba_cache
+            source = owner.kv.mamba_pool_idx.view(1)
+            state.temporal[:, source] = 1
+            for conv in state.conv:
+                conv[:, source] = 2
+            for req in (query, second):
+                pool.mamba_pool.copy_from(
+                    pool.translate_mamba_indices(req.kv.mamba_cow_src_index.view(1)),
+                    pool.translate_mamba_indices(req.kv.mamba_pool_idx.view(1)))
+            pool.mamba_allocator.alloc(pool.mamba_allocator.free_slots.numel())
+            fence = torch.cuda.Event()
+            fence.record()
+            fence.synchronize()
+            node = query.lock.node
+            self.assertEqual(upstream._device_lock_ref(cache, node, ComponentType.MAMBA), 2)
+            SchedulerBatchResultProcessor.snapshot_auxiliary_output_starts(
+                SimpleNamespace(tree_cache=cache, reqs=[query, second], forward_mode=ForwardMode.EXTEND),
+                SimpleNamespace(copy_done=fence, auxiliary_host_output=None))
+            slot = cache.components[ComponentType.MAMBA]._alloc_mamba_slot()
+            self.assertEqual(upstream._device_lock_ref(cache, node, ComponentType.FULL), 2)
+            self.assertEqual(upstream._device_lock_ref(cache, node, ComponentType.MAMBA), 0)
+            state.temporal[:, slot] = 99
+            for conv in state.conv:
+                conv[:, slot] = 99
+            for req in (query, second):
+                index = req.kv.mamba_pool_idx
+                torch.testing.assert_close(state.temporal[:, index], torch.ones_like(state.temporal[:, index]),
+                                           rtol=0, atol=0)
+                for conv in state.conv:
+                    torch.testing.assert_close(conv[:, index], torch.full_like(conv[:, index], 2),
+                                               rtol=0, atol=0)
+                cache.unlock(req.lock)
         finally:
             dist.destroy_process_group()
 
