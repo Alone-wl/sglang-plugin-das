@@ -390,3 +390,11 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 此前本地提交 `252f36e` 消除了 `lightop_deepep.py` 中的 counts 回读，但该函数以 `("deepep", "lightop")` 注册，不能作为当前 DeepGEMM 部署的优化。已撤回该候选及其专用测试，没有部署或性能收益结论。后续必须先证明实际 runner 命中，再比较同硬件、同参数、同负载下的算子与端到端耗时；保留 DeepEP、EAGLE、CP、HiCache 等原功能。
 
 目前 SCNet 跳板机持续出现 SSH 连接超时或认证后命令无响应；不启动远端 shell 的端口转发同样未建立。未据此判断原 P/D 服务退出，也未重复加载模型。完整模型 profile、数值与精度回归、P/D 优化及 A/B 均为 pending。实验脚本与结果继续使用容器 `/home/work/agent/das-glm53-tx-pd/perfopt-20261105/`。本次只完成静态调用链复核，L0 和导览检查通过，不继承历史 GPU 验证为当前验收。
+
+### 2026-11-06 冷启动架构检测与 GPU 上下文
+
+按 hcu-plugin-dev 与配套 hcu-adapter-dev 规约，保留 `get_gcn_arch(device_id)` 原有按设备属性查询；仅架构布尔检测在 CUDA 未初始化且 adapter 可用时复用其架构元数据。adapter 缺失及已初始化路径仍查 Torch 属性。gfx936/gfx938/gfx942 分类与 native FP8 布尔语义不变，无新增配置。提交范围为 detection、离线回归及本记录。
+
+配套 adapter 同时消除 import 期 GPU 分配并接管冷启动硬件查询。实际 P/D 环境的完整 bootstrap 探针无 CUDA 初始化尝试，新进程 KFD 显存全零；D 重启健康 200，8 个 scheduler 各占本卡，改前 CPU worker 与跨卡 scheduler 的 GPU 0 上下文已消失。原 trace 的通信等待与 GPU 0 runlist 超订阅是诊断证据，提速仍需同配置新 profile 和预热 A/B。不得继承历史精度。证据位于实验 `perfopt-20261105/cold-start/`，P 启动及 AIME25/HumanEval 尚待完成。
+
+本轮离线测试 67 项中 66 项通过；唯一失败仍为既有 launcher 测试期望旧 bootstrap/官方模块转发，而当前入口转发 `hcu_sglang.launch_server`，已用改前 HEAD 复现，不属于本次 detection 修改。L0、导览重建与 freshness 检查通过。浏览器预览因本地 `file:` 协议被工具安全策略拒绝，未进行截图、交互及窄屏验收，也未绕过该限制。
