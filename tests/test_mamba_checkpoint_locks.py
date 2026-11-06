@@ -62,6 +62,54 @@ class MambaCheckpointLockTests(unittest.TestCase):
         self.invoke(batch, result)
         cache.dec_lock_ref.assert_not_called()
 
+    def test_completed_prefill_releases_the_new_checkpoint_lock(self):
+        cache, batch, result = self.fixture()
+        req = batch.reqs[0]
+        req.inflight_middle_chunks = 0
+        req.extend_end = 8
+        req.full_untruncated_fill_ids = list(range(8))
+        scheduler = SimpleNamespace(tree_cache=cache)
+
+        def process(actual_scheduler, actual_batch, actual_result):
+            self.assertIs(actual_scheduler, scheduler)
+            self.assertIs(actual_batch, batch)
+            req.lock = SimpleNamespace(node=9, receipt=Receipt(), swa_released=False)
+            return lifecycle.after_prefill_checkpoint("checkpoint", scheduler, req)
+
+        with patch.dict(sys.modules, {
+            "sglang.srt.mem_cache.unified_cache.component_type":
+                SimpleNamespace(ComponentType=SimpleNamespace(MAMBA=2)),
+        }):
+            self.assertEqual(lifecycle.around_prefill_result(process, scheduler, batch, result),
+                             "checkpoint")
+        self.assertEqual(cache.dec_lock_ref.call_count, 1)
+        self.assertEqual(cache.dec_lock_ref.call_args.args[0], 9)
+        self.assertEqual(req.lock.receipt.skipped_lock_components, (2,))
+        self.assertIsNone(lifecycle._PREFILL_RESULT.get())
+
+    def test_prefill_checkpoint_requires_same_completed_request_and_fence(self):
+        for change in ("pending", "chunk", "unfenced", "other_scheduler", "other_request"):
+            cache, batch, result = self.fixture()
+            req = batch.reqs[0]
+            req.inflight_middle_chunks = int(change == "pending")
+            req.extend_end = 7 if change == "chunk" else 8
+            req.full_untruncated_fill_ids = list(range(8))
+            scheduler = SimpleNamespace(tree_cache=cache)
+            if change == "unfenced":
+                result.copy_done = None
+            actual_scheduler = SimpleNamespace(tree_cache=cache) if change == "other_scheduler" else scheduler
+            actual_req = SimpleNamespace() if change == "other_request" else req
+            lifecycle.around_prefill_result(
+                lambda *args: lifecycle.after_prefill_checkpoint(None, actual_scheduler, actual_req),
+                scheduler, batch, result)
+            cache.dec_lock_ref.assert_not_called()
+
+    def test_prefill_result_scope_resets_on_exception(self):
+        with self.assertRaisesRegex(ValueError, "forward failure"):
+            lifecycle.around_prefill_result(Mock(side_effect=ValueError("forward failure")),
+                                            object(), object(), object())
+        self.assertIsNone(lifecycle._PREFILL_RESULT.get())
+
 
 if __name__ == "__main__":
     unittest.main()
