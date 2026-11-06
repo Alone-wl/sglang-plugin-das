@@ -1667,3 +1667,15 @@ export PYTHONPATH="${ADAPTER_ROOT}:${SGLANG_ROOT}/python:${PLUGIN_ROOT}"
 KV 三项测试验证真实构造/公共写入、位置与关键字参数及重复参数错误、空输入、不同 K/V 维度、页边界、padding slot、未写层、变 slot/数据后的两次 Graph replay。GDN 四项测试验证真实 HookRegistry 应用、非 HCU 保留有效 original、构造异常身份与状态、0/1/8/1024 token 投影数值、capture 同流及变输入 replay。昂贵权重构造在微测中替身化，完整构造由上述真实 TP2 服务补充。
 
 本提交复验结果在 [交付记录](delivery-validation.md#2026-11-04-hcu-kv-与-gdn-单流策略) 汇总。其他模型、量化、短 prefill Graph、PD、并发、其他硬件与 MTP 参数仍未验证；不从本次小幅收益外推吞吐或全场景性能。
+
+## 2026-11-05 官方 sglang PD 模式适配与 SLA 验收
+
+完成模块/行为：PD（prefill/decode 分离）在官方 sglang v0.5.22（`baa9befa`）上首次端到端跑通，修掉三处仅内部 fork 才成立的依赖。`disagg/prefill.py` 的 `get_next_disagg_prefill_batch_to_run` 在任何模式判断之前调用 `self._begin_scheduler_iteration()`，该方法只存在于内部 fork，用于排空后台 cache-prefetch 回执并推进 prefetch epoch；本仓与官方都没有 external cache linker prefetch 通路，故在官方线上每次 PD prefill 首个调度轮即 AttributeError。同函数链路上的 `_external_kv_abort_rids` / `_external_kv_cleanup_rids` 两个集合由内部 fork 的 `Scheduler.__init__` 建立，本仓 prefill 钩子无条件读写它们。
+
+修复方式沿用 §2026-11-02 的 setdefault 范式：`register_hooks` 期对 `_begin_scheduler_iteration` 做探针填坑（宿主提供则不覆盖，缺失则装 no-op），`init_disaggregation` 期以 `hasattr` 建立两个空集合。第三处是 `DecodePreallocQueue._send_kv_metadata`：它把所有 metadata kwargs 原样转发给 `kv_receiver.send_metadata`，HCU Mooncake receiver 声明了 `spec_metadata`/`device_kv_indices`，但服务预热请求走的上游 `FakeKVReceiver` 两者都不接受（且其 payload 本就无用），首个 decode 迭代即 TypeError 并杀死调度器；改为按接收方签名过滤未知 kwarg（带 `**kwargs` 的接收方不过滤）。该覆盖此前从未注册为 hook，实际生效的一直是上游版本，本次一并注册。
+
+实际验证（bw47 / `yht-plugin-qwen38-dtk2610-bw47-1104` / DTK2610 / 物理卡 4,5,6,7 / 2026-11-05）：PD 拓扑为 P `TP2+EP2`（卡 4,5）、D `TP2+EP2 + attention-DP2`（卡 6,7）、mooncake over TCP；`17*23` 端到端返回 391 且 `finish_reason=stop`。SLA（1024 输出、radix cache 开启、实测缓存命中 85%）三档 TTFT/TPOT P90 为 64K 1.62s/15.39ms、128K 3.15s/18.88ms、256K 9.96s/15.53ms，均满足 10s/15s/15s 与 30/40/50ms 门限；同机 IFB 单实例（TP4+attention-DP4+EP4）为 1.59s/15.96ms、3.63s/14.23ms、12.48s/17.51ms。回归：新增 `tests/runtime/fix_pd_official_host.py` 8 项；既有 PD runtime 测试 `fix_pd_transport`(8)、`fix_pd_decode_hicache`(5)、`fix_pd_dspark_worker`(6)、`replay_validation_cpu`(5) 全通过；L0 门禁通过（583 Python / 8 skills）。
+
+未验证模式：本次 PD 因节点资源受限只跑通 TP2，未测 TP4+TP4 同口径；decode 侧 radix cache、PD 下的 HiCache/HiSparse、DeepEP、PD 角色切换、多节点与 RDMA（本机无 IB，mooncake 走 TCP）、其他模型/量化均未验证。`_send_kv_metadata` 的 hook 注册使本仓实现在官方线上首次真正生效，其与上游的差异（仅多一次 time_stats 记录）尚未单独做 A/B。完整 unittest 套件在本容器内 20 分钟未跑完，中途仅 `test_tool_contracts.test_verifier_cli_failure_is_nonzero` 报 ERROR，已在未改动的干净工作树上复现同错，与本提交无关。
+
+本提交的干净分支 `feat/qwen38-pd-disagg-clean` 于 2026-11-06 基于 upstream 最新 `release/sglang_v0.5.22@c6b0998` 直接 cherry-pick 实测提交 `a1a57ef` 生成，无冲突；三处缺陷在最新上游仍全部存在（`prefill.py:1459` / `prefill.py:1998,2072,2428,2642` / `decode.py:2386`）。改动文件与 `a1a57ef` 逐字节相同，L0（584 Python / 8 skills）与 `fix_pd_official_host.py` 8/8 在该分支复跑通过，服务与 SLA 结论沿用同日 bw47 实测。配套 adapter 无需改动：upstream `release/sglang_v0.5.22@0d5d73b` 与实测用 `2d43c67` 整树哈希同为 `f7c1dc4`。
