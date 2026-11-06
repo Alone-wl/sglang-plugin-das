@@ -52,6 +52,7 @@ def register() -> None:
     from hcu_sglang.layers.moe import alignment, aiter_w4a8, lightop_runner, mega_moe, topk, standard_dispatcher
     from hcu_sglang.mem_cache import allocation as mem_cache_allocation
     from hcu_sglang.mem_cache import (
+        cp_hicache_write_ack,
         cp_prefix_consensus,
         dsa,
         dsv4,
@@ -102,6 +103,7 @@ def register() -> None:
     dsa_lightop_mla.register_hooks()
     dsa_kpool_short.register_hooks()
     cp_prefix_consensus.register_hooks()
+    cp_hicache_write_ack.register_hooks()
     mamba_checkpoint_locks.register_hooks()
     dsa_packed_kv.register_hooks()
     dsa_topk.register_hooks()

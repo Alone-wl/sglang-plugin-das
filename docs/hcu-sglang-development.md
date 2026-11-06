@@ -428,3 +428,15 @@ P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传
 参考 fork 的 `MambaComponent._alloc_mamba_slot(req)` 在 lazy-buffer 压力路径释放已消费的 COW 源状态锁。当前部署没有启用该新 lazy-buffer 模式，新增 plugin 只实现共同的生命周期规则：在 `SchedulerBatchResultProcessor.snapshot_auxiliary_output_starts` 正式 AFTER seam 上，原方法先执行；仅 HCU GLM extra-buffer 的 extend 批次、且 `copy_done.query()` 已完成时，释放整个已完成批次的旧 Mamba 源锁。FULL KV 锁保留，receipt 标记 Mamba 已释放，最终 unlock 不重复释放；未完成 fence、decode、其他模型和 session 路径保持原行为。各生产调用点都在 copy_done.synchronize 后调用此 seam，另以 event query 防护。这里不实现 lazy buffer，不增大槽位、不关闭缓存或 overlap。
 
 `mamba-cow-pressure/probe.py` 使用真实 cache、Mamba GPU pool、两个请求共享源状态及已完成的 COW 拷贝，将池填满；原路径稳定复现 `Can not alloc mamba cache`。候选 8 张卡均能释放旧源并复用其 slot，FULL 锁仍为 2，Mamba 锁为 0；将复用 slot 改写为 99 后，两个请求自身 temporal/conv 状态仍逐位为原值 1/2，最终 unlock 不双重释放。仓内分布式测试合并 page256 CP match 与该压力场景，`registered-test-cow.log` 的 8 rank 全部通过；另有 3 项 CPU fence/receipt/准入回归。实现与 root entry 已部署，manifest 为 `mamba-lock-fix-deployment.json`，P 按原 96 槽参数重启。稳定三轮及全集新组合回归仍待完成，normal INT8 异步计数仍未部署。
+
+### 2026-11-06 CP LayerSplit HiCache 写回完成回收
+
+上述源锁候选仍在第二轮预热失败，只有首轮有效（Mean TTFT 16595.32ms、28.30 秒）。定向异常库存诊断再次复现，失败的 rank 0～2 各有 free=0、evictable=0、protected=48、16 个持有状态的请求、47 个 pending write 节点；7 个 ACK 全部完成、覆盖 43 个节点。rank 3～7 的日志使用率约 0.59，失败三 rank 约 0.97。库存为 `mamba-slot-diagnostic/failure-*.json`，不是 watchdog 的在途 census。临时异常诊断已从服务源码移除并恢复原文件 SHA。
+
+原 `_sync_hicache_ready_counts` 对写回 ACK 队列长度取全 rank MIN。LayerSplit 的本地写回队列可不同，空队列将其他 rank 已完成的 ACK 一直压为零，其写回锁无法回收。`cp-write-acks/probe.py` 使用真实 cache/tree/allocator/锁与 GPU→pinned-host 复制、完成 event：3/8 rank 持有写回锁、另 5 rank 没有 ACK，原逻辑稳定复现前三 rank 槽位不足；按本地已完成 ACK 调原 writing_check 后，8 rank 全部恢复分配，host 快照逐位一致。这验证资源生命周期，未声称覆盖整套 HiCache vendor I/O 数值。
+
+新增 `cp_hicache_write_ack` 经 root 正式注册 AROUND `UnifiedRadixCache.writing_check`。仅 HCU GLM 标记池、CP LayerSplit 大小匹配、attention TP=1、PP=1、cache 模式、write_through 且未启用 L3 时，使用本地连续完成的 ACK 数调用当前 original；原事件 synchronize、finish_write_through、锁释放和 metrics 路径保留。load ACK、全局 ready-count/digest 同步和其他拓扑/策略保持原行为。CP 前缀协调仍配套启用，不能将本地 ACK 回收当作普通 TP 或 L3 的通用替换。首次实际回收与全局计数不同时记录一条日志，供运行命中核验；没有新增环境变量或修改官方源码。
+
+3 项 CPU 边界回归通过，覆盖零全局计数、空/未完成本地事件、PP/L3/TP/非 LayerSplit/非 GLM 回退；`registered.log` 正式 Hook 的 8 rank 全部通过，每 rank 4 项，包含上述真实缓存反例。全套 80 项中 77 通过、2 个 GPU lane 跳过、1 个修改前已存在的 launcher 期望不匹配失败；L0、guide 构建与快照检查通过，页面浏览器验收仍保留之前 file URL 安全策略阻止的未验证说明。另一个“P 完成 checkpoint 后跳过其 Mamba 锁”的候选通过了局部压力检查，但不能解决写回锁积压，已以 `fc8e35a` 回退且从未部署；证据保留在 `mamba-slot-diagnostic/inflight-probe-v2.log`，不混入此轮归因。
+
+本次仅同步 root 与新 ACK 模块，清单 `cp-write-ack-deployment.json`；源锁、CP 协调和 cold-context 修复保持，normal INT8 runner 仍为原同步计数版本。P 重启与三轮稳定基线已排队在 `p-f14-writeack-baseline3/`。新组合持续压力、完整数据集精度和 normal-counts 的同硬件 A/B 仍待完成，旧全集结果只归属原 context-fix 组合。
