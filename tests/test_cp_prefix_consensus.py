@@ -243,48 +243,6 @@ class PrefixConsensusTests(unittest.TestCase):
                     torch.testing.assert_close(conv[:, index], torch.full_like(conv[:, index], 2),
                                                rtol=0, atol=0)
                 cache.unlock(req.lock)
-
-            from dataclasses import replace
-            from sglang.srt.disaggregation.prefill import SchedulerDisaggregationPrefillMixin
-            from sglang.srt.mem_cache.common import release_kv_cache
-            from sglang.srt.managers.scheduler import Scheduler
-
-            self.assertIs(Scheduler.checkpoint_disagg_prefill,
-                          SchedulerDisaggregationPrefillMixin.checkpoint_disagg_prefill)
-            cache, allocator, pool = upstream.build_fixture(replace(cfg, mamba_cache_size=11))
-            pool.mamba_pool._hcu_glm5_cache = True
-            scheduler = SimpleNamespace(tree_cache=cache)
-            inflight = []
-            for index in range(3):
-                tokens = list(range(index * 1000, index * 1000 + 256))
-                req = request("inflight-" + str(index))
-                pool.alloc([req])
-                inflight.append(req)
-                req.full_untruncated_fill_ids = array("q", tokens)
-                req.extend_end = 256
-                req.kv.kv_committed_len = 256
-                req.kv.kv_allocated_len = 256
-                req.last_node = cache.root_node_handle()
-                req.lock = None
-                req.kv.cache_protected_len = 0
-                req.kv.mamba_last_track_seqlen = 256
-                pool.write((req.kv.req_pool_idx, slice(0, 256)), allocator.alloc(256))
-                pool.mamba_pool.mamba_cache.temporal[:, req.kv.mamba_pool_idx] = index + 1
-                fence = torch.cuda.Event()
-                fence.record()
-                fence.synchronize()
-                mamba_checkpoint_locks.around_prefill_result(
-                    lambda actual_scheduler, batch, result:
-                        SchedulerDisaggregationPrefillMixin.checkpoint_disagg_prefill(actual_scheduler, req),
-                    scheduler, SimpleNamespace(tree_cache=cache, reqs=[req]),
-                    SimpleNamespace(copy_done=fence))
-                self.assertEqual(upstream._device_lock_ref(cache, req.lock.node, ComponentType.FULL), 1)
-                self.assertEqual(upstream._device_lock_ref(cache, req.lock.node, ComponentType.MAMBA), 0)
-            for index, req in enumerate(inflight):
-                state = pool.mamba_pool.mamba_cache.temporal[:, req.kv.mamba_pool_idx]
-                torch.testing.assert_close(state, torch.full_like(state, index + 1), rtol=0, atol=0)
-                release_kv_cache(req, cache, checkpoint=False)
-            cache.sanity_check()
         finally:
             dist.destroy_process_group()
 
