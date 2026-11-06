@@ -440,3 +440,7 @@ P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传
 3 项 CPU 边界回归通过，覆盖零全局计数、空/未完成本地事件、PP/L3/TP/非 LayerSplit/非 GLM 回退；`registered.log` 正式 Hook 的 8 rank 全部通过，每 rank 4 项，包含上述真实缓存反例。全套 80 项中 77 通过、2 个 GPU lane 跳过、1 个修改前已存在的 launcher 期望不匹配失败；L0、guide 构建与快照检查通过，页面浏览器验收仍保留之前 file URL 安全策略阻止的未验证说明。另一个“P 完成 checkpoint 后跳过其 Mamba 锁”的候选通过了局部压力检查，但不能解决写回锁积压，已以 `fc8e35a` 回退且从未部署；证据保留在 `mamba-slot-diagnostic/inflight-probe-v2.log`，不混入此轮归因。
 
 本次仅同步 root 与新 ACK 模块，清单 `cp-write-ack-deployment.json`；源锁、CP 协调和 cold-context 修复保持，normal INT8 runner 仍为原同步计数版本。P 重启与三轮稳定基线已排队在 `p-f14-writeack-baseline3/`。新组合持续压力、完整数据集精度和 normal-counts 的同硬件 A/B 仍待完成，旧全集结果只归属原 context-fix 组合。
+
+服务原参数重启后长前缀 2/2/7 完整通过，后两次 cached_tokens=3840；实际日志确认 8 rank 均使用本地 ACK 回收。随后三轮各 384 个预热与 128 个正式请求全部成功，共 1536 请求，未再出现 slot 断言。三轮 Mean TTFT 为 38952.43/16263.06/16246.91ms，时长 66.23/27.53/27.55 秒；中位数 16263.06ms。首轮异常波动保留，未剔除或称为稳定提速。压力记录中各 rank Mamba 使用率峰值均为 0.66；这是本轮观测上限，不作为配置承诺。完整逐轮日志/CSV、实际 Hook 命中与验收记录为 `p-f14-writeack-baseline3/`、`p-writeack-baseline3-validation.json`、`writeack-pressure-progress.json`。
+
+三轮计时均未开 profile。另起相同 4K/1/128 压力，观察任一 P rank 达到 8 请求/32768-token 的完整 chunk 后等待 30 秒，采集 CPU/GPU 10 steps、record_shapes=true、with_stack=false，目录为 `p-counts-before-trace/`。此轮专门用于随后 normal-counts 对照，不能把诊断压力中的时间加入正式三轮成绩；8 rank 导出完成后再停止压力并单独重启 P 切换计数候选。D 不重启，两个角色的启动参数与缓存修复保持。
