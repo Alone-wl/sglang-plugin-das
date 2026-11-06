@@ -131,6 +131,7 @@ class DeepGemmInt8Runner:
     def _normal(self, dispatch, layer):
         import deepgemm
         from lightop import moe as lightop_moe
+        from sglang.srt.utils.offloader import get_offloader
 
         x, scale = dispatch.hidden_states, dispatch.hidden_states_scale
         counts = dispatch.num_recv_tokens_per_expert
@@ -145,7 +146,12 @@ class DeepGemmInt8Runner:
         ids = dispatch.topk_ids.contiguous()
         if ids.dtype != torch.int64 or ids.shape[1] > 16:
             raise ValueError("HCU INT8 scatter requires INT64 IDs and top-k <= 16")
-        count_gpu = torch.tensor(counts, dtype=torch.int32, device=x.device)
+        if get_offloader().forbid_copy_engine_usage:
+            count_gpu = torch.tensor(counts, dtype=torch.int32, device=x.device)
+        else:
+            count_gpu = torch.tensor(
+                counts, dtype=torch.int32, pin_memory=True, device="cpu"
+            ).to(device=x.device, non_blocking=True)
         grouped_x = torch.zeros((total, x.shape[1]), device=x.device, dtype=x.dtype)
         grouped_scale = torch.zeros((total, 1), device=x.device, dtype=torch.float32)
         indices = torch.full((total,), -1, dtype=torch.int32, device=x.device)

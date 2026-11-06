@@ -398,3 +398,13 @@ Stable eight-rank trace: of 129 combine notifications, the last entering rank al
 配套 adapter 同时消除 import 期 GPU 分配并接管冷启动硬件查询。实际 P/D 环境的完整 bootstrap 探针无 CUDA 初始化尝试，新进程 KFD 显存全零；D 重启健康 200，8 个 scheduler 各占本卡，改前 CPU worker 与跨卡 scheduler 的 GPU 0 上下文已消失。原 trace 的通信等待与 GPU 0 runlist 超订阅是诊断证据，提速仍需同配置新 profile 和预热 A/B。不得继承历史精度。证据位于实验 `perfopt-20261105/cold-start/`，P 启动及 AIME25/HumanEval 尚待完成。
 
 本轮离线测试 67 项中 66 项通过；唯一失败仍为既有 launcher 测试期望旧 bootstrap/官方模块转发，而当前入口转发 `hcu_sglang.launch_server`，已用改前 HEAD 复现，不属于本次 detection 修改。L0、导览重建与 freshness 检查通过。浏览器预览因本地 `file:` 协议被工具安全策略拒绝，未进行截图、交互及窄屏验收，也未绕过该限制。
+
+### 2026-11-06 normal INT8 专家计数拷贝候选
+
+P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传输，不能全部归因于专家计数。实际 `DeepGemmInt8Runner._normal` 每次使用 `torch.tensor(counts, device=x.device)`；原生 `ep_moe/layer.py` 与官方 FP8 normal runner 的普通 offloader 分支使用 pinned CPU tensor 加异步设备拷贝。本候选在该调用点对齐，目标显式为输入设备。offloader 禁止 copy engine 时保留原有直接 tensor 路径，不在本候选扩展 offload 支持；量化、padding、scatter/GEMM/激活/gather 及 output 初始化保持原样，未改变 low-latency 路径。
+
+真实公共 `run`→normal→combine-input 的 CPU 接缝回归保留计数、两个 GEMM 及 gather 出口，普通路径在改前失败、改后通过，并核实禁止 copy engine 时保持旧路径。数学和 vendor consumer 不由 mock 证明。首次设备探针发现 adapter 未提供官方 no-CE helper 所需的 `sgl_kernel.elementwise.copy_to_gpu_no_ce`，因此撤回新增 helper 调用；这不是本次在服 P 的执行路径，不能宣称 no-CE 支持。失败日志保留。候选文件与 baseline 独立保存于实验 `normal-counts-candidate/`，仅在已确认 GPU 空闲的 a12r4n13 测试；没有部署到在跑 P/D，不改变当前 AIME25/HumanEval 的代码。GPU 数值、预热算子时间与整模型 A/B 仍为 pending。
+
+后续 `probe-v2.log` 与 `result.json`：GPU 0/3、真实 LightOp scatter→两次 DeepGEMM→激活→gather，BF16 输出与原路径逐位一致，共 16 项，覆盖 1/16/129/257 行、零计数专家、两种 offloader 配置（禁止 CE 时仅证明保留旧路径，不证明 no-CE 语义）。使用真实 4096 hidden / 2048 intermediate / 4 local experts；没有实际多 rank collective，不能代替 EP8 整模型验收。两卡每臂预热 5 次，三轮交替顺序、每轮 30 次，小样本候选约 0.38–0.39ms、原路径约 0.43–0.45ms。此为该 FFN 样本的主机加设备时间，不是整体 P 提速。P normal 原配置禁用 Graph，本轮不宣称 normal Graph 支持。整模型 A/B、profile 与数据集回归仍待候选部署后的独立验证。
+
+设备环境为 gfx936、Torch 2.11.0、HIP 6.3.26113、驱动 6.3.31-V1.5.0a；结果附内核版本和 topology 架构字段。当前离线 68 项中 67 项通过，唯一失败仍是上述改前可复现的 launcher 用例；L0、diff 与导览 freshness 检查通过，浏览器验收仍受前述协议限制。
