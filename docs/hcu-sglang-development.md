@@ -444,3 +444,11 @@ P 新 trace 的 `hipMemcpyWithStream` 累计 3.697 秒/994 次，包含多种传
 服务原参数重启后长前缀 2/2/7 完整通过，后两次 cached_tokens=3840；实际日志确认 8 rank 均使用本地 ACK 回收。随后三轮各 384 个预热与 128 个正式请求全部成功，共 1536 请求，未再出现 slot 断言。三轮 Mean TTFT 为 38952.43/16263.06/16246.91ms，时长 66.23/27.53/27.55 秒；中位数 16263.06ms。首轮异常波动保留，未剔除或称为稳定提速。压力记录中各 rank Mamba 使用率峰值均为 0.66；这是本轮观测上限，不作为配置承诺。完整逐轮日志/CSV、实际 Hook 命中与验收记录为 `p-f14-writeack-baseline3/`、`p-writeack-baseline3-validation.json`、`writeack-pressure-progress.json`。
 
 三轮计时均未开 profile。另起相同 4K/1/128 压力，观察任一 P rank 达到 8 请求/32768-token 的完整 chunk 后等待 30 秒，采集 CPU/GPU 10 steps、record_shapes=true、with_stack=false，目录为 `p-counts-before-trace/`。此轮专门用于随后 normal-counts 对照，不能把诊断压力中的时间加入正式三轮成绩；8 rank 导出完成后再停止压力并单独重启 P 切换计数候选。D 不重启，两个角色的启动参数与缓存修复保持。
+
+### 2026-11-07 normal INT8 异步计数实际 A/B
+
+F14 的两臂均验证 3×(384 预热 + 128 正式) 全部成功，分别各 1536 请求；INT8 checkpoint、P/D 拓扑、seed、原参数与 cache 修复保持。唯一 P 运行时代码差异为 `2401df5` 的 normal runner（`normal-counts-deployment.json`），无 profile 计时。同步臂 Mean TTFT 38952.43/16263.06/16246.91ms、吞吐 1.93/4.65/4.65 req/s；异步臂 16631.29/15996.88/16302.25ms、4.59/4.68/4.64 req/s。三轮中位数 TTFT 16263.06→16302.25ms、吞吐 4.65→4.64 req/s，未测出端到端提速。未剔除首轮波动，也不将新臂较小波动归因为代码。两臂原始结果在 `p-f14-writeack-baseline3/` 和 `p-f14-counts-after3/`。
+
+两臂独立压力 profile 均完成 8 rank、10 steps；以 `aten::copy_` 外部事件 ID、36 个 INT32 和 144-byte H2D 区分专家计数复制。rank 0/1 各由 430 次 `hipMemcpyWithStream` 降为 0，累计 CPU 调用时间分别从 406.46/419.75ms 降为 0；其余同步复制依然存在。rank 0 所有同步复制从 1090 次、1015.22ms 降到 653 次、599.39ms。记录 `p-counts-profile-comparison.json`。GPU 主热点仍为 INT8 grouped GEMM（860 次，约 1.65/1.62 秒）、ReduceScatter 和 DeepEP 通知/dispatch/combine；两次 trace 批次形状不同，GPU 跨度差不当作算子提速。异步计数保留为已验证的 CPU 同步减少，不晋级为端到端性能收益。
+
+候选重启时 router 的旧健康状态曾使首个 smoke 提前发出而报 502；原日志单独保留，未算入基准。等待器补充直连 P、D `/health` 为 200 后再发请求，后续三次 2/2/7 和缓存命中均通过。A12 节点的单机 8-rank normal DeepEP 初始化复验通过；此前人为给单机探针配置非零 RDMA buffer 的断言是探针参数错误，修正为 P 实际单机配置后通过。F14 A/B 已封存；最终 P 按用户原位置迁回 A12，保持同一 INT8 组合，迁移与数据集验收不外推为同硬件性能差。
