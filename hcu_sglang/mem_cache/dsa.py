@@ -223,10 +223,13 @@ def around_compute_dsa_indexer_cell_size(
             resolve_index_k_cache_mode,
         )
 
+        from hcu_sglang.mem_cache.glm5_index_cache import uses_glm53_flash_fp8
+
         cache_mode = resolve_index_k_cache_mode(
             kvc.kv_cache_dtype,
             kvc.page_size,
             get_dsa_index_head_dim(kvc.model_config.hf_config),
+            force_fp8=uses_glm53_flash_fp8(kvc.model_config.hf_config),
         )
         workspace_bytes = index_k_workspace_bytes_per_token(cache_mode)
         use_bf16_index_cache = cache_mode is IndexKCacheMode.BF16

@@ -55,6 +55,10 @@ from sglang.srt.model_executor.forward_context import (
     get_token_to_kv_pool,
 )
 from sglang.srt.model_executor.runner import get_is_capture_mode
+from hcu_sglang.mem_cache.glm5_index_cache import (
+    commit_kpool_write_buffer,
+    get_kpool_write_buffer,
+)
 from hcu_sglang.utils.detection import is_hcu
 from sglang.srt.utils import get_bool_env_var, is_cuda, is_hip, is_npu
 
@@ -501,7 +505,7 @@ class IndexerKPool(Indexer):
         ), "kpool decode under dsa_enable_prefill_cp is not supported"
         batch = key.shape[0]
         pool = get_token_to_kv_pool()
-        tail_k_buf, tail_score_buf = pool.get_tail_buffers(layer_id)
+        tail_k_buf, tail_score_buf = pool.get_compress_tail_buffers(layer_id)
         # Unified decode + verify entry point. Decode passes N=1 and the
         # plan's per-batch addressing (req / write_start / tail_logical_start
         # / write_loc) precomputed in init/update_kpool_write_plan; the
@@ -515,7 +519,7 @@ class IndexerKPool(Indexer):
         write_loc = plan.write_loc[:batch]
         kpool_write_tail_and_maybe_compress(
             pool=pool,
-            buf=pool.get_kpool_index_k_with_scale_write_buffer(layer_id=layer_id),
+            buf=get_kpool_write_buffer(pool, layer_id),
             key=key,
             score=gate_score,
             tail_k=tail_k_buf,
@@ -529,7 +533,7 @@ class IndexerKPool(Indexer):
             num_draft_tokens=1,
             round_scale=self.scale_fmt is not None,
         )
-        pool.commit_kpool_index_k_with_scale_write_buffer(layer_id, write_loc)
+        commit_kpool_write_buffer(pool, layer_id, write_loc)
 
     def _compress_write_extend(
         self,
@@ -567,12 +571,12 @@ class IndexerKPool(Indexer):
         if writes.is_empty and tails.is_empty:
             return
 
-        tail_k_buf, tail_score_buf = pool.get_tail_buffers(layer_id)
+        tail_k_buf, tail_score_buf = pool.get_compress_tail_buffers(layer_id)
 
         # --- assemble + compress (owned pools under CP, all otherwise) ---
         if not writes.is_empty:
             buf = (
-                pool.get_kpool_index_k_with_scale_write_buffer(layer_id=layer_id)
+                get_kpool_write_buffer(pool, layer_id)
                 if write_cache
                 else pool.get_index_k_with_scale_buffer(layer_id=layer_id)
             )
@@ -603,11 +607,11 @@ class IndexerKPool(Indexer):
                     owner_rank=cp.owner_rank,
                     cp_size=cp.size,
                     cp_rank=cp.rank,
-                    slots_per_page=get_token_to_kv_pool().slots_per_page,
+                    slots_per_page=get_token_to_kv_pool().index_page_size,
                 )
             if write_cache:
-                pool.commit_kpool_index_k_with_scale_write_buffer(
-                    layer_id, writes.write_loc
+                commit_kpool_write_buffer(
+                    pool, layer_id, writes.write_loc
                 )
 
         # --- scatter tail updates --------------------------------------------
@@ -1267,7 +1271,7 @@ class IndexerKPool(Indexer):
 
         pool = get_token_to_kv_pool()
         pool_size = self.index_kpool
-        slots_per_page = pool.slots_per_page  # PAGE_SIZE // pool_size in dense mode
+        slots_per_page = pool.index_page_size  # Compressed index slots in one KV page
         device = q_fp8.device
 
         assert forward_batch.seq_lens_cpu is not None
@@ -1471,8 +1475,10 @@ class IndexerKPool(Indexer):
 
         plan = metadata.attn_metadata.kpool_write_plan
         assert plan is not None, (
-            "kpool target_verify plan is required; see "
-            "init_kpool_write_plan in dsa_backend.py"
+            "KPool verify requires an initialized plan "
+            f"(layer={layer_id}, mode={forward_batch.forward_mode}, "
+            f"metadata={type(metadata.attn_metadata).__module__}."
+            f"{type(metadata.attn_metadata).__name__})"
         )
 
         # (1) Q/K bf16 projection (Hadamard already applied in _get_q_k_bf16).
@@ -1494,8 +1500,8 @@ class IndexerKPool(Indexer):
             # kernel launch (grid=(B,)) handles both steps per batch; the
             # compress half is gated in-kernel on pool-boundary crossing.
             pool = get_token_to_kv_pool()
-            tail_k_buf, tail_score_buf = pool.get_tail_buffers(layer_id)
-            buf = pool.get_kpool_index_k_with_scale_write_buffer(layer_id=layer_id)
+            tail_k_buf, tail_score_buf = pool.get_compress_tail_buffers(layer_id)
+            buf = get_kpool_write_buffer(pool, layer_id)
             batch = key.shape[0] // plan.num_draft_tokens
             close_rows = batch * plan.max_closed_pools
             write_loc = plan.write_loc[:close_rows]
@@ -1522,7 +1528,7 @@ class IndexerKPool(Indexer):
                     else None
                 ),
             )
-            pool.commit_kpool_index_k_with_scale_write_buffer(layer_id, write_loc)
+            commit_kpool_write_buffer(pool, layer_id, write_loc)
 
         # (2) Run tail/compress on the alt stream while the current stream
         # prepares the platform-specific query representation and head-gate

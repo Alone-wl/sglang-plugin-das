@@ -175,20 +175,20 @@ def compute_dsa_seqlens(original_seq_lens, dsa_index_topk: int, index_kpool: int
 
 
 def is_dsa_enable_prefill_cp():
-    return get_global_server_args().enable_dsa_prefill_context_parallel
+    return get_parallel().attn_cp_size > 1 and get_global_server_args().enable_prefill_cp
 
 
 def is_dsa_prefill_cp_in_seq_split():
     return (
         is_dsa_enable_prefill_cp()
-        and get_global_server_args().dsa_prefill_cp_mode == "in-seq-split"
+        and get_parallel().cp_strategy == "zigzag"
     )
 
 
 def is_dsa_prefill_cp_round_robin_split():
     return (
         is_dsa_enable_prefill_cp()
-        and get_global_server_args().dsa_prefill_cp_mode == "round-robin-split"
+        and get_parallel().cp_strategy == "interleave"
     )
 
 

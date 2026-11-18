@@ -27,6 +27,10 @@ _ENV_SPECS: dict[str, tuple[type, Any]] = {
     "SGLANG_PLE_ETP_REDUCE_SCATTER": (EnvBool, True),
     "SGLANG_PLE_ETP_REDUCE_SCATTER_MIN_TOKENS": (EnvInt, 2048),
 
+    "SGLANG_HCU_NATIVE_MHC": (EnvBool, False),
+    "SGLANG_GLM5_NEXT_FUSE_QKVBFG": (EnvBool, False),
+    "SGLANG_DSA_CP_FUSE_SYMM_MEM": (EnvBool, False),
+    "SGLANG_DEBUG_HACK_CP_CHECK_RANK_CONSISTENCY": (EnvBool, False),
     'SGLANG_DP_USE_MAX_LEN': (EnvBool, False),
     'SGLANG_EXPERIMENTAL_DSV4_DECODE_RADIX_CACHE': (EnvBool, False),
     'SGLANG_MOONCAKE_FINAL_POLL_TIMEOUT_MS': (EnvFloat, 0.0),

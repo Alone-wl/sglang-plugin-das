@@ -83,6 +83,8 @@ def around_write_mla_kv_buffer(
     if not is_hcu():
         return original(pool, dst_buffer, loc, cache_k_nope, cache_k_rope)
     if pool.dsa_kv_cache_store_fp8:
+        if cache_k_rope is None or cache_k_rope.shape[-1] != 64:
+            return original(pool, dst_buffer, loc, cache_k_nope, cache_k_rope)
         _write_lightop(cache_k_nope, cache_k_rope, dst_buffer, loc)
         return None
 

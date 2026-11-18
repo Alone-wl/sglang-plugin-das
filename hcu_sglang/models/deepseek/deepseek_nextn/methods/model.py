@@ -126,15 +126,19 @@ def __init__(
             self.rot_weight = N.load_file(rot_weight_path)
             self.rot_weight = self.rot_weight["rot.weight"].npu()
 
+    from hcu_sglang.config import glm5_decode_single_stream_enabled
+    from hcu_sglang.models.deepseek.deepseek_common.model_types import is_glm5_next_hcu
     from sglang.srt.configs.model_config import is_glm_moe_dsa
 
+    is_glm_dsa = is_glm_moe_dsa(config)
+    single_stream = is_glm5_next_hcu(config) and glm5_decode_single_stream_enabled()
     self.alt_stream = (
         N.torch.cuda.Stream()
         if (
-            (N._is_cuda and not (H.is_hcu() and is_glm_moe_dsa(config)))
+            (N._is_cuda and not (H.is_hcu() and is_glm_dsa))
             or N.envs.SGLANG_NPU_USE_MULTI_STREAM.get()
             or M.is_sbo_enabled()
-        )
+        ) and not single_stream
         else None
     )
 
@@ -172,7 +176,7 @@ def forward(
     pool = get_token_to_kv_pool()
     full_pool = getattr(pool, "full_kv_pool", pool)
     if getattr(full_pool, "is_hcu_glm5_next_pool", False):
-        from sglang.srt.layers.communicator_glm5_next_cp import (
+        from hcu_sglang.layers.communicator_glm5_next_cp import (
             maybe_prefetch_full_attention_kv,
         )
 

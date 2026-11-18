@@ -9,6 +9,9 @@ from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, TypeAlia
 
 import torch
 
+from sglang.kernels.ops.attention.dsa_kpool_metadata.decode import (
+    fused_dsa_decode_metadata,
+)
 from sglang.kernels.ops.attention.utils import (
     concat_mla_absorb_q_general,
     mla_quantize_and_rope_for_fp8,
@@ -55,7 +58,6 @@ from hcu_sglang.layers.attention.glm5_next.mtp_precompute import (
     NativeSparseAttnBackendMTPPrecomputeMixin,
     PrecomputedMetadata,
     compute_cu_seqlens,
-    fill_decode_page_table_gpu,
 )
 from hcu_sglang.layers.attention.glm5_next.runtime import (
     get_glm5_next_runtime_args as get_global_server_args,
@@ -785,6 +787,8 @@ class NativeSparseAttnBackend(
                 num_draft_tokens=self.speculative_num_draft_tokens,
                 write_start=write_start,
                 accept_length=accept_length,
+                # Draft extend may initialize metadata before entering ModelRunner.forward.
+                tail_extra_slots=getattr(self.token_to_kv_pool, "tail_extra_slots", None),
             )
         return metadata
 
@@ -956,7 +960,13 @@ class NativeSparseAttnBackend(
                 )
                 kpool_inputs.full_seqlens_expanded = seqlens_expanded
 
-            if can_dsa_prefill_cp_round_robin_split(forward_batch):
+            # The target may activate legacy CP inside its model forward.
+            # The draft uses the runner's layout and is sharded only when
+            # the runner prepared CP metadata for this batch.
+            if can_dsa_prefill_cp_round_robin_split(forward_batch) and (
+                not self.model_runner.is_draft_worker
+                or forward_batch.attn_cp_metadata is not None
+            ):
                 seqlens_expanded = dsa_cp_round_robin_split_data(seqlens_expanded)
                 extend_seq_lens_cpu, extend_seq_lens, bs_idx_cpu, bs_idx = (
                     dsa_cp_round_robin_split_q_seqs(
@@ -1562,27 +1572,24 @@ class NativeSparseAttnBackend(
         # Normal Decode
         metadata: DSAMetadata = self.decode_cuda_graph_metadata[bs]
         if forward_mode.is_decode_or_idle():
-            # Normal Decode
-            cache_seqlens = seq_lens.to(torch.int32)
-            metadata.cache_seqlens_int32.copy_(cache_seqlens)
-            metadata.cu_seqlens_k[1:].copy_(
-                torch.cumsum(cache_seqlens, dim=0, dtype=torch.int32)
-            )
-            fill_decode_page_table_gpu(
-                self.req_to_token,
-                req_pool_indices,
-                seq_lens,
-                metadata.page_table_1,
-                bs,
-            )
-            page_indices = metadata.page_table_1
-            dsa_cache_seqlens = compute_dsa_seqlens(
-                cache_seqlens,
+            fused_dsa_decode_metadata(
+                seq_lens=seq_lens,
+                req_pool_indices=req_pool_indices,
+                req_to_token=self.req_to_token,
+                cache_seqlens=metadata.cache_seqlens_int32,
+                cu_seqlens_k=metadata.cu_seqlens_k,
+                page_table_1=metadata.page_table_1,
+                dsa_cache_seqlens=metadata.dsa_cache_seqlens_int32,
+                dsa_cu_seqlens_k=metadata.dsa_cu_seqlens_k,
+                real_page_table=metadata.real_page_table,
+                bs=bs,
+                max_len=metadata.page_table_1.shape[1],
                 dsa_index_topk=self.dsa_index_topk,
+                physical_page_size=self.real_page_size,
                 index_kpool=self.dsa_index_kpool,
             )
-            metadata.dsa_cache_seqlens_int32.copy_(dsa_cache_seqlens)
-            seqlens_expanded = cache_seqlens
+            seqlens_expanded = metadata.cache_seqlens_int32
+            dsa_cache_seqlens = metadata.dsa_cache_seqlens_int32
         elif forward_mode.is_target_verify():
             assert seq_lens_cpu is not None
             max_seqlen_k = int(
@@ -1699,12 +1706,12 @@ class NativeSparseAttnBackend(
         # Keep graph-captured page-table tensor addresses stable while refreshing
         # runtime values before kpool write-plan or attention replay consumes them.
         assert self.real_page_size == metadata.page_size
-        if self.real_page_size > 1:
+        if not forward_mode.is_decode_or_idle() and self.real_page_size > 1:
             real_table = self._transform_table_1_to_real(page_indices)
             new_rows = real_table.shape[0]
             new_cols = real_table.shape[1]
             metadata.real_page_table[:new_rows, :new_cols].copy_(real_table)
-        else:
+        elif self.real_page_size == 1:
             assert metadata.real_page_table is metadata.page_table_1
 
         # replay update kpool write plan
@@ -1755,9 +1762,10 @@ class NativeSparseAttnBackend(
             and self.dsa_index_topk is not None
         )
 
-        metadata.dsa_cu_seqlens_k[1 : 1 + seqlens_expanded_size].copy_(
-            torch.cumsum(dsa_cache_seqlens, dim=0, dtype=torch.int32)
-        )
+        if not forward_mode.is_decode_or_idle():
+            metadata.dsa_cu_seqlens_k[1 : 1 + seqlens_expanded_size].copy_(
+                torch.cumsum(dsa_cache_seqlens, dim=0, dtype=torch.int32)
+            )
         # NOTE(dark): (dsa-) cu_seqlens_q is always arange, no need to copy
 
         if self.dsa_decode_impl == "flashmla_kv":
@@ -2038,6 +2046,26 @@ class NativeSparseAttnBackend(
                     if not layer.is_cross_attention
                     else forward_batch.encoder_out_cache_loc
                 )
+                if dsa_use_prefill_cp(forward_batch) and k.shape[0] != cache_loc.numel():
+                    from hcu_sglang.layers.glm5_next_cp_utils import (
+                        cp_all_gather_rerange_output,
+                    )
+
+                    # GLM CP uses the same metadata for MLA KV and hidden-state gathers.
+                    nope_dim = k.shape[-1]
+                    latent = k if k_rope is None else torch.cat((k, k_rope), dim=-1)
+                    latent = cp_all_gather_rerange_output(
+                        latent.flatten(1).contiguous(),
+                        get_parallel().attn_cp_size,
+                        forward_batch,
+                        torch.cuda.current_stream(),
+                    ).reshape(-1, *latent.shape[1:])
+                    k = latent[..., :nope_dim]
+                    if k_rope is not None:
+                        k_rope = latent[..., nope_dim:]
+                assert k.shape[0] == cache_loc.numel(), (
+                    f"GLM MLA KV has {k.shape[0]} rows for {cache_loc.numel()} write slots"
+                )
                 self.token_to_kv_pool.set_mla_kv_buffer(  # type: ignore
                     layer,
                     cache_loc,
@@ -2173,7 +2201,7 @@ class NativeSparseAttnBackend(
         # Index-KV keeps the original physical metadata. Only the final Main-KV
         # consumer locations are translated into this batch's compact scratch.
         if topk_transform_method == TopkTransformMethod.PAGED:
-            page_table_1 = self.token_to_kv_pool.translate_main_kv_loc_to_compact(
+            page_table_1 = self._translate_main_kv_loc_to_compact(
                 page_table_1
             )
 
@@ -2198,7 +2226,7 @@ class NativeSparseAttnBackend(
                     )
                     assert page_table_1_flattened is not None
                     page_table_1_flattened = (
-                        self.token_to_kv_pool.translate_main_kv_loc_to_compact(
+                        self._translate_main_kv_loc_to_compact(
                             page_table_1_flattened
                         )
                     )
@@ -3184,7 +3212,7 @@ class NativeSparseAttnBackend(
                 topk_indices,
             )
 
-        page_table_1 = self.token_to_kv_pool.translate_main_kv_loc_to_compact(
+        page_table_1 = self._translate_main_kv_loc_to_compact(
             page_table_1
         )
 
@@ -3559,6 +3587,11 @@ class NativeSparseAttnBackend(
             paged_mqa_schedule_metadata=self.forward_metadata.paged_mqa_schedule_metadata,
             force_unfused_topk=force_unfused,
         )
+
+    def _translate_main_kv_loc_to_compact(self, locations: torch.Tensor) -> torch.Tensor:
+        pool = getattr(self.token_to_kv_pool, "full_kv_pool", self.token_to_kv_pool)
+        translate = getattr(pool, "translate_main_kv_loc_to_compact", None)
+        return locations if translate is None else translate(locations)
 
     def _compute_flashmla_metadata(
         self,

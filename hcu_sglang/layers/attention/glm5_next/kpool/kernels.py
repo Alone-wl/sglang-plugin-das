@@ -510,7 +510,7 @@ def gather_index_k_scale_prefix_into(
     assert k_out.is_contiguous()
     assert scale_out.is_contiguous()
 
-    slots_per_page = pool.slots_per_page
+    slots_per_page = pool.index_page_size
     _gather_index_k_scale_prefix_into_kernel[(seq_len,)](
         buf.view(torch.int8),
         buf.view(torch.float32),
@@ -1618,7 +1618,7 @@ def kpool_assemble_softmax_rotate_write_cache(
 
     buf_i8 = buf.view(torch.int8)
     buf_fp32 = buf.view(torch.float32)
-    slots_per_page = pool.slots_per_page
+    slots_per_page = pool.index_page_size
 
     _kpool_assemble_softmax_rotate_write_cache_kernel[(n_pools,)](
         buf_i8,
@@ -2124,7 +2124,7 @@ def kpool_write_tail_and_maybe_compress(
     # key/score may be views from the caller, so guard those.
     key = key.contiguous()
     score = score.contiguous()
-    slots_per_page = pool.slots_per_page
+    slots_per_page = pool.index_page_size
     buf_i8 = buf.view(torch.int8)
     buf_fp32 = buf.view(torch.float32)
 

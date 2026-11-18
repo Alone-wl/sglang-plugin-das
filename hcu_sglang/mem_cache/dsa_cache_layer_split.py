@@ -299,9 +299,10 @@ class LayerSplitIndexKeyCache(IndexKeyCache):
             return
 
         local_buffer = self.buffer[self.pool._get_indexer_cache_index(layer_id)]
-        page_indices = torch.div(loc, self.pool.page_size, rounding_mode="floor")
-        token_offsets = loc % self.pool.page_size
-        k_bytes_per_page = self.pool.page_size * self.pool.index_head_dim
+        index_page_size = self.pool.index_page_size
+        page_indices = torch.div(loc, index_page_size, rounding_mode="floor")
+        token_offsets = loc % index_page_size
+        k_bytes_per_page = index_page_size * self.pool.index_head_dim
         scale_bytes_per_token = (
             self.pool.index_head_dim
             // self.pool.quant_block_size
@@ -309,18 +310,18 @@ class LayerSplitIndexKeyCache(IndexKeyCache):
         )
 
         local_k = local_buffer[:, :k_bytes_per_page].view(
-            -1, self.pool.page_size, self.pool.index_head_dim
+            -1, index_page_size, self.pool.index_head_dim
         )
         remote_k = self.remote_buffer[:, :k_bytes_per_page].view(
-            -1, self.pool.page_size, self.pool.index_head_dim
+            -1, index_page_size, self.pool.index_head_dim
         )
         remote_k[page_indices, token_offsets] = local_k[page_indices, token_offsets]
 
         local_scale = local_buffer[:, k_bytes_per_page:].view(
-            -1, self.pool.page_size, scale_bytes_per_token
+            -1, index_page_size, scale_bytes_per_token
         )
         remote_scale = self.remote_buffer[:, k_bytes_per_page:].view(
-            -1, self.pool.page_size, scale_bytes_per_token
+            -1, index_page_size, scale_bytes_per_token
         )
         remote_scale[page_indices, token_offsets] = local_scale[
             page_indices, token_offsets

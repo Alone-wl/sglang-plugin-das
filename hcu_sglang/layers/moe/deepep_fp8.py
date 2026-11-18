@@ -613,6 +613,17 @@ def around_process_weights(original, scheme, layer):
     return result
 
 
+def around_process_int8_weights(original, method, layer):
+    if not getattr(layer, "use_int8_w8a8_deepgemm", False):
+        return original(method, layer)
+
+    from hcu_sglang.layers.quantization.hcu_deepgemm_w8a8_utils import (
+        prepare_w8a8_int8_deepgemm_weights,
+    )
+
+    return prepare_w8a8_int8_deepgemm_weights(layer)
+
+
 def around_run_moe_core(original, layer, dispatch_output, *args, **kwargs):
     if _is_hcu and getattr(getattr(layer, "quant_method", None), "hcu_w4a8_hipc", False):
         from hcu_sglang.layers.moe.ct_w4a8 import run_moe_core
@@ -654,5 +665,10 @@ def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
     from sglang.srt.layers.quantization.compressed_tensors.schemes.compressed_tensors_w8a8_fp8_moe import CompressedTensorsW8A8Fp8MoE
     CompressedTensorsW8A8Fp8MoE._register_runtime_buffer = _register_runtime_buffer
+    HookRegistry.register(
+        "sglang.srt.layers.quantization.w8a8_int8.W8A8Int8MoEMethod.process_weights_after_loading",
+        around_process_int8_weights,
+        HookType.AROUND,
+    )
     HookRegistry.register("sglang.srt.layers.moe.ep_moe.layer.DeepEPMoE.__init__", around_ep_init, HookType.AROUND)
     HookRegistry.register("sglang.srt.layers.moe.ep_moe.layer.DeepEPMoE.run_moe_core", around_run_moe_core, HookType.AROUND)

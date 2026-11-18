@@ -98,7 +98,6 @@ from sglang.srt.mem_cache.memory_pool import HybridLinearKVPool
 from sglang.srt.mem_cache.unified_radix_cache import UnifiedRadixCache
 from sglang.srt.observability.req_time_stats import set_schedule_time_batch
 from sglang.srt.observability.scheduler_stage_metrics import (
-    SCHEDULER_STAGE_GET_NEXT_BATCH,
     SCHEDULER_STAGE_PROCESS_QUEUE,
     SchedulerStageMetricsRecorder,
     scheduler_stage_method,
@@ -1450,61 +1449,12 @@ class SchedulerDisaggregationPrefillMixin:
             for req in self.waiting_queue
         )
 
-    @scheduler_stage_method(SCHEDULER_STAGE_GET_NEXT_BATCH)
-    def get_next_disagg_prefill_batch_to_run(
-        self: Scheduler,
-        running_batch: ScheduleBatch,
-        last_batch: Optional[ScheduleBatch],
-        should_retry_storage_prefetch: bool = True,
-    ) -> NextBatchPlan:
-        self._begin_scheduler_iteration()
-        self.process_pending_chunked_abort()
-        self._process_hicache_events(
-            should_retry_storage_prefetch=should_retry_storage_prefetch
-        )
-
-        # HACK (byronhsu): reset the batch_is_full flag because we never enter update_running_batch which resets it
-        # Otherwise, it hangs under high concurrency
-        running_batch.batch_is_full = False
-
-        self.resolve_waiting_queue_bootstrap()
-
-        # Skip repeated chunk processing while polling a pending batch.
-        if last_batch is None or not last_batch.prefill_chunk_processed:
-            self.process_prefill_chunk(
-                last_batch=last_batch, running_batch=running_batch
-            )
-            if last_batch is not None:
-                last_batch.prefill_chunk_processed = True
-
-        prefill_plan = self.get_new_batch_prefill(running_batch)
-        batch = prefill_plan.batch_to_run
-        if DAS_PREFETCH_TRACE_ENABLED and batch is not None:
-            for req in batch.reqs:
-                trace_disagg_prefill(
-                    "prefill_batch_scheduled",
-                    req.rid,
-                    req.bootstrap_room,
-                    get_parallel().tp_rank,
-                    batch_size=len(batch.reqs),
-                    waiting_queue_size=len(self.waiting_queue),
-                    prefill_attempt=req.prefill_attempt_count,
-                )
-        running_batch = prefill_plan.running_batch
-        batch = self.dp_attn_adapter.maybe_prepare_mlp_sync_batch(batch)
-
-        if batch:
-            set_schedule_time_batch(batch)
-
-        return NextBatchPlan(batch_to_run=batch, running_batch=running_batch)
-
     @torch.no_grad()
     def event_loop_normal_disagg_prefill(self: Scheduler) -> None:
         """A normal scheduler loop for prefill worker in disaggregation mode."""
         while True:
             if self.gracefully_exit:
                 break
-            self._process_deferred_reqs()
 
             # Receive requests
             self.ingest_requests()
@@ -3305,6 +3255,22 @@ class SchedulerDisaggregationPrefillMixin:
 
 from hcu_sglang.utils.detection import is_hcu as _is_hcu_device
 
+def after_get_next_disagg_prefill_batch_to_run(result, scheduler, *args, **kwargs):
+    batch = result.batch_to_run
+    if DAS_PREFETCH_TRACE_ENABLED and batch is not None:
+        for req in batch.reqs:
+            trace_disagg_prefill(
+                "prefill_batch_scheduled",
+                req.rid,
+                req.bootstrap_room,
+                get_parallel().tp_rank,
+                batch_size=len(batch.reqs),
+                waiting_queue_size=len(scheduler.waiting_queue),
+                prefill_attempt=req.prefill_attempt_count,
+            )
+    return result
+
+
 def register_hooks():
     if not _is_hcu_device():
         return
@@ -3340,7 +3306,11 @@ def register_hooks():
     native.SchedulerDisaggregationPrefillMixin._admit_prefill_bootstrapped_reqs = SchedulerDisaggregationPrefillMixin._admit_prefill_bootstrapped_reqs
     native.SchedulerDisaggregationPrefillMixin.maybe_supplemental_poll_final_chunks = SchedulerDisaggregationPrefillMixin.maybe_supplemental_poll_final_chunks
     native.SchedulerDisaggregationPrefillMixin._record_final_poll_wait = SchedulerDisaggregationPrefillMixin._record_final_poll_wait
-    HookRegistry.register("sglang.srt.disaggregation.prefill.SchedulerDisaggregationPrefillMixin.get_next_disagg_prefill_batch_to_run", SchedulerDisaggregationPrefillMixin.get_next_disagg_prefill_batch_to_run, HookType.REPLACE)
+    HookRegistry.register(
+        "sglang.srt.disaggregation.prefill.SchedulerDisaggregationPrefillMixin.get_next_disagg_prefill_batch_to_run",
+        after_get_next_disagg_prefill_batch_to_run,
+        HookType.AFTER,
+    )
     HookRegistry.register("sglang.srt.disaggregation.prefill.SchedulerDisaggregationPrefillMixin.event_loop_normal_disagg_prefill", SchedulerDisaggregationPrefillMixin.event_loop_normal_disagg_prefill, HookType.REPLACE)
     HookRegistry.register("sglang.srt.disaggregation.prefill.SchedulerDisaggregationPrefillMixin.event_loop_overlap_disagg_prefill", SchedulerDisaggregationPrefillMixin.event_loop_overlap_disagg_prefill, HookType.REPLACE)
     native.SchedulerDisaggregationPrefillMixin._extract_pd_hidden_states_from_result = SchedulerDisaggregationPrefillMixin._extract_pd_hidden_states_from_result

@@ -7,6 +7,11 @@
       "owned": "hcu_sglang/models/glm5_next/model.py",
       "source_sha256": "51ab7078e530b9ac5ebae1b27c6f0c0fb8077409c4dd51e40f8247fcae776c47",
       "replacements": {
+        "        if getattr(config, \"mla\", False):\n            self.post_load_weights(is_nextn=is_nextn, weight_names=weight_names)": "        self.post_load_weights(is_nextn=is_nextn, weight_names=weight_names)",
+        "            get_attn_tp_context().set_hidden_states_local(hidden_states)": "            attn_inputs = get_forward().attn_inputs\n            if attn_inputs is not None:\n                attn_inputs.hidden_states_local = hidden_states",
+        "            zero_allocator=zero_allocator,\n            layer_scatter_modes=self.layer_scatter_modes,\n            prev_topk_indices=prev_topk_indices,": "            zero_allocator=zero_allocator,\n            prev_topk_indices=prev_topk_indices,",
+        "            with get_forward().scoped(\n                fuse_mlp_allreduce=should_allreduce_fusion,\n                mlp_reduce_scatter=use_reduce_scatter,\n            ):": "            with get_forward().scoped(mlp_reduce_scatter=use_reduce_scatter):",
+        "        self.alt_stream = (\n            torch.cuda.Stream()\n            if _is_cuda or envs.SGLANG_NPU_USE_MULTI_STREAM.get()\n            else None\n        )": "        from hcu_sglang.config import glm5_decode_single_stream_enabled\n\n        self.alt_stream = (\n            torch.cuda.Stream()\n            if (_is_cuda or envs.SGLANG_NPU_USE_MULTI_STREAM.get())\n            and not glm5_decode_single_stream_enabled()\n            else None\n        )",
         "from sglang.srt.layers.fused_rms_quant import": "from hcu_sglang.layers.fused_rms_quant import",
         "from sglang.srt.models.deepseek_common.utils import": "from hcu_sglang.models.deepseek.deepseek_v2.constants import",
         "from sglang.srt.layers.attention.glm5_next.runtime import": "from hcu_sglang.glm5_next_policy import",

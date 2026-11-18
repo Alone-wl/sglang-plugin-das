@@ -43,10 +43,7 @@ from hcu_sglang.layers.attention.glm5_next.kpool.kernels import (
     update_kpool_write_plan_cuda_graph_multi_decode,
 )
 from hcu_sglang.layers.attention.glm5_next.utils import dsa_use_prefill_cp
-from sglang.srt.model_executor.forward_context import (
-    get_req_to_token_pool,
-    get_token_to_kv_pool,
-)
+from sglang.srt.model_executor.forward_context import get_req_to_token_pool
 from sglang.srt.runtime_context import get_parallel
 from hcu_sglang.utils.detection import is_hcu
 from sglang.srt.utils import is_cuda
@@ -1279,6 +1276,7 @@ def init_kpool_write_plan(
     num_draft_tokens: int,
     write_start: torch.Tensor,
     accept_length: Optional[torch.Tensor] = None,
+    tail_extra_slots: Optional[int] = None,
 ) -> DSAMetadata:
     """Build the layer-invariant kpool write plan (eager path).
 
@@ -1308,9 +1306,8 @@ def init_kpool_write_plan(
         return metadata
 
     if is_verify or is_v2:
-        pool = get_token_to_kv_pool()
-        assert pool.tail_extra_slots == num_draft_tokens, (
-            f"tail_extra_slots mismatch: pool={pool.tail_extra_slots}, "
+        assert tail_extra_slots == num_draft_tokens, (
+            f"tail_extra_slots mismatch: pool={tail_extra_slots}, "
             f"forward={num_draft_tokens}"
         )
     assert real_page_table.dtype == torch.int32, (

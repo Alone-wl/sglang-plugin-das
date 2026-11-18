@@ -58,6 +58,7 @@ def resolve_index_k_cache_mode(
     page_size: int,
     index_head_dim: int,
     *,
+    force_fp8: bool = False,
     int8_enabled: Optional[bool] = None,
     hcu_device: Optional[bool] = None,
     gfx936_device: Optional[bool] = None,
@@ -66,6 +67,10 @@ def resolve_index_k_cache_mode(
     """Resolve the index-K format and reject non-gfx936 INT8 opt-ins."""
     if int8_enabled is None:
         int8_enabled = get_bool_env_var("SGLANG_DSA_HCU_INT8_INDEX_K_CACHE")
+    if force_fp8:
+        if int8_enabled:
+            raise ValueError("The GLM compressed index cache requires FP8")
+        return IndexKCacheMode.FP8_SCALED
     if hcu_device is None:
         hcu_device = is_hcu()
     if gfx936_device is None:

@@ -889,7 +889,9 @@ class ModelNextDecoderLayer(nn.Module):
             hidden_states = cp_plain_to_scattered(
                 hidden_states, forward_batch, get_parallel().attn_cp_size
             )
-            get_attn_tp_context().set_hidden_states_local(hidden_states)
+            attn_inputs = get_forward().attn_inputs
+            if attn_inputs is not None:
+                attn_inputs.hidden_states_local = hidden_states
 
         attn_quant_kwargs = (
             {"input_quant_args": attn_input_quant_args}
@@ -901,7 +903,6 @@ class ModelNextDecoderLayer(nn.Module):
             hidden_states=hidden_states,
             forward_batch=forward_batch,
             zero_allocator=zero_allocator,
-            layer_scatter_modes=self.layer_scatter_modes,
             prev_topk_indices=prev_topk_indices,
             **attn_quant_kwargs,
         )
@@ -961,10 +962,7 @@ class ModelNextDecoderLayer(nn.Module):
         if prequantized_shared_expert:
             self.mlp.set_shared_expert_input_quant_args(mlp_input_quant_args)
         try:
-            with get_forward().scoped(
-                fuse_mlp_allreduce=should_allreduce_fusion,
-                mlp_reduce_scatter=use_reduce_scatter,
-            ):
+            with get_forward().scoped(mlp_reduce_scatter=use_reduce_scatter):
                 hidden_states = self.mlp(
                     hidden_states,
                     forward_batch=forward_batch,
@@ -1028,9 +1026,12 @@ class ModelNextModel(nn.Module):
         else:
             self.embed_tokens = PPMissingLayer()
 
+        from hcu_sglang.config import glm5_decode_single_stream_enabled
+
         self.alt_stream = (
             torch.cuda.Stream()
-            if _is_cuda or envs.SGLANG_NPU_USE_MULTI_STREAM.get()
+            if (_is_cuda or envs.SGLANG_NPU_USE_MULTI_STREAM.get())
+            and not glm5_decode_single_stream_enabled()
             else None
         )
 
@@ -1648,8 +1649,7 @@ class ModelNextForCausalLM(nn.Module):
             loader = getattr(param, "weight_loader", default_weight_loader)
             loader(param, loaded_weight)
 
-        if getattr(config, "mla", False):
-            self.post_load_weights(is_nextn=is_nextn, weight_names=weight_names)
+        self.post_load_weights(is_nextn=is_nextn, weight_names=weight_names)
 
     def post_load_weights(self, is_nextn: bool = False, weight_names=None):
         if not is_nextn:

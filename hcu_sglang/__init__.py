@@ -42,6 +42,10 @@ def register() -> None:
         base_backend,
         debug_flash_mla_adapter,
         dsa_kernels,
+        dsa_empty_batch,
+        dsa_lightop_mla,
+        dsa_kpool_short,
+        dsa_packed_kv,
         dsa_topk,
         current_dsa,
         dsv4_compressor,
@@ -56,12 +60,16 @@ def register() -> None:
     from hcu_sglang.layers.moe import alignment, aiter_w4a8, lightop_runner, mega_moe, topk, standard_dispatcher
     from hcu_sglang.mem_cache import allocation as mem_cache_allocation
     from hcu_sglang.mem_cache import (
+        cp_hicache_write_ack,
+        cp_prefix_consensus,
         dsa,
         dsv4,
+        glm5_layer_split,
         hcu_host_pool,
         hcu_mha_pool,
         kv_cache_dtype,
         mla,
+        mamba_checkpoint_locks,
         swa,
     )
     from hcu_sglang.models import bailing_moe
@@ -94,6 +102,13 @@ def register() -> None:
     flashattention_backend.register()
     debug_flash_mla_adapter.register_hooks()
     dsa_kernels.register_hooks()
+    dsa_empty_batch.register_hooks()
+    dsa_lightop_mla.register_hooks()
+    dsa_kpool_short.register_hooks()
+    cp_prefix_consensus.register_hooks()
+    cp_hicache_write_ack.register_hooks()
+    mamba_checkpoint_locks.register_hooks()
+    dsa_packed_kv.register_hooks()
     dsa_topk.register_hooks()
     current_dsa.register_hooks()
     dsv4_compressor.register_hooks()
@@ -189,6 +204,7 @@ def register() -> None:
     mem_cache_allocation.register_hooks()
     kv_cache_dtype.register_hooks()
     swa.register_hooks()
+    glm5_layer_split.register_hooks()
     hcu_host_pool.register_hooks()
     hcu_mha_pool.register_hooks()
     mla.register_hooks()

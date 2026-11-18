@@ -155,10 +155,10 @@ def __init__(
             from hcu_sglang.models.deepseek.deepseek_common.model_types import is_glm5_next_hcu
 
             if is_glm5_next_hcu(config):
-                from sglang.srt.layers.attention.glm5_next.indexer import (
+                from hcu_sglang.layers.attention.glm5_next.indexer import (
                     Indexer as GlmIndexer,
                 )
-                from sglang.srt.layers.attention.glm5_next.kpool.indexer import (
+                from hcu_sglang.layers.attention.glm5_next.kpool.indexer import (
                     IndexerKPool as GlmIndexerKPool,
                 )
 

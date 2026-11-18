@@ -144,3 +144,33 @@ def generic_legacy_cp_mode(config):
     if not _legacy_cp_configured(config):
         return "in-seq-split"
     return {"zigzag": "in-seq-split", "interleave": "round-robin-split"}[config.cp_strategy]
+
+
+GLM5_DISABLE_DECODE_ALT_STREAM_ENV = "HCU_PLUGIN_GLM5_DISABLE_DECODE_ALT_STREAM"
+
+
+def glm5_disable_decode_alt_stream():
+    raw = os.environ.get(GLM5_DISABLE_DECODE_ALT_STREAM_ENV, "0").lower()
+    if raw not in {"0", "1", "false", "true", "no", "yes", "off", "on"}:
+        raise ValueError(f"{GLM5_DISABLE_DECODE_ALT_STREAM_ENV}: invalid boolean {raw!r}")
+    return raw in {"1", "true", "yes", "on"}
+
+
+def glm5_decode_single_stream_enabled():
+    if not glm5_disable_decode_alt_stream():
+        return False
+
+    from hcu_sglang.utils.detection import is_hcu
+    from sglang.srt.runtime_context import get_disagg
+
+    return is_hcu() and get_disagg().disaggregation_mode == "decode"
+
+
+DEEPEP_DISABLE_RECV_HOOK_ENV = "HCU_PLUGIN_DEEPEP_DISABLE_RECV_HOOK"
+
+
+def deepep_disable_recv_hook():
+    raw = os.environ.get(DEEPEP_DISABLE_RECV_HOOK_ENV, "0").lower()
+    if raw not in {"0", "1", "false", "true", "no", "yes", "off", "on"}:
+        raise ValueError(f"{DEEPEP_DISABLE_RECV_HOOK_ENV}: invalid boolean {raw!r}")
+    return raw in {"1", "true", "yes", "on"}

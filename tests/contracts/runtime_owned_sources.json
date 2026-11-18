@@ -363,8 +363,19 @@
       "target": "hcu_sglang/layers/attention/glm5_next/dsa_backend.py",
       "source": "python/sglang/srt/layers/attention/glm5_next/dsa_backend.py",
       "source_sha256": "9cbf93216b537f00cbe5a01e58c979ae0df6f04d94db68bd4eee3e7fce58cd04",
-      "target_sha256": "cbafa3fe6f8b8a946af9edccc99106666d85556aed92fe5f21de75318f7ffe27",
+      "target_sha256": "446b74e8fba99c8de8b170b5c5d8a9ee9fe6568f2b59212150f9e849c1705b01",
       "reverse_replacements": [
+        ["        if not forward_mode.is_decode_or_idle():\n            metadata.dsa_cu_seqlens_k[1 : 1 + seqlens_expanded_size].copy_(\n                torch.cumsum(dsa_cache_seqlens, dim=0, dtype=torch.int32)\n            )\n", "        metadata.dsa_cu_seqlens_k[1 : 1 + seqlens_expanded_size].copy_(\n            torch.cumsum(dsa_cache_seqlens, dim=0, dtype=torch.int32)\n        )\n", "once"],
+        ["        elif self.real_page_size == 1:\n            assert metadata.real_page_table is metadata.page_table_1\n\n        # replay update kpool write plan", "        else:\n            assert metadata.real_page_table is metadata.page_table_1\n\n        # replay update kpool write plan", "once"],
+        ["        if not forward_mode.is_decode_or_idle() and self.real_page_size > 1:\n            real_table = self._transform_table_1_to_real(page_indices)\n", "        if self.real_page_size > 1:\n            real_table = self._transform_table_1_to_real(page_indices)\n", "once"],
+        ["            fused_dsa_decode_metadata(\n                seq_lens=seq_lens,\n                req_pool_indices=req_pool_indices,\n                req_to_token=self.req_to_token,\n                cache_seqlens=metadata.cache_seqlens_int32,\n                cu_seqlens_k=metadata.cu_seqlens_k,\n                page_table_1=metadata.page_table_1,\n                dsa_cache_seqlens=metadata.dsa_cache_seqlens_int32,\n                dsa_cu_seqlens_k=metadata.dsa_cu_seqlens_k,\n                real_page_table=metadata.real_page_table,\n                bs=bs,\n                max_len=metadata.page_table_1.shape[1],\n                dsa_index_topk=self.dsa_index_topk,\n                physical_page_size=self.real_page_size,\n                index_kpool=self.dsa_index_kpool,\n            )\n            seqlens_expanded = metadata.cache_seqlens_int32\n            dsa_cache_seqlens = metadata.dsa_cache_seqlens_int32\n", "            # Normal Decode\n            cache_seqlens = seq_lens.to(torch.int32)\n            metadata.cache_seqlens_int32.copy_(cache_seqlens)\n            metadata.cu_seqlens_k[1:].copy_(\n                torch.cumsum(cache_seqlens, dim=0, dtype=torch.int32)\n            )\n            fill_decode_page_table_gpu(\n                self.req_to_token,\n                req_pool_indices,\n                seq_lens,\n                metadata.page_table_1,\n                bs,\n            )\n            page_indices = metadata.page_table_1\n            dsa_cache_seqlens = compute_dsa_seqlens(\n                cache_seqlens,\n                dsa_index_topk=self.dsa_index_topk,\n                index_kpool=self.dsa_index_kpool,\n            )\n            metadata.dsa_cache_seqlens_int32.copy_(dsa_cache_seqlens)\n            seqlens_expanded = cache_seqlens\n", "once"],
+        ["    compute_cu_seqlens,\n", "    compute_cu_seqlens,\n    fill_decode_page_table_gpu,\n", "once"],
+        ["from sglang.kernels.ops.attention.dsa_kpool_metadata.decode import (\n    fused_dsa_decode_metadata,\n)\nfrom sglang.kernels.ops.attention.utils import (", "from sglang.kernels.ops.attention.utils import (", "once"],
+        ["            # The target may activate legacy CP inside its model forward.\n            # The draft uses the runner's layout and is sharded only when\n            # the runner prepared CP metadata for this batch.\n            if can_dsa_prefill_cp_round_robin_split(forward_batch) and (\n                not self.model_runner.is_draft_worker\n                or forward_batch.attn_cp_metadata is not None\n            ):\n", "            if can_dsa_prefill_cp_round_robin_split(forward_batch):\n", "once"],
+        ["                if dsa_use_prefill_cp(forward_batch) and k.shape[0] != cache_loc.numel():\n                    from hcu_sglang.layers.glm5_next_cp_utils import (\n                        cp_all_gather_rerange_output,\n                    )\n\n                    # GLM CP uses the same metadata for MLA KV and hidden-state gathers.\n                    nope_dim = k.shape[-1]\n                    latent = k if k_rope is None else torch.cat((k, k_rope), dim=-1)\n                    latent = cp_all_gather_rerange_output(\n                        latent.flatten(1).contiguous(),\n                        get_parallel().attn_cp_size,\n                        forward_batch,\n                        torch.cuda.current_stream(),\n                    ).reshape(-1, *latent.shape[1:])\n                    k = latent[..., :nope_dim]\n                    if k_rope is not None:\n                        k_rope = latent[..., nope_dim:]\n                assert k.shape[0] == cache_loc.numel(), (\n                    f\"GLM MLA KV has {k.shape[0]} rows for {cache_loc.numel()} write slots\"\n                )\n                self.token_to_kv_pool.set_mla_kv_buffer(  # type: ignore\n                    layer,\n                    cache_loc,\n                    k,\n                    k_rope,\n                )\n\n        # Use MHA kernel if in MHA_ONE_SHOT mode", "                self.token_to_kv_pool.set_mla_kv_buffer(  # type: ignore\n                    layer,\n                    cache_loc,\n                    k,\n                    k_rope,\n                )\n\n        # Use MHA kernel if in MHA_ONE_SHOT mode", "once"],
+        ["                accept_length=accept_length,\n                # Draft extend may initialize metadata before entering ModelRunner.forward.\n                tail_extra_slots=getattr(self.token_to_kv_pool, \"tail_extra_slots\", None),\n            )\n        return metadata", "                accept_length=accept_length,\n            )\n        return metadata", "once"],
+        ["    def _translate_main_kv_loc_to_compact(self, locations: torch.Tensor) -> torch.Tensor:\n        pool = getattr(self.token_to_kv_pool, \"full_kv_pool\", self.token_to_kv_pool)\n        translate = getattr(pool, \"translate_main_kv_loc_to_compact\", None)\n        return locations if translate is None else translate(locations)\n\n    def _compute_flashmla_metadata(\n", "    def _compute_flashmla_metadata(\n"],
+        ["self._translate_main_kv_loc_to_compact(", "self.token_to_kv_pool.translate_main_kv_loc_to_compact("],
         [
           "from hcu_sglang.layers.attention.glm5_next.dequant_k_cache import (\n",
           "from sglang.srt.layers.attention.glm5_next.dequant_k_cache import (\n",
@@ -548,8 +559,16 @@
       "target": "hcu_sglang/layers/attention/glm5_next/kpool/indexer.py",
       "source": "python/sglang/srt/layers/attention/glm5_next/kpool/indexer.py",
       "source_sha256": "11b95842a038ae37ae260566f82ef7ab7db67c87cd98d6382a96e32116b87368",
-      "target_sha256": "96c768e1a08964e5ab1d0bb9c6d5ca08f387741227c599ab082feca619b42f78",
+      "target_sha256": "6532641849cc0e880a9ecb02e40ca6a2c174209c1447243247a22ac3b07cbaf6",
       "reverse_replacements": [
+        ["from hcu_sglang.mem_cache.glm5_index_cache import (\n    commit_kpool_write_buffer,\n    get_kpool_write_buffer,\n)\nfrom hcu_sglang.utils.detection import is_hcu", "from hcu_sglang.utils.detection import is_hcu"],
+        ["pool.get_compress_tail_buffers(layer_id)", "pool.get_tail_buffers(layer_id)"],
+        ["get_kpool_write_buffer(pool, layer_id)", "pool.get_kpool_index_k_with_scale_write_buffer(layer_id=layer_id)"],
+        ["commit_kpool_write_buffer(pool, layer_id, write_loc)", "pool.commit_kpool_index_k_with_scale_write_buffer(layer_id, write_loc)"],
+        ["commit_kpool_write_buffer(\n                    pool, layer_id,", "pool.commit_kpool_index_k_with_scale_write_buffer(\n                    layer_id,"],
+        ["get_token_to_kv_pool().index_page_size", "get_token_to_kv_pool().slots_per_page"],
+        ["pool.index_page_size  # Compressed index slots in one KV page", "pool.slots_per_page  # PAGE_SIZE // pool_size in dense mode"],
+        ["\"KPool verify requires an initialized plan \"\n            f\"(layer={layer_id}, mode={forward_batch.forward_mode}, \"\n            f\"metadata={type(metadata.attn_metadata).__module__}.\"\n            f\"{type(metadata.attn_metadata).__name__})\"", "\"kpool target_verify plan is required; see \"\n            \"init_kpool_write_plan in dsa_backend.py\"", "once"],
         [
           "from hcu_sglang.layers.attention.glm5_next.topk_transform import TopkTransformMethod\nfrom hcu_sglang.layers.attention.glm5_next.indexer import (\n",
           "from sglang.srt.layers.attention.glm5_next.dsa_backend import TopkTransformMethod\nfrom sglang.srt.layers.attention.glm5_next.indexer import (\n",
@@ -598,8 +617,10 @@
       "target": "hcu_sglang/layers/attention/glm5_next/kpool/kernels.py",
       "source": "python/sglang/srt/layers/attention/glm5_next/kpool/kernels.py",
       "source_sha256": "1a2b3bdd89405013b825ae403d45d83ee6b7c6604d2988b6bc23f1713334d423",
-      "target_sha256": "1a2b3bdd89405013b825ae403d45d83ee6b7c6604d2988b6bc23f1713334d423",
-      "reverse_replacements": [],
+      "target_sha256": "5c58731bf7818f223f5caca770a461821bd302d37bef516e5971ba440daaf74b",
+      "reverse_replacements": [
+        ["pool.index_page_size", "pool.slots_per_page"]
+      ],
       "source_header_lines": [],
       "source_declaration": "来源无声明"
     },
@@ -607,8 +628,11 @@
       "target": "hcu_sglang/layers/attention/glm5_next/kpool/planner.py",
       "source": "python/sglang/srt/layers/attention/glm5_next/kpool/planner.py",
       "source_sha256": "c4f995c94c9021aa7cb1855b9b86fa134361109a302ee744fa15d82df06621f0",
-      "target_sha256": "10c88c380dd58f8d51537d94e1195edc2cd4828d89f12919b26459327c739478",
+      "target_sha256": "83eebd1725c095a0aa313253408580dfee0af05b0cfd062b62ebc3101182777c",
       "reverse_replacements": [
+        ["        assert tail_extra_slots == num_draft_tokens, (\n            f\"tail_extra_slots mismatch: pool={tail_extra_slots}, \"", "        pool = get_token_to_kv_pool()\n        assert pool.tail_extra_slots == num_draft_tokens, (\n            f\"tail_extra_slots mismatch: pool={pool.tail_extra_slots}, \"", "once"],
+        ["    accept_length: Optional[torch.Tensor] = None,\n    tail_extra_slots: Optional[int] = None,\n) -> DSAMetadata:\n    \"\"\"Build the layer-invariant kpool write plan (eager path).", "    accept_length: Optional[torch.Tensor] = None,\n) -> DSAMetadata:\n    \"\"\"Build the layer-invariant kpool write plan (eager path).", "once"],
+        ["from sglang.srt.model_executor.forward_context import get_req_to_token_pool\n", "from sglang.srt.model_executor.forward_context import (\n    get_req_to_token_pool,\n    get_token_to_kv_pool,\n)\n", "once"],
         [
           "from hcu_sglang.kernels.kpool_write_plan import (\n",
           "from sglang.kernels.jit.kpool_write_plan import (\n",
@@ -698,8 +722,11 @@
       "target": "hcu_sglang/layers/attention/glm5_next/utils.py",
       "source": "python/sglang/srt/layers/attention/glm5_next/utils.py",
       "source_sha256": "84770e38d606712fe91908665a462074066cdce2334a42066361b95387de058a",
-      "target_sha256": "3cce480e3b6ba8b3b77094f7ef1c4ec63dd4113d2e65baf50e4b217ef0c13090",
+      "target_sha256": "ea6c4d79001ec488f2458bcee4f2c59b658d5e79802ddf70966caa5ae96b0453",
       "reverse_replacements": [
+        ["get_parallel().attn_cp_size > 1 and get_global_server_args().enable_prefill_cp", "get_global_server_args().enable_dsa_prefill_context_parallel", "once"],
+        ["get_parallel().cp_strategy == \"zigzag\"", "get_global_server_args().dsa_prefill_cp_mode == \"in-seq-split\"", "once"],
+        ["get_parallel().cp_strategy == \"interleave\"", "get_global_server_args().dsa_prefill_cp_mode == \"round-robin-split\"", "once"],
         [
           "from hcu_sglang.layers.attention.glm5_next.runtime import (\n",
           "from sglang.srt.layers.attention.glm5_next.runtime import (\n",
@@ -1283,7 +1310,7 @@
     },
     {
       "target": "hcu_sglang/mem_cache/dsa_cache_layer_split.py",
-      "target_sha256": "b1cfeb3718f7e3138ee52bed898e2bfad8d0b51d7eb2cb1a10e3bda7667b6326",
+      "target_sha256": "c099b5b776689c05210f79900a7093141307e39a7053e32e7287c76006e850dd",
       "definition_contract": "tests/contracts/runtime_reviewed_definitions.json",
       "sources": [
         {

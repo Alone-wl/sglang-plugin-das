@@ -142,3 +142,37 @@ LightOp 自行选择 launch，不套用旧 sgl_kernel 的 256-thread head 分块
 `SGLANG_HCU_W8A8_USE_LIGHTOP` 为插件布尔开关，默认 `False`。GLM CT W4A8 配方显式设置为 `1`，使既有 `triton_scaled_mm` 接口使用镜像内公共 LightOp 分发，跳过插件自行选择的 smooth ASM 快路径；公共接口内部仍可能使用 ASM。开关不改变输入 INT8 量化值、token scale、权重或输出 dtype；默认关闭及非 HCU 的行为保持原样。应在服务启动前设置，Graph 捕获后不要切换后端。
 
 真实首层 Q-b 的两组八 rank 输入、权重和 scale 对照中，两套镜像的公共接口均逐元素重建原生输出；插件的 ASM 快路径有四个元素不同。该有限组件证据不证明所有 shape 或完整模型通过，后续分发和模型复测见[开发记录](hcu-sglang-development.md#2026-11-05-glm-ct-w4a8-的-w8a8-gemm-分发)。
+
+## GLM5-Next Decode 辅助流诊断
+
+`HCU_PLUGIN_GLM5_DISABLE_DECODE_ALT_STREAM` 是 Plugin 的 worker 环境变量，默认 `0`。在 HCU Decode 启动前设为 `1`，Plugin 在主模型和 Draft NextN 构造时跳过创建 `alt_stream`。回退时取消设置或设回 `0`，重启 Decode。
+
+Prefill、其他模型、Adapter 平台判定和 HIP Graph 运行时的流分配由各自原有配置控制。
+
+`HCU_PLUGIN_DEEPEP_DISABLE_RECV_HOOK` 默认 `0`。设为 `1` 并重启后，当前进程的 Plugin DeepEP low-latency dispatcher 关闭接收 hook，dispatch 和 combine 改用完成事件等待。启用时记录 `HCU DeepEP low-latency receive hook disabled`。做 Decode 对照时只在 Decode 启动脚本设置，并保持共享专家融合和 SBO 关闭。
+
+## GLM5.3 INT8 DeepGEMM 包与接口
+
+当前 gfx936 W8A8 INT8 + DeepEP 配方固定使用
+`deepgemm==2.1.0+dtk2604.torch2110.2610301506.gedf118`（CPython 3.10 / DTK 26.04 / Torch 2.11）。
+这是该配方的版本要求，不是全部模型或架构的通用依赖钉。
+
+| 路径 | 权重打包 | GEMM 参数 |
+|---|---|---|
+| low-latency | `marlin_i8_masked_weight(..., shuffle_unique=0, low_memory=True)`，七维 pair32 | `m_grouped_i8_gemm_nt_masked(..., shuffle_unique=0, config={"MODE": 1001})` |
+| normal | `marlin_i8_contiguous_weight(..., shuffle_unique=0, low_memory=True)`，vendor contiguous 布局 | `m_grouped_i8_gemm_nt_contiguous(..., shuffle_unique=0)` |
+| auto | 分别保存上述两种布局 | 按实际 dispatch 类型使用匹配权重 |
+
+此包不使用旧 `backend="cooperative"` 关键字；MODE=1001 在 masked pair32 路径选择
+BM128 cooperative kernel，不能把它传给 normal GEMM。输入为 INT8，激活 scale 为
+FP32 per-token，权重 scale 为 FP32 per-channel，输出 BF16。`masked_m` 为每个专家的
+实际有效行数，服务 bs、容量和 `expected_m` 不能代替它。
+
+Plugin 拥有 INT8 专家打包与运行时调用；Adapter 负责平台/DeepEP ABI 和上游
+`deep_gemm` 兼容出口，不覆盖上述 `deepgemm` INT8 函数。实际接线为
+`deepep_current` dispatcher、`deepep_fp8` Hook 和 `moe/deepep_int8.py` 执行体。
+旧的独立 INT8 runner 与未注册 Hook 已退役。
+
+更换包后必须重启并重新打包权重、捕获 Graph；不能把 post20261022 的启动目录继续
+置于 `PYTHONPATH` 首位。独立算子测试通过不代表 normal、其他架构或模型数据集已通过。
+验证范围与历史结果见 [开发记录](hcu-sglang-development.md)。

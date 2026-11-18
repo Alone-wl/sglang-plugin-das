@@ -252,10 +252,40 @@ def around_row_forward(original, layer, *args, **kwargs):
     return original(layer, *args, **kwargs)
 
 
+def around_int8_init(original, method, *args, **kwargs):
+    result = original(method, *args, **kwargs)
+    method.supports_prequantized_input = True
+    return result
+
+
+def around_int8_apply(original, method, layer, x, bias=None, input_quant_args=None):
+    if input_quant_args is None:
+        return original(method, layer, x, bias=bias)
+    from sglang.srt.layers.quantization import w8a8_int8
+
+    x_q, x_scale = input_quant_args
+    if x_q.dtype != N.torch.int8 or x_scale.dtype != N.torch.float32:
+        raise TypeError("W8A8 prequantized input requires INT8 values and FP32 scales")
+    if x_q.shape != x.shape or x_scale.shape != x.shape[:-1] + (1,):
+        raise ValueError("W8A8 prequantized input shape mismatch")
+    output = w8a8_int8.int8_scaled_mm(
+        x_q.reshape(-1, x_q.shape[-1]),
+        layer.weight,
+        x_scale.reshape(-1, 1),
+        layer.weight_scale,
+        out_dtype=x.dtype,
+        bias=bias,
+    )
+    return output.reshape(*x_q.shape[:-1], layer.weight.shape[1])
+
+
 def register_hooks():
     if not is_hcu():
         return
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
+    target = "sglang.srt.layers.quantization.w8a8_int8.W8A8Int8LinearMethod"
+    HookRegistry.register(f"{target}.__init__", around_int8_init, HookType.AROUND)
+    HookRegistry.register(f"{target}.apply", around_int8_apply, HookType.AROUND)
     N.RowParallelLinear.supports_fused_silu_mul_quant_input = supports_fused_silu_mul_quant_input
     N.RowParallelLinear.supports_fused_silu_mul_fp8_quant_input = supports_fused_silu_mul_fp8_quant_input
     HookRegistry.register("sglang.srt.layers.linear.RowParallelLinear.forward", around_row_forward, HookType.AROUND)

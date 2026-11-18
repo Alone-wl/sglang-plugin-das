@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -198,6 +199,56 @@ class OwnedGlmNextNTests(unittest.TestCase):
         self.cls(SimpleNamespace(text_config=text), quant_config=quant, prefix="draft")
         self.parent_init.assert_called_once_with(text, quant_config=quant, prefix="draft")
         self.assertTrue(issubclass(self.module.Glm5NextForCausalLMNextN, self.cls))
+
+
+class OwnedGlmAttentionRegistryTests(unittest.TestCase):
+    def test_target_and_draft_share_the_owned_glm_backend(self):
+        upstream = Mock(return_value="upstream")
+        target = Mock(return_value="glm")
+        multistep = Mock(return_value="glm-draft")
+        hooks = Mock()
+        attention_registry = SimpleNamespace(ATTENTION_BACKENDS={"dsa": upstream})
+        module_path = ROOT / "hcu_sglang/layers/attention/glm5_next_registry.py"
+        spec = importlib.util.spec_from_file_location("isolated_glm_attention_registry", module_path)
+        registry = importlib.util.module_from_spec(spec)
+        modules = {
+            "hcu_sglang.glm5_next_policy": SimpleNamespace(is_glm5_next_hcu=lambda cfg: cfg == "glm"),
+            "hcu_sglang.utils.detection": SimpleNamespace(is_hcu=lambda: True),
+            "sglang.srt.layers.attention.attention_registry": attention_registry,
+            "sglang.srt.plugins.hook_registry": SimpleNamespace(
+                HookRegistry=SimpleNamespace(register=hooks),
+                HookType=SimpleNamespace(AROUND="around", AFTER="after"),
+            ),
+            "hcu_sglang.layers.attention.glm5_next.dsa_backend": SimpleNamespace(
+                NativeSparseAttnBackend=target,
+                NativeSparseAttnMultiStepBackend=multistep,
+            ),
+        }
+        glm = SimpleNamespace(model_config=SimpleNamespace(hf_config="glm"))
+        other = SimpleNamespace(model_config=SimpleNamespace(hf_config="other"))
+        draft = SimpleNamespace(
+            draft_model_runner=glm, topk=1, speculative_num_steps=5,
+            seed_dsa_topk_from_draft_extend=True,
+        )
+        with patch.dict(sys.modules, modules):
+            spec.loader.exec_module(registry)
+            registry.register()
+            registry.register()
+            hooks.assert_any_call(
+                "sglang.srt.speculative.eagle_worker_v2.EagleDraftWorker._capture_cuda_graphs",
+                registry.after_capture_draft_graphs,
+                "after",
+            )
+            self.assertEqual(attention_registry.ATTENTION_BACKENDS["dsa"](glm), "glm")
+            self.assertEqual(attention_registry.ATTENTION_BACKENDS["dsa"](other), "upstream")
+            target.assert_called_once_with(glm)
+            upstream.assert_called_once_with(other)
+            self.assertEqual(registry.around_create_dsa_decode_backend(upstream, draft), ("dsa", "glm-draft"))
+            multistep.assert_called_once_with(glm, 1, 5, seed_dsa_topk_from_draft_extend=True)
+            self.assertEqual(registry.around_create_dsa_prefill_backend(upstream, draft), ("dsa", "glm"))
+            target.assert_called_with(glm, skip_prefill=False, seed_dsa_topk_from_draft_extend=True)
+            draft.draft_model_runner = other
+            self.assertEqual(registry.around_create_dsa_decode_backend(upstream, draft), "upstream")
 
 
 if __name__ == "__main__":

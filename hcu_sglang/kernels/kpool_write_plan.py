@@ -3,12 +3,17 @@
 from __future__ import annotations
 
 import logging
+from pathlib import Path
 
 import torch
 
 from sglang.kernels.jit.utils import cache_once, load_jit, make_cpp_args
 
 logger = logging.getLogger(__name__)
+_KPOOL_WRITE_PLAN_SOURCE = (
+    Path(__file__).resolve().parents[1]
+    / "jit_overlay/csrc/elementwise/kpool_write_plan.cuh"
+)
 _DUMMY_INT32_CACHE: dict[tuple[torch.device, int], torch.Tensor] = {}
 
 
@@ -28,7 +33,7 @@ def _jit_kpool_write_plan_module(num_draft_tokens: int, has_per_q: bool):
         return load_jit(
             "kpool_write_plan",
             *args,
-            cuda_files=["elementwise/kpool_write_plan.cuh"],
+            cuda_files=[str(_KPOOL_WRITE_PLAN_SOURCE)],
             cuda_wrappers=[
                 (
                     "kpool_write_plan",
@@ -52,7 +57,7 @@ def _jit_kpool_write_plan_multi_decode_module():
     try:
         return load_jit(
             "kpool_write_plan_multi_decode",
-            cuda_files=["elementwise/kpool_write_plan.cuh"],
+            cuda_files=[str(_KPOOL_WRITE_PLAN_SOURCE)],
             cuda_wrappers=[
                 (
                     "kpool_write_plan_multi_decode",

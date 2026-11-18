@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "source_head": "15c7204b7a3b6edaa222cff80018d8e5f2b2ad0e",
-  "semantics": "Full committed Source AST equals owned implementation and explicit module caller exists. This supports implemented disposition only; it is not runtime verification.",
+  "semantics": "Historical Source AST provenance is retained. Owned AST tracks the current implementation; documented adaptations may differ from Source. This is not runtime verification.",
   "files": [
     {
       "source": "python/sglang/srt/disaggregation/glm5_next.py",
@@ -115,12 +115,13 @@
       "source": "python/sglang/srt/layers/quantization/hcu_deepgemm_w8a8_utils.py",
       "owned": "hcu_sglang/layers/quantization/hcu_deepgemm_w8a8_utils.py",
       "source_ast_sha256": "12ed3c59a67735cd1a73c092b00ceba65999b6b7ca66ed28bb4336ea95070868",
-      "owned_ast_sha256": "12ed3c59a67735cd1a73c092b00ceba65999b6b7ca66ed28bb4336ea95070868",
+      "owned_ast_sha256": "3a9e5465e0db0956baf8d5c8a5499f0e8ac283837a0a80d8736f6e674e2ab212",
       "callers": [
         "hcu_sglang/layers/quantization/compressed_w8a8_int8_moe.py",
         "hcu_sglang/layers/quantization/compressed_moe_marlin.py",
         "hcu_sglang/layers/moe/deepep_int8.py"
-      ]
+      ],
+      "adaptation": "DeepGEMM gedf118 pair32 masked packing and MODE=1001 dispatch; normal and low-latency retain distinct vendor layouts. See docs/configuration.md and docs/hcu-sglang-development.md for scope and validation."
     },
     {
       "source": "python/sglang/srt/layers/quantization/w4a8_utils.py",

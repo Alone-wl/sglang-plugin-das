@@ -1101,6 +1101,16 @@ def forward_normal_dual_stream(
     return final_hidden_states
 
 
+def set_shared_expert_input_quant_args(self, input_quant_args):
+    if self._shared_expert_input_quant_args is not None:
+        raise RuntimeError("Shared-expert prequantized input is already set")
+    self._shared_expert_input_quant_args = input_quant_args
+
+
+def clear_shared_expert_input_quant_args(self):
+    self._shared_expert_input_quant_args = None
+
+
 def _forward_shared_experts(
     self,
     hidden_states,

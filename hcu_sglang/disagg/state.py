@@ -16,4 +16,7 @@ def around_setup_state_kv_args(original, kv_args, token_to_kv_pool,
     if isinstance(token_to_kv_pool, DeepSeekV4TokenToKVPool):
         kv_args.kv_layout = token_to_kv_pool.pd_kv_layout()
         configure_v4_transfer(kv_args, token_to_kv_pool, draft_token_to_kv_pool)
+    from hcu_sglang.mem_cache.glm5_layer_split import configure_indexer_layer_ids
+
+    configure_indexer_layer_ids(kv_args, token_to_kv_pool)
     return result
