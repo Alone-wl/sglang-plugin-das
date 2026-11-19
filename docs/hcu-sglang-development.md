@@ -24,6 +24,7 @@
 - [2026-11-04：HCU MHA KV 单流构造试验](#2026-11-04-hcu-mha-kv-单流构造试验)
 - [2026-11-04：GDN 投影单流构造试验](#2026-11-04-gdn-投影单流构造试验)
 - [2026-11-04：KV 与 GDN 单流提交验证](#2026-11-04-kv-与-gdn-单流提交验证)
+- [2026-11-19：GLM-5.3 Channel FP8 基础运行时](#2026-11-19-glm-53-channel-fp8-基础运行时)
 - [附录：布局、操作方式与汇总](#附录布局操作方式与汇总)
 
 两份早期独立开发记录已全文收录（卷内同链）。历史结果不代表当前代码已重新验证。
@@ -3999,3 +4000,14 @@ The candidate previously passed simple dialogues as part of the combined deploym
 本分支合并 SlimQuant router/EH norm、专家 ID 映射融合、首次 draft TopK 策略和单实例配方。按使用者要求验证整套组合，不做各项模型 A/B；性能结论归属于整套组合，不把历史阶段收益相加。固定 adapter fd1b7f5、plugin b8ea993；本轮 GPU 组合验证已完成，结果见下。
 
 提交验收范围由使用者确认为单请求对齐。单请求 decode 39.0214 对 0518 的 38.5064 token/s，三项对话和固定输入接受统计一致。性能结论仅限本轮单请求配置。
+
+## 2026-11-19 GLM-5.3 Channel FP8 基础运行时
+
+以官方 SGLang v0.5.22 为宿主。移入 fork 的 Channel FP8 量化、MoE、MLA、
+KV/index cache 和模型 Hook，并加入显式的 prefill、decode 候选开关。部署所需
+算子入口、模型条件和供应商扩展来源见[配置管理](configuration.md)。
+上游的模型注册及 P/D 调度入口保留，沿用 Scheduler 注册时安装的兼容方法。
+
+已有隔离环境记录覆盖 CP8 的 12K/MTP 调用对照和普通 eager decode。
+本分支只做本地结构与 lint 检查。DCP4、HiSparse 和完整 Graph 组合需要按
+实际部署配方另行复验；历史候选结果按原环境记录。
