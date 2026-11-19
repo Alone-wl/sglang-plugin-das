@@ -173,6 +173,10 @@ Plugin 拥有 INT8 专家打包与运行时调用；Adapter 负责平台/DeepEP 
 `deepep_current` dispatcher、`deepep_fp8` Hook 和 `moe/deepep_int8.py` 执行体。
 旧的独立 INT8 runner 与未注册 Hook 已退役。
 
+`SGLANG_USE_DEEPGEMM_MOE=0`（以及等价的 `false`）显式关闭该插件 INT8
+DeepGEMM 分发，即使 runner 和 A2A backend 分别选择 `deep_gemm`、`deepep`。
+未设置此变量时，HCU 仍按设备、runner 和 A2A backend 自动选择兼容路径。
+
 更换包后必须重启并重新打包权重、捕获 Graph；不能把 post20261022 的启动目录继续
 置于 `PYTHONPATH` 首位。独立算子测试通过不代表 normal、其他架构或模型数据集已通过。
 验证范围与历史结果见 [开发记录](hcu-sglang-development.md)。
