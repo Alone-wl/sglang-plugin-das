@@ -117,10 +117,9 @@ def configure_indexer_layer_ids(kv_args, pool):
     if StateType.DSA not in kv_args.state_types:
         return
     component = kv_args.state_types.index(StateType.DSA)
-    layer_ids = owned_global_layers(pool)
+    layer_ids = kv_args.state_layer_ids[component]
     if len(layer_ids) != len(kv_args.state_data_ptrs[component]):
-        raise ValueError("GLM indexer buffer count does not match global layer IDs")
-    kv_args.state_layer_ids[component] = layer_ids
+        raise ValueError("GLM indexer buffer count does not match registered layer IDs")
 
 
 def around_mamba_host_pool(original, mamba_pool, *, host_size, layout, mtp_draft_device_pools=()):
@@ -187,6 +186,11 @@ def register_hooks():
 
     HookRegistry.register(
         "sglang.srt.layers.attention.dsa_backend.DeepseekSparseAttnBackend.init_forward_metadata",
+        around_dsa_metadata,
+        HookType.AROUND,
+    )
+    HookRegistry.register(
+        "hcu_sglang.layers.attention.glm5_next.dsa_backend.NativeSparseAttnBackend.init_forward_metadata",
         around_dsa_metadata,
         HookType.AROUND,
     )

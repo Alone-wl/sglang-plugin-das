@@ -12,7 +12,7 @@ def append_hcu_dsa_state(kv_args, token_pool, draft_pool, num_hidden_layers):
 
     target = unwrap(token_pool)
     draft = unwrap(draft_pool)
-    pools = [(target, token_pool.get_kv_layer_ids())]
+    pools = [(target, target.get_state_layer_ids())]
     if draft is not None:
         if not getattr(draft, "is_hcu_glm5_next_pool", False):
             raise ValueError(
@@ -25,7 +25,7 @@ def append_hcu_dsa_state(kv_args, token_pool, draft_pool, num_hidden_layers):
                 draft,
                 [
                     num_hidden_layers + i - draft.start_layer
-                    for i in draft.get_kv_layer_ids()
+                    for i in draft.get_state_layer_ids()
                 ],
             )
         )

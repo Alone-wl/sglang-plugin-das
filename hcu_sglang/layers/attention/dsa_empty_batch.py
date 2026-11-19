@@ -2,8 +2,9 @@ from hcu_sglang.utils.detection import is_hcu
 
 
 def around_init_forward_metadata(original, backend, batch):
+    from importlib import import_module
+
     import torch
-    from sglang.srt.layers.attention.dsa_backend import DSAMetadata
 
     if not is_hcu() or batch.batch_size != 0 or not batch.forward_mode.is_target_verify():
         return original(backend, batch)
@@ -12,8 +13,12 @@ def around_init_forward_metadata(original, backend, batch):
     empty = batch.seq_lens.to(torch.int32)
     zero = torch.zeros(1, dtype=torch.int32, device=empty.device)
     table = backend.req_to_token_pool.req_to_token[:0, :0]
-    backend.forward_metadata = DSAMetadata(
-        page_size=backend.physical_page_size,
+    metadata_type = getattr(import_module(backend.__class__.__module__), "DSAMetadata")
+    page_size = getattr(backend, "physical_page_size", None)
+    if page_size is None:
+        page_size = backend.real_page_size
+    backend.forward_metadata = metadata_type(
+        page_size=page_size,
         cache_seqlens_int32=empty,
         max_seq_len_q=1,
         max_seq_len_k=0,
@@ -49,6 +54,11 @@ def register_hooks():
 
     HookRegistry.register(
         "sglang.srt.layers.attention.dsa_backend.DeepseekSparseAttnBackend.init_forward_metadata",
+        around_init_forward_metadata,
+        HookType.AROUND,
+    )
+    HookRegistry.register(
+        "hcu_sglang.layers.attention.glm5_next.dsa_backend.NativeSparseAttnBackend.init_forward_metadata",
         around_init_forward_metadata,
         HookType.AROUND,
     )
