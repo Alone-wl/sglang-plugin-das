@@ -92,21 +92,20 @@ class LayerMoeFixTests(unittest.TestCase):
         layer.moe_runner_config = SimpleNamespace(activation="silu", swiglu_limit=None)
         layer.deepep_mode = SimpleNamespace(is_normal=lambda: False)
         layer.dispatcher = SimpleNamespace(quant_config={}, set_quant_config=Mock())
-        with patch("sglang.srt.layers.moe.get_moe_runner_backend", return_value=SimpleNamespace(is_deep_gemm=lambda: True)), patch("sglang.srt.layers.moe.get_moe_a2a_backend", return_value=SimpleNamespace(is_deepep=lambda: True)), patch.object(I, "use_int8_deepgemm_asm", return_value=True), patch.object(I, "is_hcu_gfx936", return_value=False):
+        with patch("sglang.srt.layers.moe.get_moe_runner_backend", return_value=SimpleNamespace(is_deep_gemm=lambda: True)), patch("sglang.srt.layers.moe.get_moe_a2a_backend", return_value=SimpleNamespace(is_deepep=lambda: True)), patch.object(I, "use_int8_deepgemm_asm", return_value=True), patch.object(I, "is_hcu_pair32_int8", return_value=False):
             I.configure_layer(layer, None)
         self.assertTrue(layer.use_int8_w8a8_deepgemm)
         mode = SimpleNamespace(is_normal=lambda: False, enable_normal=lambda: True, enable_low_latency=lambda: True)
-        with patch.object(W, "get_hcu_gfx_arch", return_value="gfx936"), patch.object(W, "use_int8_deepgemm_asm", return_value=True), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch("deepgemm.marlin_i8_contiguous_weight", side_effect=lambda w, **kw: w.clone()), patch("deepgemm.group_gemm_weight_pack._get_current_gfx_arch", return_value="gfx936"):
+        with patch.object(W, "get_hcu_gfx_arch", return_value="gfx936"), patch.object(W, "use_int8_deepgemm_asm", return_value=True), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch("deepgemm.group_gemm_weight_pack._get_current_gfx_arch", return_value="gfx936"):
             scheme.process_weights_after_loading(layer)
         self.assertFalse(hasattr(layer, "w13_weight"))
         self.assertEqual(layer._w8a8_int8_w13_weight_shape, (2, 256, 256))
         self.assertTrue(layer._w8a8_int8_deepgemm_has_contiguous)
         self.assertTrue(layer._w8a8_int8_deepgemm_has_masked)
         seen = []
-        def gemm(a, weights, output, counts, expected, *, config, shuffle_unique):
-            self.assertEqual(config, {"MODE": 1001})
-            self.assertEqual(weights[0].ndim, 7)
-            self.assertEqual(shuffle_unique, 0)
+        def gemm(a, weights, output, counts, expected, **kwargs):
+            self.assertEqual(kwargs, {})
+            self.assertEqual(weights[0].ndim, 3)
             self.assertEqual(expected, 3)
             self.assertEqual(counts.tolist(), [0, 3])
             seen.append(weights[0])
@@ -114,7 +113,7 @@ class LayerMoeFixTests(unittest.TestCase):
         x = torch.ones(2, 3, 256, dtype=torch.int8)
         ids = torch.tensor([[0], [1]], dtype=torch.int64)
         output = D.DeepEPLLDispatchOutput(x, torch.ones(2, 3, 1), ids, torch.ones(2, 1), torch.tensor([0, 3], dtype=torch.int32), 99)
-        with patch("deepgemm.m_grouped_i8_gemm_nt_masked", side_effect=gemm), patch("torch.ops.sglang.fuse_silu_mul_quant_ep", side_effect=I.fuse_silu_mul_quant_ep_wrapper), patch.object(I, "fuse_silu_mul_quant_ep", side_effect=lambda x, *args, **kw: (x[..., ::2].to(torch.int8), torch.ones(2, 3, 1))):
+        with patch("deepgemm.m_grouped_w8a8_gemm_nt_masked", side_effect=gemm), patch("torch.ops.sglang.fuse_silu_mul_quant_ep", side_effect=I.fuse_silu_mul_quant_ep_wrapper), patch.object(I, "fuse_silu_mul_quant_ep", side_effect=lambda x, *args, **kw: (x[..., ::2].to(torch.int8), torch.ones(2, 3, 1))):
             combined = F.around_run_moe_core(Mock(side_effect=AssertionError("generic runner")), layer, output)
         self.assertIs(seen[0], layer.w13_weight_deepgemm_masked)
         self.assertIs(seen[1], layer.w2_weight_deepgemm_masked)
@@ -132,24 +131,32 @@ class LayerMoeFixTests(unittest.TestCase):
         from hcu_sglang.layers.quantization import hcu_deepgemm_w8a8_utils as W
         import deepgemm
 
-        vendor_pack = deepgemm.marlin_i8_masked_weight
-        def masked_pack(weight, *, shuffle_unique, low_memory):
-            return vendor_pack(weight, shuffle_unique=shuffle_unique, low_memory=low_memory)
-
-        for normal, low_latency in [(True, False), (False, True), (True, True)]:
-            with self.subTest(normal=normal, low_latency=low_latency):
-                layer = torch.nn.Module()
-                layer.register_parameter("w13_weight", torch.nn.Parameter(torch.ones(2, 256, 256, dtype=torch.int8), requires_grad=False))
-                layer.register_parameter("w2_weight", torch.nn.Parameter(torch.ones(2, 256, 128, dtype=torch.int8), requires_grad=False))
-                mode = SimpleNamespace(is_normal=lambda: normal and not low_latency, enable_normal=lambda: normal, enable_low_latency=lambda: low_latency)
-                with patch.object(W, "get_hcu_gfx_arch", return_value="gfx936"), patch.object(W, "use_int8_deepgemm_asm", return_value=True), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch("deepgemm.marlin_i8_contiguous_weight", side_effect=lambda w, **kw: w.clone()) as contiguous, patch("deepgemm.marlin_i8_masked_weight", side_effect=masked_pack) as masked, patch("deepgemm.group_gemm_weight_pack._get_current_gfx_arch", return_value="gfx936"):
-                    W.prepare_w8a8_int8_deepgemm_weights(layer)
-                    W.prepare_w8a8_int8_deepgemm_weights(layer)
-                self.assertEqual(contiguous.call_count, 2 if normal else 0)
-                self.assertEqual(masked.call_count, 2 if low_latency else 0)
-                self.assertEqual(hasattr(layer, "w13_weight_deepgemm"), normal)
-                self.assertEqual(hasattr(layer, "w13_weight_deepgemm_masked"), low_latency)
-                self.assertFalse(hasattr(layer, "w13_weight"))
+        from deepgemm import group_gemm_weight_pack as packing
+        for asm in (False, True):
+            for normal, low_latency in [(True, False), (False, True), (True, True)]:
+                with self.subTest(asm=asm, normal=normal, low_latency=low_latency):
+                    originals = [torch.randint(-128, 128, (2, 256, k), dtype=torch.int8) for k in (256, 128)]
+                    layer = torch.nn.Module()
+                    layer.w13_weight = torch.nn.Parameter(originals[0].clone(), requires_grad=False)
+                    layer.w2_weight = torch.nn.Parameter(originals[1].clone(), requires_grad=False)
+                    mode = SimpleNamespace(is_normal=lambda: normal and not low_latency, enable_normal=lambda: normal, enable_low_latency=lambda: low_latency)
+                    with patch.object(W, "get_hcu_gfx_arch", return_value="gfx936"), patch.object(W, "use_int8_deepgemm_asm", return_value=asm), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch.object(packing, "_get_current_gfx_arch", return_value="gfx936"):
+                        expected_normal = [deepgemm.marlin_i8_contiguous_weight(w.clone(), shuffle_unique=0, low_memory=True) for w in originals]
+                        expected_masked = [(packing.pack_i8_weight_gfx936_asm(w.clone()) if asm else packing.pack_i8_weight_pair32(w)) for w in originals]
+                        W.prepare_w8a8_int8_deepgemm_weights(layer)
+                        saved = list(layer.buffers())
+                        W.prepare_w8a8_int8_deepgemm_weights(layer)
+                    self.assertEqual(hasattr(layer, "w13_weight_deepgemm"), normal)
+                    self.assertEqual(hasattr(layer, "w13_weight_deepgemm_masked"), low_latency)
+                    self.assertFalse(hasattr(layer, "w13_weight"))
+                    for actual, previous in zip(layer.buffers(), saved):
+                        self.assertIs(actual, previous)
+                    for name, reference in zip(("w13", "w2"), expected_normal):
+                        if normal:
+                            torch.testing.assert_close(getattr(layer, name + "_weight_deepgemm"), reference, rtol=0, atol=0)
+                    for name, reference in zip(("w13", "w2"), expected_masked):
+                        if low_latency:
+                            torch.testing.assert_close(getattr(layer, name + "_weight_deepgemm_masked"), reference, rtol=0, atol=0)
 
     def test_registered_int8_normal_dispatch_preserves_count_transfer(self):
         from hcu_sglang.layers.moe import deepep_int8 as I, deepep_fp8 as F, deepep_current as D
@@ -169,7 +176,7 @@ class LayerMoeFixTests(unittest.TestCase):
                     output.fill_(1)
                 def gather(down, topk_ids, topk_weights, indices, output):
                     output.fill_(2)
-                with patch.object(I, "get_offloader", return_value=SimpleNamespace(forbid_copy_engine_usage=forbid_copy_engine)), patch.object(I, "copy_list_to_gpu_no_ce", return_value=gpu_counts) as no_ce, patch.object(I, "_w8a8_int8_ep_workspace_tokens", 0), patch.object(I, "_ep_scatter_with_optional_lightop", return_value=(object(), object())) as scatter, patch.object(I, "m_grouped_i8_gemm_nt_contiguous", side_effect=gemm) as provider, patch.object(I, "fuse_silu_mul_quant", side_effect=lambda v: (v[..., ::2].to(torch.int8), torch.ones(v.shape[0], 1))), patch.object(I, "_ep_gather_with_optional_lightop", side_effect=gather), patch("torch.tensor", return_value=cpu_counts) as tensor:
+                with patch.object(I, "get_offloader", return_value=SimpleNamespace(forbid_copy_engine_usage=forbid_copy_engine)), patch.object(I, "copy_list_to_gpu_no_ce", return_value=gpu_counts) as no_ce, patch.object(I, "_w8a8_int8_ep_workspace_tokens", 0), patch.object(I, "_ep_scatter_with_optional_lightop", return_value=(object(), object())) as scatter, patch("deepgemm.m_grouped_i8_gemm_nt_contiguous", side_effect=gemm) as provider, patch.object(I, "fuse_silu_mul_quant", side_effect=lambda v: (v[..., ::2].to(torch.int8), torch.ones(v.shape[0], 1))), patch.object(I, "_ep_gather_with_optional_lightop", side_effect=gather), patch("torch.tensor", return_value=cpu_counts) as tensor:
                     result = F.around_run_moe_core(Mock(side_effect=AssertionError("obsolete runner")), layer, dispatch)
                 self.assertIs(scatter.call_args.args[3], gpu_counts)
                 self.assertEqual(provider.call_count, 2)
@@ -184,13 +191,12 @@ class LayerMoeFixTests(unittest.TestCase):
                     tensor.assert_called_once_with(counts, dtype=torch.int32, pin_memory=True, device="cpu")
                     cpu_counts.to.assert_called_once_with(device=x.device, non_blocking=True)
 
-    def test_int8_masked_packing_rejects_legacy_vendor_layout(self):
+    def test_int8_asm_packing_rejects_invalid_shape_and_dtype(self):
         from hcu_sglang.layers.quantization import hcu_deepgemm_w8a8_utils as W
-        weight = torch.zeros(2, 256, 128, dtype=torch.int8)
-        legacy = torch.zeros(2, 16, 2048, dtype=torch.int8)
-        with patch("deepgemm.marlin_i8_masked_weight", return_value=legacy):
-            with self.assertRaisesRegex(RuntimeError, "requires pair32 weights"):
-                W._pack_w8a8_int8_masked_weight(weight)
+        with self.assertRaisesRegex(ValueError, "N%16"):
+            W._pack_w8a8_int8_asm_masked_weight(torch.zeros(2, 17, 128, dtype=torch.int8))
+        with self.assertRaisesRegex(ValueError, "must be 8-bit"):
+            W._pack_w8a8_int8_asm_masked_weight(torch.zeros(2, 256, 128))
 
     def test_lightop_runner_preserves_explicit_zero_route_scale(self):
         from hcu_sglang.layers.moe import lightop_runner as L

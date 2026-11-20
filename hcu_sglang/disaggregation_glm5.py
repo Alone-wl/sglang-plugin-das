@@ -120,6 +120,11 @@ def register_hooks():
     from sglang.srt.plugins.hook_registry import HookRegistry, HookType
 
     HookRegistry.register(
+        "sglang.srt.arg_groups.cp_tp_group_sharing_hook.resolve_cp_tp_group_sharing",
+        around_resolve_cp,
+        HookType.AROUND,
+    )
+    HookRegistry.register(
         "sglang.srt.arg_groups.parallel_hook.resolve_cp_tp_group_sharing",
         around_resolve_cp,
         HookType.AROUND,

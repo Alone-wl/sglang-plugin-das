@@ -161,7 +161,8 @@ def around_native_mhc_pre(
             for value in (fn, hc_scale, hc_base)
         )
     ):
-        return original(
+        return _dispatch_mhc(
+            "_mhc_pre_dispatch", original,
             residual, fn, hc_scale, hc_base, rms_eps, hc_pre_eps,
             hc_sinkhorn_eps, hc_post_mult_value, sinkhorn_repeat,
             norm_weight, norm_eps,

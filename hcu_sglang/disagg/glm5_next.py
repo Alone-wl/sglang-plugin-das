@@ -12,30 +12,26 @@ def append_hcu_dsa_state(kv_args, token_pool, draft_pool, num_hidden_layers):
 
     target = unwrap(token_pool)
     draft = unwrap(draft_pool)
-    pools = [(target, target.get_state_layer_ids())]
+    pools = [(target, 0)]
     if draft is not None:
-        if not getattr(draft, "is_hcu_glm5_next_pool", False):
-            raise ValueError(
-                "HCU GLM target and draft require the same physical KPool layout"
-            )
+        if not all(
+            hasattr(draft, name)
+            for name in ("get_state_layer_ids", "get_state_buf_infos", "start_layer")
+        ):
+            raise ValueError("HCU GLM draft pool is missing the Index-K state contract")
+        if num_hidden_layers is None:
+            raise ValueError("HCU GLM draft state requires total_kv_layers")
         # Draft owns one attention layer. IDs stay stable when a CP rank has
         # no draft buffer; both PD peers reserve the same band above target.
-        pools.append(
-            (
-                draft,
-                [
-                    num_hidden_layers + i - draft.start_layer
-                    for i in draft.get_state_layer_ids()
-                ],
-            )
-        )
+        pools.append((draft, num_hidden_layers - draft.start_layer))
 
     index_ptrs, index_lens, index_items, index_ids = [], [], [], []
     tail_ptrs, tail_lens, tail_items, tail_ids = [], [], [], []
     has_tail = False
-    for pool, ids in pools:
+    for pool, offset in pools:
+        ids = [offset + i for i in pool.get_state_layer_ids()]
         ptrs, lens, items = pool.get_state_buf_infos()
-        if len(ptrs) != len(ids):
+        if not len(ptrs) == len(lens) == len(items) == len(ids):
             raise ValueError("HCU indexer buffer IDs do not match its owned layers")
         index_ptrs.extend(ptrs)
         index_lens.extend(lens)
@@ -44,13 +40,14 @@ def append_hcu_dsa_state(kv_args, token_pool, draft_pool, num_hidden_layers):
         has_tail |= pool.kpool_use_compress
         if not pool.kpool_use_compress:
             continue
-        owned = [i - pool.start_layer for i in pool.get_kv_layer_ids()]
         ptrs, lens, items = pool.get_compress_tail_buf_infos()
-        selected = owned + [pool.layer_num + i for i in owned]
-        tail_ptrs.extend(ptrs[i] for i in selected)
-        tail_lens.extend(lens[i] for i in selected)
-        tail_items.extend(items[i] for i in selected)
-        tail_ids.extend(ids + ids)
+        ids = list(range(offset + pool.start_layer, offset + pool.start_layer + pool.layer_num)) * 2
+        if not len(ptrs) == len(lens) == len(items) == len(ids):
+            raise ValueError("HCU GLM tail buffers do not match the dense layer range")
+        tail_ptrs.extend(ptrs)
+        tail_lens.extend(lens)
+        tail_items.extend(items)
+        tail_ids.extend(ids)
     append_state_component(
         kv_args,
         StateType.DSA,

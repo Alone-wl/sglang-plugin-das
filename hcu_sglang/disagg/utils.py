@@ -2022,7 +2022,9 @@ def setup_state_kv_args(
             )
             # Hybrid DSA pools keep their index cache and kpool tail in the
             # full-attention sub-pool rather than in the Mamba state above.
-            if getattr(token_to_kv_pool.full_kv_pool, "is_hcu_glm5_next_pool", False):
+            if getattr(token_to_kv_pool, "_hcu_glm5_cache", False) and getattr(
+                token_to_kv_pool, "use_dsa", False
+            ):
                 append_hcu_dsa_state(
                     kv_args, token_to_kv_pool, draft_token_to_kv_pool, total_kv_layers
                 )

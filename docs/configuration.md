@@ -159,9 +159,17 @@ Prefill、其他模型、Adapter 平台判定和 HIP Graph 运行时的流分配
 
 | 路径 | 权重打包 | GEMM 参数 |
 |---|---|---|
-| low-latency | `marlin_i8_masked_weight(..., shuffle_unique=0, low_memory=True)`，七维 pair32 | `m_grouped_i8_gemm_nt_masked(..., shuffle_unique=0, config={"MODE": 1001})` |
+| low-latency | `pack_i8_weight_pair32(...)`，与本配方的 `marlin_i8_masked_weight(..., shuffle_unique=0)` 逐字节相同 | `m_grouped_i8_gemm_nt_masked(..., shuffle_unique=0, config={"MODE": 1001})` |
 | normal | `marlin_i8_contiguous_weight(..., shuffle_unique=0, low_memory=True)`，vendor contiguous 布局 | `m_grouped_i8_gemm_nt_contiguous(..., shuffle_unique=0)` |
 | auto | 分别保存上述两种布局 | 按实际 dispatch 类型使用匹配权重 |
+
+gedf118 在 gfx936 上的 contiguous 包装器返回三维 ASM 布局，masked 包装器返回
+七维 pair32；两者不是同一种排列。较新 DeepGEMM 源码将两个包装器统一到 pair32，
+不能据此替换旧包的 contiguous 打包而保留其 ASM 消费者。AUTO 先保存 masked
+权重，再执行可能原地改写输入的 contiguous 打包，避免第二种布局读取已重排的权重。
+显式 `SGLANG_INT8_DEEPGEMM_ASM=1` 保留三维 masked ASM 打包及
+`m_grouped_w8a8_gemm_nt_masked` 消费者，不把它送入 pair32 的 `m_grouped_i8_gemm_nt_masked`。
+这些契约由 HY3 和 GLM 共用，不按模型另设互相覆盖的打包实现。
 
 此包不使用旧 `backend="cooperative"` 关键字；MODE=1001 在 masked pair32 路径选择
 BM128 cooperative kernel，不能把它传给 normal GEMM。输入为 INT8，激活 scale 为

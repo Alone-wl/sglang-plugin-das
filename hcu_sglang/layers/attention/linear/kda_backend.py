@@ -76,10 +76,11 @@ def _run_causal_conv1d_update(
     *,
     activation="silu",
     conv_state_indices=None,
+    **kwargs,
 ):
     """HCU uses the operator-library single-step causal conv; other platforms
     keep the sglang triton implementation (or its NPU/CPU overrides)."""
-    if _hcu_causal_conv1d_update is not None:
+    if _hcu_causal_conv1d_update is not None and not kwargs:
         return _hcu_causal_conv1d_update(
             x,
             conv_state,
@@ -95,6 +96,7 @@ def _run_causal_conv1d_update(
         bias,
         activation=activation,
         conv_state_indices=conv_state_indices,
+        **kwargs,
     )
 
 class _DispatcherMethods:

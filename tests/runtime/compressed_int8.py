@@ -4,7 +4,7 @@
 from __future__ import annotations
 import os
 import unittest
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 from unittest.mock import Mock,patch
 import torch
 from compressed_tensors.quantization import QuantizationStrategy as S
@@ -19,6 +19,28 @@ from sglang.srt.plugins.hook_registry import HookRegistry
 
 
 class CompressedInt8Tests(unittest.TestCase):
+    def test_normal_layout_does_not_require_unused_masked_packer(self):
+        import deepgemm
+        from deepgemm import group_gemm_weight_pack as packing
+        from hcu_sglang.layers.quantization import hcu_deepgemm_w8a8_utils as U
+
+        original = torch.arange(256 * 128).reshape(1, 256, 128).to(torch.int8)
+        layer = torch.nn.Module()
+        layer.w13_weight = torch.nn.Parameter(original.clone(), requires_grad=False)
+        layer.w2_weight = torch.nn.Parameter(original.clone(), requires_grad=False)
+        mode = SimpleNamespace(is_normal=lambda: True, enable_normal=lambda: True, enable_low_latency=lambda: False)
+        with patch.object(U, "get_hcu_gfx_arch", return_value="gfx936"), patch.object(
+            U, "use_int8_deepgemm_asm", return_value=False
+        ), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch.object(
+            packing, "_get_current_gfx_arch", return_value="gfx936"
+        ), patch.dict("sys.modules", {
+            "deepgemm.group_gemm_weight_pack": ModuleType("deepgemm.group_gemm_weight_pack")
+        }), patch.object(torch.cuda, "is_available", return_value=False):
+            expected = deepgemm.marlin_i8_contiguous_weight(original.clone(), shuffle_unique=0, low_memory=True)
+            U.prepare_w8a8_int8_deepgemm_weights(layer)
+        torch.testing.assert_close(layer.w13_weight_deepgemm, expected, rtol=0, atol=0)
+        self.assertFalse(hasattr(layer, "w13_weight_deepgemm_masked"))
+
     def test_pair32_auto_and_low_latency_match_public_gemm_layouts(self):
         from deepgemm import group_gemm_weight_pack as packing
         from hcu_sglang.layers.quantization import hcu_deepgemm_w8a8_utils as U
@@ -32,12 +54,11 @@ class CompressedInt8Tests(unittest.TestCase):
                     mode = SimpleNamespace(is_normal=lambda: False, enable_normal=lambda: normal, enable_low_latency=lambda: True)
                     with patch.object(U, "get_hcu_gfx_arch", return_value=arch), patch.object(
                         U, "use_int8_deepgemm_asm", return_value=False
-                    ), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch.object(
+                    ), patch("sglang.srt.layers.moe.utils.get_deepep_mode", return_value=mode), patch.object(packing, "_get_current_gfx_arch", return_value=arch), patch.object(
                         packing, "pack_i8_weight_pair32", wraps=packing.pack_i8_weight_pair32
                     ) as packing_call, patch.object(torch.cuda, "is_available", return_value=False):
                         U.prepare_w8a8_int8_deepgemm_weights(layer)
                         U.prepare_w8a8_int8_deepgemm_weights(layer)
-                    self.assertEqual(packing_call.call_count, 2)
                     self.assertFalse(hasattr(layer, "w13_weight"))
                     self.assertEqual(layer.w13_weight_deepgemm_masked.shape, (2, 4, 8, 2, 4, 16, 16))
                     self.assertEqual(layer.w2_weight_deepgemm_masked.shape, (2, 2, 8, 2, 4, 16, 16))
@@ -46,8 +67,10 @@ class CompressedInt8Tests(unittest.TestCase):
                             index = (e, k // 64, n // 32, n % 2, k // 16 % 4, n // 2 % 4 * 4 + n // 8 % 4, k % 16)
                             self.assertEqual(packed[index].item(), original[e, n, k].item())
                     if normal:
-                        self.assertIs(layer.w13_weight_deepgemm, layer.w13_weight_deepgemm_masked)
-                        self.assertIs(layer.w2_weight_deepgemm, layer.w2_weight_deepgemm_masked)
+                        with patch.object(packing, "_get_current_gfx_arch", return_value=arch):
+                            expected = [packing.marlin_i8_contiguous_weight(w.clone(), shuffle_unique=0, low_memory=True) for w in originals]
+                        torch.testing.assert_close(layer.w13_weight_deepgemm, expected[0], rtol=0, atol=0)
+                        torch.testing.assert_close(layer.w2_weight_deepgemm, expected[1], rtol=0, atol=0)
                     else:
                         self.assertFalse(hasattr(layer, "w13_weight_deepgemm"))
                     self.assertEqual(layer._w8a8_int8_deepgemm_has_contiguous, normal)
@@ -60,10 +83,16 @@ class CompressedInt8Tests(unittest.TestCase):
             for asm in (False, True):
                 with self.subTest(arch=arch, asm=asm), patch.object(U, "get_hcu_gfx_arch", return_value=arch), patch.object(
                     M, "use_int8_deepgemm_asm", return_value=asm
-                ), patch("hcu_sglang.utils.detection.is_hcu", return_value=True), patch.dict(
+                ), patch("hcu_sglang.layers.moe.deepgemm_int8.is_hcu", return_value=True), patch(
+                    "sglang.srt.layers.moe.get_moe_runner_backend",
+                    return_value=SimpleNamespace(is_deep_gemm=lambda: True),
+                ), patch(
+                    "sglang.srt.layers.moe.get_moe_a2a_backend",
+                    return_value=SimpleNamespace(is_deepep=lambda: True),
+                ), patch.dict(
                     os.environ, {"SGLANG_USE_DEEPGEMM_MOE": "1"}
                 ):
-                    layer = SimpleNamespace()
+                    layer = SimpleNamespace(dispatcher=SimpleNamespace(quant_config={}, set_quant_config=Mock()))
                     M.configure_layer(layer, M.W8A8Int8Config())
                     self.assertTrue(layer.use_int8_w8a8_deepgemm)
                     self.assertEqual(layer.use_int8_w8a8_deepgemm_asm, asm)
@@ -92,7 +121,7 @@ class CompressedInt8Tests(unittest.TestCase):
         self.assertIs(calls[0][1][0], layer.w13_weight_deepgemm_masked)
         self.assertIs(calls[1][1][0], layer.w2_weight_deepgemm_masked)
         self.assertEqual([call[3] for call in calls], [4, 4])
-        self.assertTrue(all(call[4] == {"shuffle_unique": 0} for call in calls))
+        self.assertTrue(all(call[4] == {"shuffle_unique": 0, "config": {"MODE": 1001}} for call in calls))
         torch.testing.assert_close(output, torch.full((2, 4, 8), 2, dtype=torch.bfloat16))
 
     @classmethod

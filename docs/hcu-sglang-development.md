@@ -4016,6 +4016,12 @@ DP Attention 中空闲 rank 仍可能进入线性层。此前 LightOp 在 M=0 �
 
 此前未提交补丁直接修改共享的 `cos_sin_cache`，存在影响其他使用者的风险。本次保留该原缓存，单独保存 HY3 INT8 使用的转换结果；同一源缓存、设备和 dtype 复用结果，源对象替换或目标设备/dtype 改变时重新转换。复用 `tests/runtime/fix_attention_models.py`，覆盖共享对象下交替执行 INT8、BF16、FP8、非 HCU 输入，以及缓存复用、源替换和 Q/K 数值。共享缓存反例在隔离前失败，隔离后该文件 17 项通过；本轮三个相关文件共 40 项通过。
 
+## 2026-11-20：PR81 P/D 启动期 HIP mask JIT 适配
+
+PR81 review 修复在三节点 P/D 启动联调中继续验证。发现官方 DeepSeek-V4 `MaskKernel::run` 把 `num_token_non_padded` 的设备类型限定为 CPU/CUDA，HIP 标量会触发 TVM FFI `InternalError`。plugin 为该单个 JIT factory 指向已有 HIP-aware `hash_topk.cuh`，保持官方 `mask_topk_ids` 调用及 JIT overlay 默认关闭，不全局改写其他 JIT 编译。
+
+本地 `py_compile` 与 `git diff --check` 通过。三节点首轮服务尚未健康：P/D 在触发该 HIP 错误后退出；定点修复已加入 plugin，需重启后继续验证 P/D `/ready` 与生成请求。未做数据集精度或性能验收。
+
 历史的直接改缓存版本曾完成 GPQA no_think 150/198，旧版同条件重测为 147/198；这是历史组合证据，不算本次缓存隔离版本的全量精度验收。本次未重跑完整模型、GPU Graph、GPQA、GSM8K、性能或其他模型服务。
 
 两仓 L0 通过（Adapter 保留 32 项原有警告）；Plugin 全量 CPU 检查与修改前干净 HEAD 对照均为 248 项、82 failures、6 errors、17 skips，失败及错误用例相同。既有来源快照与导入测试未全绿，不重写历史来源清单迎合测试。开发记录及导览随提交更新，导览生成和快照检查通过，浏览器视觉验收未执行。详细日志、备份与对照保存在仓库外的任务归档中。
@@ -4074,3 +4080,130 @@ EP 规模，插件将其和实际专家并行规模核对。旧权重缺少该�
 CPU 回归覆盖布局生成与复用、EP 规模相同与不匹配、旧权重兼容、
 布局后缀检查、写入失败后的恢复及并发发布。运行时校验在 CPU
 模拟 HIP 上下文中执行，当前未做设备推理或吞吐复测。
+
+## 2026-11-20 PR81 review runtime follow-up
+
+以下保留早期候选的诊断经过。后置覆盖 layer IDs 和重复 mask 工厂已在下节
+复核中撤回；该轮临时关闭 Decode Graph 的启动尝试不计入最终验收，亦不是
+后续部署配方。
+
+修复 GLM CP-PD resolver hook 目标：同时覆盖定义模块及 `parallel_hook` 导入别名，适配该 SGLang 版本的 hook 绑定；从 DSA pointer producer 的 target/draft pool 顺序重建 layer ID，并校验后覆盖原生全量层 ID。回归 `tests.test_glm5_review_regressions` 4 项通过，Python 编译和 `git diff --check` 通过。
+
+SCNet PD 验证中，插件源代码可导入但没有安装 general-plugin entry point，故此前 hooks 未执行；按 editable 安装后解决。adapter 和 plugin 对 `slimquant_w4a8` 的重复注册通过 `HCU_SLIMQUANT=0` 消除。D 端先遇到 decode Graph Triton `Loop layout is not injective`，本次仅为启动健康验证禁用 decode Graph；精度及性能尚未验证。当前三节点服务启动验证仍进行中；完整通过情况待本次实测后补记。
+
+## 2026-11-20 PR81 INT8 合入契约复核
+
+用途：处理已合入 HY3 INT8 路径与 GLM5.3 候选在同一入口上的布局分歧。
+当前本地分支已包含主线 `a8eed56`，沿用 Adapter 的 `_hcu_quant_type_dispatch`；
+显式 `SGLANG_USE_DEEPGEMM_MOE=0` 的关闭优先级保留。
+
+真实 gedf118 Python 源码与固定 `edf1183` 逐字节相同，实际共享库指纹与此前
+验证记录一致。执行未修改的真实打包函数确认：gfx936 的 contiguous/shuffle=0
+返回三维 ASM，masked/shuffle=0 与七维 pair32 逐字节相同；gfx938 两个包装器
+都返回 pair32。较新 DeepGEMM 源码已统一包装器，不能外推旧包布局。
+
+保留 normal 的 vendor 打包和匹配 GEMM；AUTO 分别保存 normal 与 masked 权重，
+先打包 masked，再调用可能原地改写原权重的 contiguous 包装器。
+显式 ASM masked 分支恢复其匹配的 `m_grouped_w8a8_gemm_nt_masked`；
+MODE=1001 放在真正的 pair32 masked 分支，gate/up 和 down 配套使用。
+
+未提交 P/D 修复按真实生产/消费契约整理：保留 CP resolver 的定义模块及
+预导入别名目标，保留外层 GLM Hybrid 标记接线。Index-K 的 pointers 与 layer IDs
+由同一生产者组装；取消后置重建覆盖，保留长度校验。压缩 tail 保留完整的
+K/score 两组及零行占位，匹配仅 CP0 发送 tail 的既有协议；draft 以目标总层数
+映射到独立命名空间。新增行为回归覆盖 IndexShare 子集、CP 空 owner、draft、
+合法指针换序及元数据不匹配反例。
+两个 CP resolver 目标均补登记到当前 Hook 合同。真实 HookRegistry apply 后，
+定义入口和预导入别名各产生一次声明，原配置不变，Decode Graph 仍为 full；
+非 HCU 分支保留 effective-original 返回值。真实 Adapter 包装属性接线也通过，
+在 compiled/network dispatch 边界用记录器核对 INT8 quant_type、权重和参数，
+不将该接线探针当作真实 DeepEP 网络通信验收。
+
+撤回此前未提交的 Plugin mask JIT 工厂：当前 Adapter 已在不可变编译输入中
+提供 HIP scalar guard。真实构建固定官方源码的完整 JIT bundle 成功，270 个资产
+处理通过，mask 的 HIP 条件实际命中，官方源文件哈希未改变。旧 Plugin REPLACE
+候选还存在非 HCU 回退递归，不作为保留该重复实现的理由。
+
+本轮真实 gfx936 + gedf118 GPU 验证通过 32 个路径用例及 4 组真实打包比较：
+GLM 的 N/K 为 4096/4096、4096/2048，HY3 为 3072/4096、4096/1536；
+覆盖 normal、low-latency、AUTO 与 ASM 开关。每组使用 3 个专家、容量 256，
+有效行数从 0/1/7 改为 63/0/1，另做全空重放。eager、原输入 Graph 和变输入、
+scale、行数 Graph 的有效行均与独立 CPU INT32 matmul + FP32 scale + BF16
+舍入参考逐值相同，无容差放宽。全空重放只证明执行完成，不作无效行数值声明。
+真实共享库 SHA256 为
+`40378fafacb43b69b1eacc20759b9b4fd78963d01e34adee24ea8785b4380f38`。
+复现入口为 `python3 tests/runtime/int8_deepgemm_gpu.py --plugin-dir . --out <result.json>`；
+必须在已加载上述真实 gfx936/gedf118 组合的环境执行，缺少设备或库指纹不符会失败。
+最终同一运行时代码重跑 32 个 GPU 用例再次通过。MoE 回归 16 项、INT8 专项
+4 项、DeepEP 回归 6 项、DSA 元数据行为 3 项通过；L0 检查 822 个 Python
+文件、8 个 Skill 通过。完整 compressed_int8 运行 17 项仍有 1 项 CPU backend
+错误，未修改的基线同一测试也复现：tensor-scale 路径调用的 FP8 量化算子无
+CPU kernel。本地全量 unittest 与干净 HEAD 对照均有既有 17 failures、26 errors、
+30 skipped，候选没有新增失败 node ID；这些结果不能写成全量测试通过。
+
+这是模型形状的 GEMM 契约验证，未执行完整 MoE forward、HY3/GLM P/D 服务、
+数据集或性能复测；gfx938 仅核对真实 CPU 打包，未作 GPU 结论。旧的
+79.501 ms 与数据集分数不转记为本候选结果。此前 D 配方的 ASM=1 曾被候选
+解释成 pair32；本轮恢复 ASM 的原义，要继续使用 pair32 cooperative 内核须
+显式使用 ASM=0，并保留既有 Decode Graph、EAGLE 与其他接受配置重新验收。
+
+## 2026-11-20 PR81 P/D 精度复验中的 KDA 卷积接线修复
+
+按原三节点 INT8、CP/LayerSplit/HiCache、EAGLE 5/1/6、Decode Graph 和
+ReplaySSM 配方启动当前候选。初次 D 在 Graph target-verify warmup 退出：
+`_run_causal_conv1d_update` 不接受 `intermediate_conv_window`。新主线将公共
+卷积别名接到普通单步包装器，但 verify 调用仍携带窗口、状态索引与树索引。
+
+包装器现在保留普通单步的 HCU provider；带额外状态参数的调用原样交给当前
+有效的完整 provider，包含 Adapter 已安装的适配，不丢弃投机状态，也不关闭
+Graph 或投机功能。新增回归通过真实注册别名检查参数和返回值；真实状态、
+GPU/Graph、P/D 完整请求及两个数据集的最终结果在本轮继续复验。
+
+## 2026-11-20 PR81 mHC 输出归一化接线复验
+
+完整 P/D 的固定请求在首个 P token 后产生乱码。相同 token 的 P 重算与 D
+首层 embedding 完全相同，首层 conv/temporal 状态传输也逐值相同；D 首层
+QKV 输入缺少输出 RMSNorm 的量级。真实公共 `hc_pre` 经过已注册 Hook 后，
+官方 dispatch 调用 Plugin 的 AITER TileLang 实现，却按存在 norm weight
+返回 `norm_fused=True`；该实现没有执行输出归一化，communicator 因而跳过它。
+
+保留显式 native mHC 分支，其余 HCU 调用转交 Plugin 已有的完整 dispatch，
+由实际执行分支返回归一化状态；非 HCU 继续调用 effective original。未修改
+官方源码、AITER 内核或 Graph/EAGLE 配方。新回归通过预导入公共入口、正式
+Hook 与真实 MHCLayerCommunicator 执行：修复前 1/6/32 token 三组均失败，
+修复后与独立 FP32 参考比较通过，包含两次变输入 Graph replay。
+
+该文件与留存的历史部署快照一致，尚不能据此认定是本轮新增回归；历史
+正常部署的代码/环境差异另行核对。仅重启 D、保持 P 原进程的整模型 A/B
+已通过：同一 24-token 确定性请求在 64 和 512 token 上限下均生成 43 tokens，
+最终 content 精确为数字 2，finish reason 为 stop。原乱码请求在两种上限下均
+失败。随后移除临时诊断入口，重新启动完整接受配置验证两个数据集。
+L0 的 823 个 Python 文件、8 个 Skill 通过；同一 Python 3.11 环境全量
+unittest 295 项仍有既有 17 failures、26 errors、30 skipped，失败 node IDs
+与修复前完全相同。
+
+清理诊断入口、恢复正式完整配置后，确定性请求再次正常 stop，最终答案
+精确为数字 2。随后两个 EvalScope 进程于本次运行并行完成，退出码均为 0：
+HumanEval 164/164（100.00%，Pass@1 100.00%），AIME25 26/30（86.67%）。
+194 条预测与评分均唯一完整，无生成错误；HumanEval 164 个均正常 stop，
+AIME25 为 27 stop、3 max_tokens。保留原 64000 token、temperature=1、
+top_p=0.95、seed=42、stream=true 配方；enable_thinking=false 字段仍保留，
+实际响应含 reasoning，不标称关闭思考。
+
+AIME25 零基索引 12/13/14 达到 64000 tokens 后截断，最终答案为空；12、14
+的推理中出现正确答案后继续自检，13 的更深数学偏差尚未单独归因。索引 23
+把十二个非零内部整数误数为十三个，得到 159；正确零点数 139，加十个切点
+应为 149。四题的连续 50 词窗口最高重复次数分别为 2/1/1/1，没有该口径的
+机械复读证据。评测后 P/D/Router 健康，16 个 HTTP workers ready、退出与
+scheduler 异常计数均为零。本次分数为新运行结果。
+
+同日完成当前候选的 Decode bs8 trace：128 个请求按 16 rank × 8 显式路由，
+日志确认满载后等待 30.1 秒，采集 10 steps CPU/GPU。16 份原始 gzip/JSON
+均完整，每 rank 的 CPU 和 GPU 注解各有 10 个 step[VERIFY bs=8]；使用
+官方 ProfileMerger 合并后的事件数为 2,683,439，与原始事件总数相同。
+采集 ID 为 1795178080.5101914，原始 TP0 文件 SHA256 为
+957b470e9a33f434558621bdaceb52aa452b65cc4488c4af72853e8de03942c6。
+沿用假 bootstrap 直压 Decode 的交接配方，未改动 Graph/EAGLE 或其他服务
+配置；这份 trace 不代表真实 P/D 精度或有效 token 吞吐。导出完成后触发
+已知 profiler SIGSEGV，按相同配置恢复两台 Decode，随后 P/D/Router 健康、
+16 个 HTTP workers ready。尚未完成本次 trace 的同口径性能拆分与对比。

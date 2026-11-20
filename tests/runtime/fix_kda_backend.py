@@ -55,6 +55,23 @@ def recurrence(x,state,dim,steps):
 
 
 class KdaConsumerTests(unittest.TestCase):
+    def test_registered_conv_dispatch_preserves_speculative_state_arguments(self):
+        x, state, weight, bias, indices, result = [object() for _ in range(6)]
+        spec = {name: object() for name in (
+            'intermediate_conv_window', 'intermediate_state_indices',
+            'retrieve_next_token', 'retrieve_next_sibling', 'retrieve_parent_token',
+        )}
+        with patch.object(P, '_hcu_causal_conv1d_update', side_effect=AssertionError('simple provider cannot save verify state')), patch.object(P, 'causal_conv1d_update', return_value=result) as original:
+            actual = N.causal_conv1d_update(x, state, weight, bias, activation='silu', conv_state_indices=indices, **spec)
+        self.assertIs(actual, result)
+        original.assert_called_once_with(x, state, weight, bias, activation='silu', conv_state_indices=indices, **spec)
+        for provider in (Mock(return_value=result), None):
+            with self.subTest(hcu=provider is not None), patch.object(P, '_hcu_causal_conv1d_update', provider), patch.object(P, 'causal_conv1d_update', return_value=result) as original:
+                self.assertIs(N.causal_conv1d_update(x, state, weight, bias, activation='silu', conv_state_indices=indices), result)
+                (provider if provider is not None else original).assert_called_once_with(x, state, weight, bias, activation='silu', conv_state_indices=indices)
+                if provider is not None:
+                    original.assert_not_called()
+
     def test_real_config_pool_backend_constructor_selects_hcu_and_keeps_fp32_state(self):
         runner,backend,layer=fixture()
         self.assertTrue(runner.req_to_token_pool.mamba_pool.use_hcu_kda)
@@ -141,7 +158,7 @@ class KdaConsumerTests(unittest.TestCase):
         for row in range(2):expected.append(recurrence(x[row*2:row*2+2],torch.zeros(2,16,16,device='cuda'),16,2))
         torch.testing.assert_close(out.squeeze(0).float(),torch.cat([v[0] for v in expected]),rtol=.025,atol=.003)
         with patch.object(SU,'mambaish_config',return_value=NS()),patch.object(SU,'pp_spec_stable_rows_enabled',return_value=False):
-            _ALIAS.commit(NS(model_runner=NS(model_config=NS(),req_to_token_pool=pool)),batch,torch.tensor([1,2],device='cuda'),torch.tensor([[0,1],[2,3]],device='cuda'),2)
+            _ALIAS.commit(NS(model_runner=NS(model_config=NS(),req_to_token_pool=pool,attn_backend=NS(linear_attn_backend=backend))),batch,torch.tensor([1,2],device='cuda'),torch.tensor([[0,1],[2,3]],device='cuda'),2)
         actual=state.temporal[0,torch.tensor([1,2],device='cuda')]
         torch.testing.assert_close(actual,torch.stack([expected[0][1][0],expected[1][1][1]]),rtol=.025,atol=.003)
         self.assertEqual(state.temporal[0,0].abs().sum().item(),0)

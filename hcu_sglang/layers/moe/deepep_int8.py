@@ -309,16 +309,14 @@ def forward_groupgemm_w8a8_int8_masked(
     )
 
     if self.use_int8_w8a8_deepgemm_asm:
-        from deepgemm import m_grouped_i8_gemm_nt_masked
+        from deepgemm import m_grouped_w8a8_gemm_nt_masked
 
-        m_grouped_i8_gemm_nt_masked(
+        m_grouped_w8a8_gemm_nt_masked(
             (hidden_states, hidden_states_scale),
             (self.w13_weight_deepgemm_masked, self.w13_weight_scale),
             gateup_output,
             masked_m,
             expected_m,
-            shuffle_unique=0,
-            config={"MODE": 1001},
         )
     elif self.use_pair32_w8a8_int8_deepgemm:
         from deepgemm import m_grouped_i8_gemm_nt_masked
@@ -336,6 +334,7 @@ def forward_groupgemm_w8a8_int8_masked(
             masked_m.contiguous(),
             expected_m,
             shuffle_unique=0,
+            config={"MODE": 1001},
         )
     else:
         from deepgemm.m_group_gemm import m_grouped_w8a8_gemm_nt_masked_ll
@@ -379,16 +378,14 @@ def forward_groupgemm_w8a8_int8_masked(
     )
 
     if self.use_int8_w8a8_deepgemm_asm:
-        from deepgemm import m_grouped_i8_gemm_nt_masked
+        from deepgemm import m_grouped_w8a8_gemm_nt_masked
 
-        m_grouped_i8_gemm_nt_masked(
+        m_grouped_w8a8_gemm_nt_masked(
             (q_a2_all, q_a2_scale),
             (self.w2_weight_deepgemm_masked, self.w2_weight_scale),
             down_output,
             masked_m,
             expected_m,
-            shuffle_unique=0,
-            config={"MODE": 1001},
         )
     elif self.use_pair32_w8a8_int8_deepgemm:
         from deepgemm import m_grouped_i8_gemm_nt_masked
@@ -401,6 +398,7 @@ def forward_groupgemm_w8a8_int8_masked(
             masked_m.contiguous(),
             expected_m,
             shuffle_unique=0,
+            config={"MODE": 1001},
         )
     else:
         w2_weight_int8 = (self.w2_weight_deepgemm, self.w2_weight_scale)
