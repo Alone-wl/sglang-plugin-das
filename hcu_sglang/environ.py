@@ -2,10 +2,56 @@
 
 from __future__ import annotations
 
+import logging
+import os
+import sys
+from pathlib import PurePosixPath
 from typing import Any
 
 from sglang.srt.environ import EnvBool, EnvBoolWithAlias, EnvFloat, EnvInt, EnvStr, Envs, _default_hip
 from hcu_sglang.utils.detection import is_hcu
+
+
+logger = logging.getLogger(__name__)
+
+_QWEN36_BF16 = "qwen3.6-35b-a3b"
+_QWEN36_CHANNEL_FP8 = "qwen3.6-35b-a3b-channel-fp8"
+_QWEN36_SERVE_DEFAULTS = (
+    "SGLANG_ENABLE_SPEC_V2",
+    "SGLANG_USE_FUSED_TOPK_SOFTMAX",
+    "SGLANG_USE_LIGHTOP",
+    "SGLANG_USE_CAUSAL_CONV1D",
+    "SGLANG_USE_AITER_LINEAR_ATTN",
+    "SGLANG_ROCM_USE_AITER_MOE",
+)
+
+
+def apply_qwen36_serve_defaults() -> None:
+    entrypoint, *args = sys.argv or [""]
+    if args[:1] == ["serve"]:
+        args = args[1:]
+        positional_model = args[0] if args and not args[0].startswith("-") else ""
+    elif PurePosixPath(entrypoint).name == "launch_server.py":
+        positional_model = ""
+    else:
+        return
+
+    from sglang.cli.utils import try_get_model_path
+
+    model_path = positional_model or try_get_model_path(args)
+    model_name = PurePosixPath(model_path or "").name.lower()
+    if model_name not in (_QWEN36_BF16, _QWEN36_CHANNEL_FP8) or not is_hcu():
+        return
+
+    flags = _QWEN36_SERVE_DEFAULTS
+    if model_name == _QWEN36_CHANNEL_FP8:
+        flags += ("SGLANG_USE_MODELSCOPE",)
+
+    defaults = [flag for flag in flags if flag not in os.environ]
+    for flag in defaults:
+        os.environ.setdefault(flag, "1")
+    if defaults:
+        logger.info("Applied HCU Qwen3.6 serve defaults: %s", ", ".join(defaults))
 
 
 _ENV_SPECS: dict[str, tuple[type, Any]] = {
@@ -37,7 +83,30 @@ _ENV_SPECS: dict[str, tuple[type, Any]] = {
     'SGLANG_PD_HIDDEN_RECV_POOL_TOKENS': (EnvInt, -1),
     "SGLANG_ENABLE_HICACHE_SWA_TAIL_ONLY_BACKUP": (EnvBool, False),
     "SGLANG_ENABLE_CP_V2": (EnvBool, False),
-    "SGLANG_HCU_W8A8_USE_LIGHTOP": (EnvBool, False),
+    "SGLANG_GLM_PREFILL_GATE_K1_VECTOR": (EnvBool, False),
+    "SGLANG_GLM_OPT_PREFILL": (EnvBool, False),
+    "SGLANG_GLM_PREFILL_SHARED_OVERLAP": (EnvBool, False),
+    "SGLANG_GLM_OPT_DECODE": (EnvBool, False),
+    "SGLANG_GLM_HCU_GEMM": (EnvBool, False),
+    "SGLANG_GLM_LIGHTOP_FUSIONS": (EnvBool, False),
+    "SGLANG_LIGHTOP_FUSION_PHASES": (EnvStr, "verify"),
+    "SGLANG_LIGHTOP_NORM_QUANT": (EnvBool, True),
+    "SGLANG_LIGHTOP_MLA_KV_FUSED": (EnvBool, True),
+    "SGLANG_HCU_DRAFT_CONCAT": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_DECODE_NATIVE_OPS": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_K1_INDIRECT": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_K1_AUTO_BUILD": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_K1_INDIRECT_SO": (EnvStr, None),
+    "SGLANG_HCU_GLM53_FP8_EXPERT_INVERSE": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_EXPERT_INVERSE_SO": (EnvStr, None),
+    "SGLANG_HCU_GLM53_FP8_EP_GATHER_K8": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_EP_GATHER_K8_SO": (EnvStr, None),
+    "SGLANG_HCU_GLM53_FP8_TOKEN_INVERSE": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_TOKEN_INVERSE_SO": (EnvStr, None),
+    "SGLANG_HCU_GLM53_FP8_PHYSICAL_KV_COMPACT": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_KV_ROPE_STORE": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_ADD_RMS_ALIGN16": (EnvBool, False),
+    "SGLANG_HCU_GLM53_FP8_ADD_RMS_ALIGN16_SO": (EnvStr, None),
     "SGLANG_HCU_GLM_CT_BF16_ROUTER": (EnvBool, False),
     "SGLANG_HCU_USE_LIGHTOP_ROPE": (EnvBool, False),
     "SGLANG_HCU_W8A8_USE_LIGHTOP": (EnvBool, False),
