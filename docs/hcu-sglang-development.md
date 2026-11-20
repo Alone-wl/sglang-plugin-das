@@ -25,6 +25,9 @@
 - [2026-11-04：GDN 投影单流构造试验](#2026-11-04-gdn-投影单流构造试验)
 - [2026-11-04：KV 与 GDN 单流提交验证](#2026-11-04-kv-与-gdn-单流提交验证)
 - [2026-11-19：静态 LPLB 产物校验](#2026-11-19-静态-lplb-产物校验)
+
+- [2026-11-12：PD prefill inflight 队列 rank 一致性](#2026-11-12-pd-prefill-inflight-队列-rank-一致性)
+- [2026-11-19：Qwen Gemma RMSNorm 与动态 INT8 量化融合](#2026-11-19-qwen-gemma-rmsnorm-与动态-int8-量化融合)
 - [2026-11-19：GLM-5.3 Channel FP8 基础运行时](#2026-11-19-glm-53-channel-fp8-基础运行时)
 - [2026-11-18：GLM-5.3 FP8 absorb BMM 分发对齐](#2026-11-18-glm-53-fp8-absorb-bmm-分发对齐)
 - [2026-11-19：DeepEP 清理接口兼容](#2026-11-19-deepep-清理接口兼容)
@@ -702,6 +705,22 @@ git show de390225d615381d3fd02b8d3eed639e5ef529b5:docs/hcu-sglang-targets.json
 生成器 v5 补齐 KDA HIP、KV C++、Rust crate 和 AITER 配置的 package-data。输出复制 721 个插件文件，726 项清单 SHA256 核验通过；314 个非 Python 包资源均被打包规则覆盖。上游受跟踪修改只有 bootstrap、插件 loader 与 pyproject，来源/许可另由生成器清单记录。
 
 在仓库外、仅输出 python 的 PYTHONPATH 下屏蔽全部外部 entry point，并清空 SGLANG_PLUGINS，验证 `sglang` 和 `hcu_sglang` 均来自内嵌输出；597/597 Hook 全部应用，4 个具名 seam、0 errors。工具仓库 117 项单元测试通过，其中 13 项需显式开启的层运行时测试未执行。本轮没有构建输出 wheel、启动模型服务或进行数值/性能验收；只验证源码生成、资源规则和隔离加载。原始证据保存在 `artifacts/backtrack-20261102/`。
+
+## 2026-11-19 Qwen Gemma RMSNorm 与动态 INT8 量化融合
+
+起点为插件 `81315b2`、SGLang `baa9befa381511cd4d56f83980951e5a45fffc6d`、adapter `bcec3e046cb5835410d0c8ab5503acbfdf0a3e9c`，使用运行环境已安装的 LightOP `0.6.0+das.dtk2610`。
+
+在 HCU 设置 `SGLANG_HCU_QWEN_RMS_INT8_FUSION=1` 后，Qwen3.5/3.8 解码层为两个 Gemma RMSNorm 边界绑定压缩张量动态对称 INT8 消费端。输入归一化接 `qkv_proj` 或 GDN 的 `in_proj_qkvz`，注意力后归一化接 dense MLP 的 `gate_up_proj`。LightOP `rms_norm_dynamic_per_token_quant_sglang` 保留归一化 BF16 给 GDN 的 `in_proj_ba`，并交付 INT8 和 FP32 token scale。带 residual 的分支保留原位写回。只有当前解码层中匹配同一张量的目标 GEMM 才跳过独立量化。未匹配、输入不满足 LightOP 契约和显式指定预量化输入的情况仍走已有路径。
+
+本轮使用 Qwen3.8-27B Channel-INT8 checkpoint 的四份 5120 维 Gemma 权重与合成 BF16 激活。对比当前 Triton Gemma RMSNorm 接独立 LightOP INT8 量化，gfx936 上图重放测得 M=1/4/128 分别为 7.38→6.56、7.42→6.54、12.75→11.51 µs，M=2048 为 105.57→105.51 µs，均为四个位置耗时的中位数。残差逐元素一致，量化值最大差 2，去量化激活相对 L2 误差 0.51%–1.06%。通用 LightOP 接口要求权重与激活同 dtype，因此传入 BF16 的 `gemma_weight`，基线在 FP32 计算 `1 + weight`。带 residual 时，基线 Triton 用 FP32 和计算方差，再从 BF16 residual 重读归一化输入。LightOP 保留 FP32 和用于归一化。M=128 对照中将基线权重改为相同 BF16 值后，无 residual 的量化结果一致，有 residual 的去量化相对 L2 差仍为 0.72%–0.74%。使用相同 BF16 权重并统一为 FP32 和后，PyTorch 参考与 LightOP 的去量化相对 L2 差降至 0.004% 以内。开关默认关闭。
+
+后续用全部 64 层 checkpoint 权重和合成 BF16 激活复核，覆盖两个归一化位置和 M=4/128。256/256 组观察到 INT8 差异，最大差 2。去量化相对 L2 误差为 0.53%–1.09%，中位数 0.88%。统一权重舍入与残差累加后，PyTorch 参考与 LightOP 的最大去量化相对 L2 差为 0.020%。
+
+bw46 HCU 4/5 在同一容器、同一 DTK 和同一 TP2 配置串行运行基线与融合版，MTP NEXTN 3/1/4，decode Graph BS=1。两个 rank 均确认 QKV、GDN 大投影和 MLP gate/up 使用预量化结果。两个基线实例的五个贪心样本逐字一致。对比融合版，计数和短算术两个样本一致，其余三个样本的文本有变化。短算术正常停止，计数生成 64 token 并执行 16 轮 verify。
+
+单请求合成输入，固定输出 128 token，丢弃首轮后各取七次中位数。输入 128 token 时，TTFT 244.95→226.99 ms，decode 131.20→132.27 tok/s。输入 2048 token 时，TTFT 251.74→242.41 ms，decode 131.01→132.09 tok/s。两组负载的每轮请求均执行 32 轮 verify。这组单卡对串行对照用于烟测，TTFT 观测区间重叠。其他模型、批量和完整精度评测未执行。
+
+L0、三个定向测试、导览生成和 `git diff --check` 通过。完整 unittest 在当前 venv 留有两项启动测试失败，干净 HEAD 复现同样失败。原始算子与服务证据保存在本轮服务器实验目录。
 
 ## 附录：布局、操作方式与汇总
 
@@ -4236,6 +4255,34 @@ CPU 回归覆盖布局生成与复用、EP 规模相同与不匹配、旧权重�
 布局后缀检查、写入失败后的恢复及并发发布。运行时校验在 CPU
 模拟 HIP 上下文中执行，当前未做设备推理或吞吐复测。
 
+目标为 release/sglang_v0.5.22，基点 708a332b0b14372badaebdb79e53c3a061571421，仅移植已合入 main 的 #87（59b217a）。保留发布分支现有记录，重新生成导览。本次验收范围仍为单请求；既有 GPU 与性能证据来自原固定组合，不记为发布分支的新 GPU 复验。发布分支验收：15 项定向 CPU 测试通过；导览生成与一致性检查通过；L0 检查通过（665 个 Python 文件、8 项技能）。全量测试：回移分支 184 项，干净基线 180 项，两者均为 3 errors、13 skipped；逐项对照错误集合完全一致，无新增失败。三个共有错误涉及 HY4 compressed config/checkpoint 与 mrope_delta，未计为本次通过。未运行新的 GPU 服务或数据集评测，既有单请求性能及对话证据沿用 #87 的固定组合。
+
+## 2026-11-19 nmz16 Qwen3.6-35B E4M3 KV Prefill
+
+使用 DTK 26.10 插件镜像、SGLang v0.5.22、adapter release `bcec3e0`、TP4。Graph On / Off 均在第一次真实 Prefill 进入 FA3 的 varlen 分支时触发 `NameError: _current_max_seq_len_k`。release backport `708a332` 留下了一个没有生产者的变量引用。调用方省略 `max_seqlen_k` 时，继续沿用页表列数乘页尺寸的上界。显式长度照常透传，保留 BSHD / BHSD 和原有 vendor 分发。
+
+真实 wrapper 的 CPU 探针替换 vendor 算子，覆盖 E4M3 KV 两种布局、显式和省略的最大长度。修复前复现相同 NameError，修复后检查传入 wheel 的参数。整模、性能和精度仍待 GPU 复验。
+
+
+## 2026-11-19 Qwen3.6 Channel FP8 checkpoint 精度
+
+在 nmz16 用相同 Channel FP8 checkpoint、TP4、E4M3 KV、FA3、EAGLE 和 0.84 静态显存比例对照。DAS 参考全量 HumanEval 96.34%、GSM8K 96.66%。社区和插件组合的原配置为 71.34% 和 79.38%。
+
+对同一批输入逐层采样。第 0 层输入一致，QKV/Z 投影误差较小，B/A 投影先出现异常。checkpoint 中 `in_proj_b.weight` 和 `in_proj_a.weight` 均为 BF16 且不带 FP8 scale。CLI 显式选 `w8a8_fp8` 后，社区 `W8A8Fp8Config.from_config` 丢失 compressed-tensors 的 `ignore`，以 `W8A8Fp8LinearMethod` 创建 B/A 权重并读取不存在的 scale。
+
+插件在已有量化注册链保留 checkpoint 的 ignore 和 packed mapping，在真实 HCU 的 LinearBase 量化选择中复用社区匹配函数。Qwen 的 merged B/A 对应两个原始投影名，两者都被忽略时才落到 BF16。普通 FP8 线性、MoE、其他 checkpoint 和非 HCU 路径维持上游分发。新增 CPU 回归覆盖忽略项、保留 FP8、混合 shard 拒绝和非 HCU 回退。
+
+固定五个 HumanEval prompt，四 rank 的 20 份 B/A 权重逐元素匹配 checkpoint，实际使用 BF16，FP32 参考输出的最大 NRMSE 低于 0.2%。真实服务修复前后及数据集报告见任务目录。社区 SGLang 与 adapter 无源码改动。
+
+
+## 2026-11-19 Qwen3.6-35B-A3B 启动默认值
+
+HCU 插件在 CLI 进程注册时为 `Qwen3.6-35B-A3B` 和 `Qwen3.6-35B-A3B-Channel-fp8` 补齐启动配方的环境变量。应用入口为 `hcu_sglang.register`，在导入读取开关的 Hook 模块前完成，各 spawn worker 继承父进程的环境。按 CLI 模型路径末级名称匹配，支持 `sglang serve` 和 `python -m sglang.launch_server`。程序化调用、其他模型和非 HCU 保持现有配置。
+
+两种模型默认启用 `SGLANG_ENABLE_SPEC_V2`、`SGLANG_USE_FUSED_TOPK_SOFTMAX`、`SGLANG_USE_LIGHTOP`、`SGLANG_USE_CAUSAL_CONV1D`、`SGLANG_USE_AITER_LINEAR_ATTN` 和 `SGLANG_ROCM_USE_AITER_MOE`。Channel FP8 额外默认启用 `SGLANG_USE_MODELSCOPE`，使用该值时镜像需安装 ModelScope。每个变量可独立显式覆盖，包含设为 `0`。模型量化、KV 数据类型、Graph 和并行参数仍由启动命令指定。
+
+回归测试覆盖标准 CLI、位置参数、兼容启动入口、显式禁用、其他模型与非 HCU。与 W8A8 FP8 checkpoint 排除项测试合计 11 项通过。完整 EvalScope 在本次默认值变更前运行，当前实机复核关注零 `export` 启动与子进程继承。
+nmz16 gfx938 两组 TP4 在移除配方环境变量后，均完成 eager Prefill / Full Decode 启动和确定性短答，结束原因为 `stop`。两组的六个进程均继承各自配方，只有 Channel FP8 注入 ModelScope 默认值。
 ## 2026-11-19 GLM-5.3 Channel FP8 基础运行时
 
 以官方 SGLang v0.5.22 为宿主。移入 fork 的 Channel FP8 量化、MoE、MLA、
